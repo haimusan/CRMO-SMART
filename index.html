@@ -1,0 +1,1511 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRMO_v3002</title>
+  <style>
+    :root {
+      --bg: #f2f2f2;
+      --panel: #ffffff;
+      --ink: #111111;
+      --muted: #6f6f6f;
+      --line: #d5d5d5;
+      --admin: #bdbdbd;
+      --shadow: 0 12px 40px rgba(0,0,0,.12);
+      --radius: 18px;
+      --tile-radius: 18px;
+      --overlay-bg: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.14) 18%, rgba(0,0,0,.82) 100%);
+      --stroke-width: 1px;
+      --tile-ratio: 16 / 9;
+      --accent: #111111;
+      --danger: #8d1111;
+      --success: #0f6f2f;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: Assistant, Arial, Helvetica, sans-serif; }
+    body { min-height: 100vh; }
+    button, input, textarea, select { font: inherit; }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 22px 16px 80px;
+    }
+
+    .top-auth {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .auth-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .auth-row > * { min-width: 0; }
+
+    .auth-panel input,
+    .auth-panel button,
+    .auth-panel textarea,
+    .auth-panel select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .auth-panel button {
+      cursor: pointer;
+      font-weight: 700;
+      background: #efefef;
+    }
+
+    .auth-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-inline.success { color: var(--success); }
+    .status-inline.error { color: var(--danger); }
+
+    .advanced {
+      margin-top: 10px;
+      border-top: 1px dashed var(--line);
+      padding-top: 10px;
+    }
+
+    .advanced summary {
+      cursor: pointer;
+      color: var(--muted);
+      user-select: none;
+      margin-bottom: 10px;
+    }
+
+    .advanced-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .advanced-grid label,
+    .editor-grid label,
+    .layer-fields label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .admin-bar {
+      display: none;
+      min-height: 54px;
+      background: var(--admin);
+      border-radius: 14px;
+      border: 1px solid #9f9f9f;
+      margin: 4px 0 22px;
+      padding: 8px 12px;
+      align-items: center;
+      box-shadow: var(--shadow);
+      gap: 10px;
+    }
+
+    .admin-bar.visible { display: flex; }
+    .admin-pill {
+      background: rgba(255,255,255,.6);
+      border: 1px solid rgba(0,0,0,.1);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .tile-wrap {
+      position: relative;
+      width: min(100%, 1100px);
+      margin: 0 auto;
+    }
+
+    .tile {
+      position: relative;
+      aspect-ratio: var(--tile-ratio);
+      border-radius: var(--tile-radius);
+      overflow: hidden;
+      background: #ddd;
+      border: var(--stroke-width) solid rgba(0,0,0,.18);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      isolation: isolate;
+    }
+
+    .tile-media,
+    .lightbox-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #dcdcdc;
+    }
+
+    .tile-fallback,
+    .lightbox-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      color: #666;
+      background: linear-gradient(135deg, #ececec, #d8d8d8);
+      font-size: clamp(18px, 2.5vw, 32px);
+      line-height: 1.3;
+    }
+
+    .tile-edit-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 5;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      display: none;
+      place-items: center;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.12);
+      box-shadow: 0 10px 20px rgba(0,0,0,.16);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .tile-wrap.editable .tile-edit-btn { display: grid; }
+
+    .tile-overlay {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 2;
+      background: var(--overlay-bg);
+      color: #fff;
+      padding: 18px 20px 16px;
+      transform: translateY(101%);
+      opacity: 0;
+      transition: transform .28s ease, opacity .28s ease;
+      pointer-events: none;
+    }
+
+    .tile:hover .tile-overlay,
+    .tile:focus-visible .tile-overlay,
+    .tile.touch-show-overlay .tile-overlay {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .ov-title {
+      font-size: clamp(18px, 2.2vw, 28px);
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 0 0 6px;
+      white-space: pre-line;
+      text-align: right;
+    }
+
+    .ov-desc {
+      font-size: clamp(13px, 1.4vw, 16px);
+      line-height: 1.35;
+      white-space: pre-line;
+      margin: 0;
+      text-align: right;
+    }
+
+    .ov-link {
+      margin-top: 10px;
+      display: inline-flex;
+      direction: ltr;
+      text-align: left;
+      color: #fff;
+      text-decoration: underline;
+      word-break: break-word;
+      font-size: 13px;
+      opacity: .95;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .meta-row strong { color: var(--ink); }
+
+    dialog {
+      border: none;
+      padding: 0;
+      max-width: min(1000px, calc(100vw - 24px));
+      width: min(1000px, calc(100vw - 24px));
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,.3);
+      background: #fff;
+    }
+
+    dialog::backdrop { background: rgba(0,0,0,.58); }
+
+    .modal-shell {
+      display: grid;
+      grid-template-columns: 1fr;
+      max-height: min(90vh, 920px);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f7f7f7;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .x-btn,
+    .small-btn,
+    .ghost-btn,
+    .danger-btn {
+      min-height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .danger-btn {
+      border-color: rgba(141,17,17,.25);
+      color: var(--danger);
+      background: #fff5f5;
+    }
+
+    .lightbox-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      min-height: 560px;
+    }
+
+    .lightbox-view {
+      position: relative;
+      min-height: 420px;
+      background: #111;
+    }
+
+    .lightbox-side {
+      padding: 18px;
+      overflow: auto;
+      background: #fff;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .lb-title {
+      font-size: 28px;
+      line-height: 1.03;
+      font-weight: 800;
+      margin: 0;
+      white-space: pre-line;
+      text-align: right;
+    }
+
+    .lb-desc {
+      margin: 0;
+      white-space: pre-line;
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .lb-link {
+      direction: ltr;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .lb-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .thumb-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+      gap: 8px;
+    }
+
+    .thumb-btn {
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      padding: 0;
+      background: #f2f2f2;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .thumb-btn.active { outline: 2px solid #111; }
+    .thumb-btn img,
+    .thumb-btn video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .editor-body {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .editor-grid textarea,
+    .layer-fields textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .dropzone {
+      border: 2px dashed #b8b8b8;
+      border-radius: 14px;
+      background: #fafafa;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .dropzone.dragover {
+      background: #f1f1f1;
+      border-color: #666;
+      color: #222;
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .layers-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .layer-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .layer-top {
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .layer-preview {
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      background: #ececec;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      position: relative;
+    }
+
+    .layer-preview img,
+    .layer-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .layer-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .layer-controls {
+      display: grid;
+      gap: 8px;
+    }
+
+    .layer-controls button {
+      min-width: 54px;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    footer {
+      margin-top: 32px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .auth-row,
+      .advanced-grid,
+      .editor-grid,
+      .layer-fields,
+      .lightbox-body {
+        grid-template-columns: 1fr;
+      }
+      .layer-top { grid-template-columns: 1fr; }
+      .tile-edit-btn { top: 10px; left: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top-auth">
+      <section class="auth-panel" aria-label="התחברות וניהול חיבור">
+        <div class="auth-row">
+          <input id="emailInput" type="email" placeholder="אימייל" autocomplete="username" />
+          <input id="passwordInput" type="password" placeholder="סיסמה" autocomplete="current-password" />
+          <button id="loginBtn" type="button">התחבר</button>
+          <button id="logoutBtn" type="button">התנתק</button>
+          <button id="saveConnBtn" type="button">שמור הגדרות</button>
+          <button id="refreshBtn" type="button">רענן מהענן</button>
+        </div>
+        <div class="auth-meta">
+          <div id="sessionLabel">מצב: מנותק</div>
+          <div id="statusLabel" class="status-inline">מוכן</div>
+        </div>
+        <details class="advanced">
+          <summary>הגדרות חיבור מתקדמות</summary>
+          <div class="advanced-grid">
+            <label>Supabase URL
+              <input id="sbUrlInput" type="text" placeholder="https://PROJECT.supabase.co" />
+            </label>
+            <label>Anon Key
+              <input id="sbAnonInput" type="password" placeholder="הדבק anon key" />
+            </label>
+            <label>Table Name
+              <input id="tableInput" type="text" value="crmo_site_config" />
+            </label>
+            <label>Row Key Column
+              <input id="keyColumnInput" type="text" value="key" />
+            </label>
+            <label>Row Key Value
+              <input id="rowKeyInput" type="text" value="crmo_v3000_tile_demo" />
+            </label>
+            <label>Payload Column
+              <input id="payloadColumnInput" type="text" value="payload" />
+            </label>
+          </div>
+          <div class="note" style="margin-top:8px;">
+            ברירת המחדל מיועדת לטבלת config עם מזהה שורה קבוע ועמודת payload מסוג json/jsonb. אם אצלך שם העמודות אחר – אפשר לעדכן כאן בלי לשנות קוד.
+          </div>
+        </details>
+      </section>
+
+      <section id="adminBar" class="admin-bar" aria-label="סרגל ניהול">
+        <div class="admin-pill">ADMIN</div>
+        <div class="admin-pill" id="adminVersionPill">CRMO_v3002</div>
+        <div class="admin-pill" id="adminTileId">tile: crmo-tile-001</div>
+        <div class="admin-pill" id="adminSyncState">sync: local</div>
+        <div class="admin-pill" id="adminUserEmail" hidden></div>
+      </section>
+    </div>
+
+    <main class="stage">
+      <div class="tile-wrap" id="tileWrap">
+        <button class="tile-edit-btn" id="editBtn" type="button" aria-label="עריכת אריח">✎</button>
+        <article class="tile" id="tile" tabindex="0" aria-label="CRMO Tile">
+          <div id="tileMediaHost"></div>
+          <div id="tileFallback" class="tile-fallback">CRMO TILE<br />16:9</div>
+          <div class="tile-overlay" id="tileOverlay">
+            <h2 class="ov-title" id="ovTitle"></h2>
+            <p class="ov-desc" id="ovDesc"></p>
+            <a class="ov-link" id="ovLink" target="_blank" rel="noopener"></a>
+          </div>
+        </article>
+        <div class="meta-row">
+          <div><strong>Tile ID:</strong> <span id="tileIdLabel">crmo-tile-001</span></div>
+          <div><strong>Layers:</strong> <span id="layerCountLabel">0</span>/18</div>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footerVersionLabel">CRMO_v3002 · Single editable tile · local + auth + cloud-ready</footer>
+  </div>
+
+  <dialog id="lightboxDialog" aria-label="Lightbox">
+    <div class="modal-shell">
+      <div class="modal-head">
+        <h2>Lightbox</h2>
+        <button class="x-btn" id="closeLightboxBtn" type="button" aria-label="סגור">✕</button>
+      </div>
+      <div class="lightbox-body">
+        <div class="lightbox-view" id="lightboxView">
+          <div id="lightboxMediaHost"></div>
+          <div id="lightboxFallback" class="lightbox-fallback">No media</div>
+        </div>
+        <aside class="lightbox-side">
+          <h3 class="lb-title" id="lbTitle"></h3>
+          <p class="lb-desc" id="lbDesc"></p>
+          <a class="lb-link" id="lbLink" target="_blank" rel="noopener"></a>
+          <div class="lb-controls">
+            <button class="small-btn" id="prevLayerBtn" type="button">הקודם</button>
+            <button class="small-btn" id="nextLayerBtn" type="button">הבא</button>
+          </div>
+          <div class="thumb-strip" id="thumbStrip"></div>
+        </aside>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="editorDialog" aria-label="עורך אריח">
+    <div class="modal-shell">
+      <div class="modal-head">
+        <h2>עורך אריח — crmo-tile-001</h2>
+        <button class="x-btn" id="closeEditorBtn" type="button" aria-label="סגור">✕</button>
+      </div>
+      <div class="editor-body">
+        <div class="editor-grid">
+          <label>כותרת ברירת מחדל לאריח
+            <textarea id="tileTitleInput" placeholder="כותרת שיופיע במאוס אובר/לייטבוקס אם אין טקסט נפרד למדיה"></textarea>
+          </label>
+          <label>טקסט ברירת מחדל לאריח
+            <textarea id="tileDescInput" placeholder="תיאור ברירת מחדל"></textarea>
+          </label>
+          <label>קישור ברירת מחדל לאריח
+            <input id="tileLinkInput" type="text" placeholder="https://example.com" />
+          </label>
+          <label>כותרת ללייטבוקס בלבד (אופציונלי)
+            <textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
+          </label>
+          <label>טקסט ללייטבוקס בלבד (אופציונלי)
+            <textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
+          </label>
+          <label>קישור ללייטבוקס בלבד (אופציונלי)
+            <input id="tileLbLinkInput" type="text" placeholder="אם ריק — ישתמש בקישור הראשי" />
+          </label>
+        </div>
+
+        <div class="editor-actions">
+          <button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
+          <input id="fileInput" type="file" hidden multiple accept="image/*,video/*,.gif" />
+          <button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
+          <button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
+          <button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+          גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
+          <div class="note" style="margin-top:8px;">
+            לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
+          </div>
+        </div>
+
+        <div class="note">
+          גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
+        </div>
+
+        <section class="layers-list" id="layersList"></section>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      const VERSION = 'CRMO_v3002';
+      const TILE_ID = 'crmo-tile-001';
+      const MAX_LAYERS = 18;
+      const LOCAL_CONN_KEY = 'CRMO_V3002_CONNECTION';
+      const LOCAL_TILE_KEY = 'CRMO_V3002_TILE';
+      const TOUCH_OVERLAY_MS = 1600;
+
+      const APP_CONNECTION_DEFAULTS = Object.freeze({
+        url: 'https://swkxhqrovsdfpqbskcyp.supabase.co',
+        anonKey: 'sb_publishable_iy8PYn5zkjZb6I7YQtW8Bg_w8eKvrWs',
+        table: 'crmo_site_config',
+        keyColumn: 'key',
+        rowKey: 'crmo_v3000_tile_demo',
+        payloadColumn: 'payload'
+      });
+
+      const DEFAULT_STATE = {
+        version: VERSION,
+        tileId: TILE_ID,
+        updatedAt: null,
+        strokeWidth: 1,
+        ratio: '16:9',
+        overlay: {
+          title: 'כותרת ראשית של האריח',
+          desc: 'טקסט ברירת מחדל למאוס אובר. אפשר להפריד טקסט שונה לכל מדיה בתוך האריח.',
+          link: ''
+        },
+        lightbox: {
+          title: '',
+          desc: '',
+          link: ''
+        },
+        layers: []
+      };
+
+      let state = loadLocalTile() || structuredClone(DEFAULT_STATE);
+      let currentLayerIndex = 0;
+      let editorDraft = null;
+      let supabaseClient = null;
+      let session = null;
+      let overlayTouchTimer = null;
+
+      const $ = (id) => document.getElementById(id);
+      const els = {
+        emailInput: $('emailInput'),
+        passwordInput: $('passwordInput'),
+        loginBtn: $('loginBtn'),
+        logoutBtn: $('logoutBtn'),
+        saveConnBtn: $('saveConnBtn'),
+        refreshBtn: $('refreshBtn'),
+        sbUrlInput: $('sbUrlInput'),
+        sbAnonInput: $('sbAnonInput'),
+        tableInput: $('tableInput'),
+        keyColumnInput: $('keyColumnInput'),
+        rowKeyInput: $('rowKeyInput'),
+        payloadColumnInput: $('payloadColumnInput'),
+        sessionLabel: $('sessionLabel'),
+        statusLabel: $('statusLabel'),
+        adminBar: $('adminBar'),
+        adminSyncState: $('adminSyncState'),
+        adminUserEmail: $('adminUserEmail'),
+        adminVersionPill: $('adminVersionPill'),
+        adminTileId: $('adminTileId'),
+        tileWrap: $('tileWrap'),
+        tile: $('tile'),
+        editBtn: $('editBtn'),
+        tileMediaHost: $('tileMediaHost'),
+        tileFallback: $('tileFallback'),
+        ovTitle: $('ovTitle'),
+        ovDesc: $('ovDesc'),
+        ovLink: $('ovLink'),
+        tileIdLabel: $('tileIdLabel'),
+        layerCountLabel: $('layerCountLabel'),
+        footerVersionLabel: $('footerVersionLabel'),
+        lightboxDialog: $('lightboxDialog'),
+        closeLightboxBtn: $('closeLightboxBtn'),
+        lightboxMediaHost: $('lightboxMediaHost'),
+        lightboxFallback: $('lightboxFallback'),
+        lbTitle: $('lbTitle'),
+        lbDesc: $('lbDesc'),
+        lbLink: $('lbLink'),
+        prevLayerBtn: $('prevLayerBtn'),
+        nextLayerBtn: $('nextLayerBtn'),
+        thumbStrip: $('thumbStrip'),
+        editorDialog: $('editorDialog'),
+        closeEditorBtn: $('closeEditorBtn'),
+        tileTitleInput: $('tileTitleInput'),
+        tileDescInput: $('tileDescInput'),
+        tileLinkInput: $('tileLinkInput'),
+        tileLbTitleInput: $('tileLbTitleInput'),
+        tileLbDescInput: $('tileLbDescInput'),
+        tileLbLinkInput: $('tileLbLinkInput'),
+        pickFilesBtn: $('pickFilesBtn'),
+        fileInput: $('fileInput'),
+        saveTileBtn: $('saveTileBtn'),
+        loadTileBtn: $('loadTileBtn'),
+        resetTileBtn: $('resetTileBtn'),
+        dropzone: $('dropzone'),
+        layersList: $('layersList')
+      };
+
+      hydrateConnectionInputs();
+      applyStateToUI(state);
+      syncVersionLabels();
+      wireEvents();
+      initSupabase();
+
+      async function initSupabase() {
+        const conn = getConnectionSettings();
+        if (!conn.url || !conn.anonKey || !window.supabase?.createClient) {
+          setStatus('חיבור Supabase קבוע נטען מהקובץ', '');
+          updateAuthUI(false);
+          return;
+        }
+        try {
+          supabaseClient = window.supabase.createClient(conn.url, conn.anonKey, {
+            auth: {
+              persistSession: true,
+              autoRefreshToken: true,
+              detectSessionInUrl: true
+            }
+          });
+          const result = await supabaseClient.auth.getSession();
+          session = result?.data?.session || null;
+          updateAuthUI(!!session);
+
+          supabaseClient.auth.onAuthStateChange(async (_event, newSession) => {
+            session = newSession || null;
+            updateAuthUI(!!session);
+            if (session) {
+              await loadFromCloudAndMerge(true);
+            }
+          });
+
+          if (session) {
+            await loadFromCloudAndMerge(true);
+          }
+        } catch (err) {
+          console.error('[CRMO_v3002] initSupabase failed', err);
+          setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
+          updateAuthUI(false);
+        }
+      }
+
+      function wireEvents() {
+        els.saveConnBtn.addEventListener('click', async () => {
+          saveConnectionInputs();
+          setStatus('הגדרות חיבור נשמרו לוקאלית', 'success');
+          await initSupabase();
+        });
+
+        els.loginBtn.addEventListener('click', login);
+        els.logoutBtn.addEventListener('click', logout);
+        els.refreshBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
+        els.editBtn.addEventListener('click', openEditor);
+        els.closeEditorBtn.addEventListener('click', closeEditor);
+        els.closeLightboxBtn.addEventListener('click', closeLightbox);
+        els.tile.addEventListener('click', handleTileClick);
+        els.tile.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openLightbox(0);
+          }
+        });
+        els.pickFilesBtn.addEventListener('click', () => els.fileInput.click());
+        els.fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+        els.saveTileBtn.addEventListener('click', saveEditorToStateAndPersist);
+        els.loadTileBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
+        els.resetTileBtn.addEventListener('click', resetTile);
+        els.prevLayerBtn.addEventListener('click', () => shiftLightbox(-1));
+        els.nextLayerBtn.addEventListener('click', () => shiftLightbox(1));
+        els.lightboxDialog.addEventListener('click', (e) => {
+          const rect = els.lightboxDialog.getBoundingClientRect();
+          const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
+          if (!inDialog) closeLightbox();
+        });
+        els.editorDialog.addEventListener('click', (e) => {
+          const rect = els.editorDialog.getBoundingClientRect();
+          const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
+          if (!inDialog) closeEditor();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            if (els.editorDialog.open) closeEditor();
+            if (els.lightboxDialog.open) closeLightbox();
+          }
+          if (els.lightboxDialog.open && e.key === 'ArrowRight') shiftLightbox(1);
+          if (els.lightboxDialog.open && e.key === 'ArrowLeft') shiftLightbox(-1);
+        });
+
+        ['dragenter','dragover'].forEach(type => {
+          els.dropzone.addEventListener(type, (e) => {
+            e.preventDefault();
+            els.dropzone.classList.add('dragover');
+          });
+        });
+        ['dragleave','drop'].forEach(type => {
+          els.dropzone.addEventListener(type, (e) => {
+            e.preventDefault();
+            els.dropzone.classList.remove('dragover');
+          });
+        });
+        els.dropzone.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+      }
+
+      function handleTileClick(e) {
+        if (state.layers.length > 1 && e.pointerType === 'touch') {
+          els.tile.classList.add('touch-show-overlay');
+          clearTimeout(overlayTouchTimer);
+          overlayTouchTimer = setTimeout(() => els.tile.classList.remove('touch-show-overlay'), TOUCH_OVERLAY_MS);
+        }
+        openLightbox(0);
+      }
+
+      async function login() {
+        if (!supabaseClient) {
+          setStatus('אין חיבור Supabase פעיל. שמור קודם URL ו-anon key', 'error');
+          return;
+        }
+        const email = els.emailInput.value.trim();
+        const password = els.passwordInput.value;
+        if (!email || !password) {
+          setStatus('יש להזין אימייל וסיסמה', 'error');
+          return;
+        }
+        try {
+          setStatus('מתחבר...', '');
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          setStatus('התחברות הצליחה', 'success');
+        } catch (err) {
+          console.error('[CRMO_v3002] login failed', err);
+          setStatus('התחברות נכשלה: ' + safeMessage(err), 'error');
+        }
+      }
+
+      async function logout() {
+        if (!supabaseClient) {
+          updateAuthUI(false);
+          return;
+        }
+        try {
+          await supabaseClient.auth.signOut();
+          session = null;
+          updateAuthUI(false);
+          setStatus('התנתקת', '');
+        } catch (err) {
+          console.error('[CRMO_v3002] logout failed', err);
+          setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
+        }
+      }
+
+      function updateAuthUI(isLoggedIn) {
+        const email = session?.user?.email || '';
+        els.sessionLabel.textContent = isLoggedIn
+          ? `מצב: מחובר${email ? ' · ' + email : ''}`
+          : 'מצב: מנותק';
+        els.adminBar.classList.toggle('visible', isLoggedIn);
+        els.tileWrap.classList.toggle('editable', isLoggedIn);
+        els.adminSyncState.textContent = isLoggedIn ? 'sync: cloud enabled' : 'sync: local only';
+
+        els.loginBtn.hidden = isLoggedIn;
+        els.logoutBtn.hidden = !isLoggedIn;
+
+        if (els.adminUserEmail) {
+          els.adminUserEmail.hidden = !isLoggedIn || !email;
+          els.adminUserEmail.textContent = email || '';
+        }
+      }
+
+      function openEditor() {
+        if (!session) {
+          setStatus('אפשר לערוך רק במצב מחובר', 'error');
+          return;
+        }
+        editorDraft = deepClone(state);
+        fillEditor(editorDraft);
+        renderLayersEditor();
+        els.editorDialog.showModal();
+      }
+
+      function closeEditor() {
+        if (els.editorDialog.open) els.editorDialog.close();
+        editorDraft = null;
+      }
+
+      function openLightbox(index = 0) {
+        currentLayerIndex = clamp(index, 0, Math.max(state.layers.length - 1, 0));
+        renderLightbox();
+        els.lightboxDialog.showModal();
+      }
+
+      function closeLightbox() {
+        if (els.lightboxDialog.open) els.lightboxDialog.close();
+      }
+
+      function shiftLightbox(delta) {
+        if (!state.layers.length) return;
+        currentLayerIndex = (currentLayerIndex + delta + state.layers.length) % state.layers.length;
+        renderLightbox();
+      }
+
+      function fillEditor(data) {
+        els.tileTitleInput.value = data.overlay?.title || '';
+        els.tileDescInput.value = data.overlay?.desc || '';
+        els.tileLinkInput.value = data.overlay?.link || '';
+        els.tileLbTitleInput.value = data.lightbox?.title || '';
+        els.tileLbDescInput.value = data.lightbox?.desc || '';
+        els.tileLbLinkInput.value = data.lightbox?.link || '';
+      }
+
+      function collectEditorHeader() {
+        return {
+          overlay: {
+            title: els.tileTitleInput.value,
+            desc: els.tileDescInput.value,
+            link: els.tileLinkInput.value.trim()
+          },
+          lightbox: {
+            title: els.tileLbTitleInput.value,
+            desc: els.tileLbDescInput.value,
+            link: els.tileLbLinkInput.value.trim()
+          }
+        };
+      }
+
+      function renderLayersEditor() {
+        els.layersList.innerHTML = '';
+        editorDraft.layers.forEach((layer, idx) => {
+          const card = document.createElement('section');
+          card.className = 'layer-card';
+          card.draggable = true;
+          card.dataset.index = String(idx);
+          card.innerHTML = `
+            <div class="layer-top">
+              <div class="layer-preview">${renderPreviewHTML(layer)}</div>
+              <div class="layer-fields">
+                <label>כותרת למדיה
+                  <textarea data-field="title">${escapeHtml(layer.title || '')}</textarea>
+                </label>
+                <label>טקסט למדיה
+                  <textarea data-field="desc">${escapeHtml(layer.desc || '')}</textarea>
+                </label>
+                <label>קישור למדיה
+                  <input data-field="link" type="text" value="${escapeAttr(layer.link || '')}" />
+                </label>
+              </div>
+              <div class="layer-controls">
+                <button class="ghost-btn" type="button" data-action="up">↑</button>
+                <button class="ghost-btn" type="button" data-action="down">↓</button>
+                <button class="danger-btn" type="button" data-action="remove">מחק</button>
+              </div>
+            </div>
+            <label class="checkline">
+              <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
+              טקסט נפרד למדיה זו
+            </label>
+            <div class="note">סוג: ${layer.type} · ${layer.name || 'ללא שם'}</div>
+          `;
+
+          const fields = card.querySelectorAll('[data-field]');
+          fields.forEach((field) => {
+            field.addEventListener('input', () => {
+              const key = field.dataset.field;
+              editorDraft.layers[idx][key] = field.type === 'checkbox' ? field.checked : field.value;
+            });
+            if (field.type === 'checkbox') {
+              field.addEventListener('change', () => {
+                editorDraft.layers[idx][field.dataset.field] = field.checked;
+              });
+            }
+          });
+
+          card.querySelector('[data-action="up"]').addEventListener('click', () => moveLayer(idx, idx - 1));
+          card.querySelector('[data-action="down"]').addEventListener('click', () => moveLayer(idx, idx + 1));
+          card.querySelector('[data-action="remove"]').addEventListener('click', () => {
+            editorDraft.layers.splice(idx, 1);
+            renderLayersEditor();
+          });
+
+          card.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', String(idx)));
+          card.addEventListener('dragover', (e) => e.preventDefault());
+          card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const from = Number(e.dataTransfer.getData('text/plain'));
+            const to = idx;
+            moveLayer(from, to);
+          });
+
+          els.layersList.appendChild(card);
+        });
+      }
+
+      function moveLayer(from, to) {
+        if (from === to || from < 0 || to < 0 || from >= editorDraft.layers.length || to >= editorDraft.layers.length) return;
+        const [item] = editorDraft.layers.splice(from, 1);
+        editorDraft.layers.splice(to, 0, item);
+        renderLayersEditor();
+      }
+
+      async function addFiles(fileList) {
+        if (!editorDraft) return;
+        const files = Array.from(fileList || []);
+        if (!files.length) return;
+        const remaining = MAX_LAYERS - editorDraft.layers.length;
+        if (remaining <= 0) {
+          setStatus('האריח כבר מלא (18 מדיות)', 'error');
+          return;
+        }
+        const picked = files.slice(0, remaining);
+        try {
+          setStatus('ממיר קבצים ל-payload...', '');
+          const layers = await Promise.all(picked.map(fileToLayer));
+          editorDraft.layers.push(...layers);
+          renderLayersEditor();
+          setStatus(`נוספו ${layers.length} מדיות`, 'success');
+        } catch (err) {
+          console.error('[CRMO_v3002] addFiles failed', err);
+          setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
+        } finally {
+          els.fileInput.value = '';
+        }
+      }
+
+      async function fileToLayer(file) {
+        const dataUrl = await readAsDataURL(file);
+        const type = file.type.startsWith('video/') ? 'video' : (file.type === 'image/gif' ? 'gif' : 'image');
+        return {
+          id: crypto.randomUUID(),
+          type,
+          name: file.name,
+          src: dataUrl,
+          title: '',
+          desc: '',
+          link: '',
+          useOwnText: false
+        };
+      }
+
+      async function saveEditorToStateAndPersist() {
+        if (!editorDraft) return;
+        if (!session) {
+          setStatus('אפשר לשמור רק במצב מחובר', 'error');
+          return;
+        }
+        const header = collectEditorHeader();
+        editorDraft.overlay = header.overlay;
+        editorDraft.lightbox = header.lightbox;
+        editorDraft.updatedAt = new Date().toISOString();
+        editorDraft.version = VERSION;
+        editorDraft.tileId = TILE_ID;
+        state = deepClone(editorDraft);
+        saveLocalTile(state);
+        applyStateToUI(state);
+        closeEditor();
+        await saveToCloud(state);
+      }
+
+      async function saveToCloud(payload) {
+        if (!session || !supabaseClient) {
+          setStatus('נשמר לוקאלית בלבד', '');
+          return;
+        }
+        const conn = getConnectionSettings();
+        const rowKeyCol = conn.keyColumn || 'key';
+        const payloadCol = conn.payloadColumn || 'payload';
+        const row = {
+          [rowKeyCol]: conn.rowKey,
+          [payloadCol]: payload,
+          updated_at: payload.updatedAt || new Date().toISOString()
+        };
+        try {
+          setStatus('שומר לענן...', '');
+          const { error } = await supabaseClient
+            .from(conn.table)
+            .upsert(row, { onConflict: rowKeyCol });
+          if (error) throw error;
+          els.adminSyncState.textContent = 'sync: cloud saved';
+          setStatus('נשמר לענן ולוקאלי', 'success');
+        } catch (err) {
+          console.error('[CRMO_v3002] saveToCloud failed', err);
+          els.adminSyncState.textContent = 'sync: local only';
+          setStatus('שמירת ענן נכשלה. נשמר לוקאלית: ' + safeMessage(err), 'error');
+        }
+      }
+
+      async function loadFromCloudAndMerge(applyLatest = true) {
+        if (!session || !supabaseClient) {
+          setStatus('אין session פעיל לטעינה מהענן', 'error');
+          return;
+        }
+        try {
+          setStatus('טוען מהענן...', '');
+          const cloud = await readCloudPayload();
+          if (!cloud) {
+            setStatus('לא נמצאה שורת payload בענן. נשארים עם הלוקאלי', '');
+            return;
+          }
+          const winner = chooseLatest(state, cloud);
+          if (applyLatest) {
+            state = normalizeState(winner);
+            saveLocalTile(state);
+            applyStateToUI(state);
+          }
+          els.adminSyncState.textContent = 'sync: cloud loaded';
+          setStatus('נטען מהענן', 'success');
+        } catch (err) {
+          console.error('[CRMO_v3002] loadFromCloudAndMerge failed', err);
+          setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
+        }
+      }
+
+      async function readCloudPayload() {
+        const conn = getConnectionSettings();
+        const rowKeyCol = conn.keyColumn || 'key';
+        const payloadCol = conn.payloadColumn || 'payload';
+        const { data, error } = await supabaseClient
+          .from(conn.table)
+          .select(`${rowKeyCol}, ${payloadCol}, updated_at`)
+          .eq(rowKeyCol, conn.rowKey)
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) return null;
+        const payload = data[payloadCol];
+        return normalizeState(payload);
+      }
+
+
+      function getEffectivePageTitle() {
+        const path = String(window.location.pathname || '');
+        const fileName = path.split('/').pop() || '';
+        return /^index(?:\.[a-z0-9]+)?$/i.test(fileName)
+          ? 'CRMO | sales oriented design'
+          : VERSION;
+      }
+
+      function syncVersionLabels() {
+        const pageTitle = getEffectivePageTitle();
+        document.title = pageTitle;
+        if (els.adminVersionPill) {
+          els.adminVersionPill.textContent = VERSION;
+        }
+        if (els.footerVersionLabel) {
+          els.footerVersionLabel.textContent = `${VERSION} · Single editable tile · local + auth + cloud-ready`;
+        }
+      }
+
+      function applyStateToUI(nextState) {
+        state = normalizeState(nextState);
+        document.documentElement.style.setProperty('--stroke-width', `${Number(state.strokeWidth || 1)}px`);
+        document.documentElement.style.setProperty('--tile-ratio', ratioToCss(state.ratio || '16:9'));
+        els.tileIdLabel.textContent = state.tileId;
+        els.adminTileId.textContent = `tile: ${state.tileId}`;
+        els.layerCountLabel.textContent = String(state.layers.length);
+        renderTile();
+      }
+
+      function renderTile() {
+        els.tileMediaHost.innerHTML = '';
+        const layer = state.layers[0] || null;
+        if (!layer?.src) {
+          els.tileFallback.hidden = false;
+        } else {
+          els.tileFallback.hidden = true;
+          els.tileMediaHost.appendChild(createMediaElement(layer, 'tile-media'));
+        }
+        const tileText = getDisplayTextForLayer(0, 'overlay');
+        els.ovTitle.textContent = tileText.title || '';
+        els.ovDesc.textContent = tileText.desc || '';
+        bindLink(els.ovLink, tileText.link);
+      }
+
+      function renderLightbox() {
+        const layer = state.layers[currentLayerIndex] || null;
+        els.lightboxMediaHost.innerHTML = '';
+        if (!layer?.src) {
+          els.lightboxFallback.hidden = false;
+        } else {
+          els.lightboxFallback.hidden = true;
+          els.lightboxMediaHost.appendChild(createMediaElement(layer, 'lightbox-media', true));
+        }
+
+        const lbText = getDisplayTextForLayer(currentLayerIndex, 'lightbox');
+        els.lbTitle.textContent = lbText.title || '';
+        els.lbDesc.textContent = lbText.desc || '';
+        bindLink(els.lbLink, lbText.link);
+        renderThumbs();
+      }
+
+      function renderThumbs() {
+        els.thumbStrip.innerHTML = '';
+        state.layers.forEach((layer, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'thumb-btn' + (idx === currentLayerIndex ? ' active' : '');
+          btn.appendChild(createMediaElement(layer, '', false, true));
+          btn.addEventListener('click', () => {
+            currentLayerIndex = idx;
+            renderLightbox();
+          });
+          els.thumbStrip.appendChild(btn);
+        });
+      }
+
+      function getDisplayTextForLayer(index, mode) {
+        const layer = state.layers[index] || null;
+        const base = mode === 'lightbox'
+          ? {
+              title: state.lightbox?.title || state.overlay?.title || '',
+              desc: state.lightbox?.desc || state.overlay?.desc || '',
+              link: state.lightbox?.link || state.overlay?.link || ''
+            }
+          : {
+              title: state.overlay?.title || '',
+              desc: state.overlay?.desc || '',
+              link: state.overlay?.link || ''
+            };
+        if (layer?.useOwnText) {
+          return {
+            title: layer.title || base.title,
+            desc: layer.desc || base.desc,
+            link: layer.link || base.link
+          };
+        }
+        return base;
+      }
+
+      function createMediaElement(layer, className = '', autoplay = false, muted = true) {
+        if (layer.type === 'video') {
+          const video = document.createElement('video');
+          video.className = className;
+          video.src = layer.src;
+          video.playsInline = true;
+          video.loop = true;
+          video.muted = muted;
+          video.controls = autoplay;
+          if (autoplay) {
+            video.autoplay = true;
+            video.muted = false;
+          } else {
+            video.autoplay = true;
+          }
+          return video;
+        }
+        const img = document.createElement('img');
+        img.className = className;
+        img.src = layer.src;
+        img.alt = layer.title || layer.name || 'CRMO media';
+        return img;
+      }
+
+      function renderPreviewHTML(layer) {
+        if (!layer?.src) return '<div class="note" style="padding:10px;">No preview</div>';
+        if (layer.type === 'video') {
+          return `<video src="${escapeAttr(layer.src)}" muted loop autoplay playsinline></video>`;
+        }
+        return `<img src="${escapeAttr(layer.src)}" alt="preview" />`;
+      }
+
+      function bindLink(anchor, url) {
+        const clean = (url || '').trim();
+        if (!clean) {
+          anchor.hidden = true;
+          anchor.removeAttribute('href');
+          anchor.textContent = '';
+          return;
+        }
+        anchor.hidden = false;
+        anchor.href = clean;
+        anchor.textContent = prettifyUrl(clean);
+      }
+
+      function prettifyUrl(url) {
+        return String(url)
+          .replace(/^https?:\/\//i, '')
+          .replace(/^www\./i, '')
+          .replace(/\/$/, '');
+      }
+
+      function chooseLatest(localState, cloudState) {
+        const localTime = Date.parse(localState?.updatedAt || 0) || 0;
+        const cloudTime = Date.parse(cloudState?.updatedAt || 0) || 0;
+        return cloudTime >= localTime ? cloudState : localState;
+      }
+
+      function normalizeState(input) {
+        const base = deepClone(DEFAULT_STATE);
+        const merged = {
+          ...base,
+          ...(input || {}),
+          overlay: { ...base.overlay, ...(input?.overlay || {}) },
+          lightbox: { ...base.lightbox, ...(input?.lightbox || {}) },
+          layers: Array.isArray(input?.layers) ? input.layers.slice(0, MAX_LAYERS).map(normalizeLayer) : []
+        };
+        merged.tileId = TILE_ID;
+        merged.version = VERSION;
+        return merged;
+      }
+
+      function normalizeLayer(layer) {
+        return {
+          id: layer?.id || crypto.randomUUID(),
+          type: layer?.type || 'image',
+          name: layer?.name || '',
+          src: layer?.src || '',
+          title: layer?.title || '',
+          desc: layer?.desc || '',
+          link: layer?.link || '',
+          useOwnText: !!layer?.useOwnText
+        };
+      }
+
+      function resetTile() {
+        if (!editorDraft) return;
+        editorDraft = deepClone(DEFAULT_STATE);
+        fillEditor(editorDraft);
+        renderLayersEditor();
+      }
+
+      function hydrateConnectionInputs() {
+        const conn = getConnectionSettings();
+        els.sbUrlInput.value = conn.url || APP_CONNECTION_DEFAULTS.url;
+        els.sbAnonInput.value = conn.anonKey || APP_CONNECTION_DEFAULTS.anonKey;
+        els.tableInput.value = conn.table || APP_CONNECTION_DEFAULTS.table;
+        els.keyColumnInput.value = conn.keyColumn || APP_CONNECTION_DEFAULTS.keyColumn;
+        els.rowKeyInput.value = conn.rowKey || APP_CONNECTION_DEFAULTS.rowKey;
+        els.payloadColumnInput.value = conn.payloadColumn || APP_CONNECTION_DEFAULTS.payloadColumn;
+      }
+
+      function saveConnectionInputs() {
+        const conn = {
+          url: els.sbUrlInput.value.trim(),
+          anonKey: els.sbAnonInput.value.trim(),
+          table: els.tableInput.value.trim() || APP_CONNECTION_DEFAULTS.table,
+          keyColumn: els.keyColumnInput.value.trim() || APP_CONNECTION_DEFAULTS.keyColumn,
+          rowKey: els.rowKeyInput.value.trim() || APP_CONNECTION_DEFAULTS.rowKey,
+          payloadColumn: els.payloadColumnInput.value.trim() || APP_CONNECTION_DEFAULTS.payloadColumn
+        };
+        localStorage.setItem(LOCAL_CONN_KEY, JSON.stringify(conn));
+      }
+
+      function getConnectionSettings() {
+        try {
+          const raw = JSON.parse(localStorage.getItem(LOCAL_CONN_KEY) || '{}');
+          return {
+            url: raw.url || APP_CONNECTION_DEFAULTS.url,
+            anonKey: raw.anonKey || APP_CONNECTION_DEFAULTS.anonKey,
+            table: raw.table || APP_CONNECTION_DEFAULTS.table,
+            keyColumn: raw.keyColumn || APP_CONNECTION_DEFAULTS.keyColumn,
+            rowKey: raw.rowKey || APP_CONNECTION_DEFAULTS.rowKey,
+            payloadColumn: raw.payloadColumn || APP_CONNECTION_DEFAULTS.payloadColumn
+          };
+        } catch {
+          return {
+            url: APP_CONNECTION_DEFAULTS.url,
+            anonKey: APP_CONNECTION_DEFAULTS.anonKey,
+            table: APP_CONNECTION_DEFAULTS.table,
+            keyColumn: APP_CONNECTION_DEFAULTS.keyColumn,
+            rowKey: APP_CONNECTION_DEFAULTS.rowKey,
+            payloadColumn: APP_CONNECTION_DEFAULTS.payloadColumn
+          };
+        }
+      }
+
+      function saveLocalTile(payload) {
+        localStorage.setItem(LOCAL_TILE_KEY, JSON.stringify(normalizeState(payload)));
+      }
+
+      function loadLocalTile() {
+        try {
+          const raw = localStorage.getItem(LOCAL_TILE_KEY);
+          return raw ? normalizeState(JSON.parse(raw)) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function setStatus(message, kind) {
+        els.statusLabel.textContent = message;
+        els.statusLabel.className = 'status-inline' + (kind ? ' ' + kind : '');
+      }
+
+      function ratioToCss(value) {
+        if (value === '16:9') return '16 / 9';
+        if (/^\d+(?:\.\d+)?:\d+(?:\.\d+)?$/.test(String(value))) {
+          const [w, h] = String(value).split(':');
+          return `${w} / ${h}`;
+        }
+        return '16 / 9';
+      }
+
+      function safeMessage(err) {
+        return err?.message || String(err);
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeAttr(text) {
+        return escapeHtml(text).replace(/'/g, '&#39;');
+      }
+
+      function readAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error || new Error('FileReader failed'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function clamp(v, min, max) {
+        return Math.min(max, Math.max(min, v));
+      }
+
+      function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      window.CRMO_V3000 = {
+        getState: () => deepClone(state),
+        getSession: () => session,
+        getConnectionSettings,
+        saveToCloud: () => saveToCloud(state),
+        loadFromCloud: () => loadFromCloudAndMerge(true),
+        resetLocal: () => { localStorage.removeItem(LOCAL_TILE_KEY); state = deepClone(DEFAULT_STATE); applyStateToUI(state); },
+        version: VERSION,
+        tileId: TILE_ID
+      };
+    })();
+  </script>
+</body>
+</html>
