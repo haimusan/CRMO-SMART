@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRMO_v3002</title>
+  <title>CRMO_v3004</title>
   <style>
     :root {
       --bg: #f2f2f2;
@@ -34,73 +34,98 @@
       padding: 22px 16px 80px;
     }
 
-    .top-auth {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .auth-panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 14px;
+    .admin-dashboard {
+      display: none;
+      background: var(--admin);
+      border-radius: 16px;
+      border: 1px solid #9f9f9f;
+      margin: 8px 0 16px;
       padding: 12px;
       box-shadow: var(--shadow);
+      gap: 12px;
     }
 
-    .auth-row {
+    .admin-dashboard.visible {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
     }
 
-    .auth-row > * { min-width: 0; }
+    .dashboard-pill {
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.1);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+    }
 
-    .auth-panel input,
-    .auth-panel button,
-    .auth-panel textarea,
-    .auth-panel select {
-      width: 100%;
+    .dashboard-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-inline-start: auto;
+    }
+
+    .dashboard-actions button,
+    .dashboard-tab-panel input,
+    .dashboard-tab-panel textarea,
+    .dashboard-tab-panel select,
+    .auth-box input,
+    .auth-box button {
       min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px 12px;
       background: #fff;
+      font: inherit;
     }
 
-    .auth-panel button {
+    .dashboard-actions button,
+    .auth-box button {
       cursor: pointer;
       font-weight: 700;
       background: #efefef;
     }
 
-    .auth-meta {
+    .dashboard-tabs {
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
+      gap: 8px;
+      border-top: 1px dashed rgba(0,0,0,.18);
+      padding-top: 12px;
+    }
+
+    .dashboard-tab {
+      border: 1px solid rgba(0,0,0,.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.55);
+      padding: 7px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .dashboard-tab.active {
+      background: #fff;
+    }
+
+    .dashboard-tab-panel {
+      display: none;
+      border-top: 1px dashed rgba(0,0,0,.18);
+      padding-top: 12px;
+    }
+
+    .dashboard-tab-panel.active {
+      display: block;
     }
 
     .status-inline.success { color: var(--success); }
     .status-inline.error { color: var(--danger); }
-
-    .advanced {
-      margin-top: 10px;
-      border-top: 1px dashed var(--line);
-      padding-top: 10px;
-    }
-
-    .advanced summary {
-      cursor: pointer;
-      color: var(--muted);
-      user-select: none;
-      margin-bottom: 10px;
-    }
 
     .advanced-grid {
       display: grid;
@@ -117,26 +142,53 @@
       color: var(--muted);
     }
 
-    .admin-bar {
-      display: none;
-      min-height: 54px;
-      background: var(--admin);
-      border-radius: 14px;
-      border: 1px solid #9f9f9f;
-      margin: 4px 0 22px;
-      padding: 8px 12px;
-      align-items: center;
+    .site-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 460px);
+      gap: 12px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .header-brand,
+    .auth-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
       box-shadow: var(--shadow);
+    }
+
+    .header-brand h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.05;
+    }
+
+    .header-brand p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .auth-box {
+      display: grid;
       gap: 10px;
     }
 
-    .admin-bar.visible { display: flex; }
-    .admin-pill {
-      background: rgba(255,255,255,.6);
-      border: 1px solid rgba(0,0,0,.1);
-      border-radius: 999px;
-      padding: 7px 12px;
+    .auth-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .auth-row > * { min-width: 0; }
+
+    .auth-note {
+      color: var(--muted);
       font-size: 13px;
+      min-height: 20px;
     }
 
     .stage {
@@ -502,6 +554,7 @@
     }
 
     @media (max-width: 980px) {
+      .site-header,
       .auth-row,
       .advanced-grid,
       .editor-grid,
@@ -516,56 +569,68 @@
 </head>
 <body>
   <div class="app">
-    <div class="top-auth">
-      <section class="auth-panel" aria-label="התחברות וניהול חיבור">
+    <section id="adminDashboard" class="admin-dashboard" aria-label="דאשבורד ניהול">
+      <div class="dashboard-top">
+        <div class="dashboard-pill">ADMIN DASHBOARD</div>
+        <div class="dashboard-pill" id="adminVersionPill">CRMO_v3004</div>
+        <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
+        <div class="dashboard-pill" id="adminSyncState">sync: local</div>
+        <div class="dashboard-pill" id="sessionLabel">מצב: מנותק</div>
+        <div class="dashboard-pill" id="adminUserEmail" hidden></div>
+        <div class="dashboard-actions">
+          <button id="refreshBtn" type="button">רענן מהענן</button>
+          <button id="saveConnBtn" type="button">שמור הגדרות</button>
+        </div>
+      </div>
+      <div class="dashboard-tabs" role="tablist" aria-label="לשוניות ניהול">
+        <button class="dashboard-tab active" type="button" data-dashboard-tab="status">Status</button>
+        <button class="dashboard-tab" type="button" data-dashboard-tab="connection">Connection</button>
+      </div>
+      <section class="dashboard-tab-panel active" id="dashboardPanelStatus" data-dashboard-panel="status">
+        <div id="statusLabel" class="status-inline">מוכן</div>
+      </section>
+      <section class="dashboard-tab-panel" id="dashboardPanelConnection" data-dashboard-panel="connection">
+        <div class="advanced-grid">
+          <label>Supabase URL
+            <input id="sbUrlInput" type="text" placeholder="https://PROJECT.supabase.co" />
+          </label>
+          <label>Anon Key
+            <input id="sbAnonInput" type="password" placeholder="הדבק anon key" />
+          </label>
+          <label>Table Name
+            <input id="tableInput" type="text" value="crmo_site_config" />
+          </label>
+          <label>Row Key Column
+            <input id="keyColumnInput" type="text" value="key" />
+          </label>
+          <label>Row Key Value
+            <input id="rowKeyInput" type="text" value="crmo_v3000_tile_demo" />
+          </label>
+          <label>Payload Column
+            <input id="payloadColumnInput" type="text" value="payload" />
+          </label>
+        </div>
+        <div class="note" style="margin-top:8px;">
+          ברירת המחדל מיועדת לטבלת config עם מזהה שורה קבוע ועמודת payload מסוג json/jsonb. אם אצלך שם העמודות אחר – אפשר לעדכן כאן בלי לשנות קוד.
+        </div>
+      </section>
+    </section>
+
+    <header class="site-header" aria-label="Header">
+      <section class="header-brand">
+        <h1>CRMO | Sales Oriented Design</h1>
+        <p>אותו קובץ, אותה לוגיקה, אותו אריח — עובד לוקאלית וגם בשרת. דאשבורד הניהול מופיע רק במצב מחובר ודוחף את ההדר מטה כשהוא מתרחב.</p>
+      </section>
+      <section class="auth-box" aria-label="התחברות">
         <div class="auth-row">
           <input id="emailInput" type="email" placeholder="אימייל" autocomplete="username" />
           <input id="passwordInput" type="password" placeholder="סיסמה" autocomplete="current-password" />
           <button id="loginBtn" type="button">התחבר</button>
           <button id="logoutBtn" type="button">התנתק</button>
-          <button id="saveConnBtn" type="button">שמור הגדרות</button>
-          <button id="refreshBtn" type="button">רענן מהענן</button>
         </div>
-        <div class="auth-meta">
-          <div id="sessionLabel">מצב: מנותק</div>
-          <div id="statusLabel" class="status-inline">מוכן</div>
-        </div>
-        <details class="advanced">
-          <summary>הגדרות חיבור מתקדמות</summary>
-          <div class="advanced-grid">
-            <label>Supabase URL
-              <input id="sbUrlInput" type="text" placeholder="https://PROJECT.supabase.co" />
-            </label>
-            <label>Anon Key
-              <input id="sbAnonInput" type="password" placeholder="הדבק anon key" />
-            </label>
-            <label>Table Name
-              <input id="tableInput" type="text" value="crmo_site_config" />
-            </label>
-            <label>Row Key Column
-              <input id="keyColumnInput" type="text" value="key" />
-            </label>
-            <label>Row Key Value
-              <input id="rowKeyInput" type="text" value="crmo_v3000_tile_demo" />
-            </label>
-            <label>Payload Column
-              <input id="payloadColumnInput" type="text" value="payload" />
-            </label>
-          </div>
-          <div class="note" style="margin-top:8px;">
-            ברירת המחדל מיועדת לטבלת config עם מזהה שורה קבוע ועמודת payload מסוג json/jsonb. אם אצלך שם העמודות אחר – אפשר לעדכן כאן בלי לשנות קוד.
-          </div>
-        </details>
+        <div id="authNote" class="auth-note">מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.</div>
       </section>
-
-      <section id="adminBar" class="admin-bar" aria-label="סרגל ניהול">
-        <div class="admin-pill">ADMIN</div>
-        <div class="admin-pill" id="adminVersionPill">CRMO_v3002</div>
-        <div class="admin-pill" id="adminTileId">tile: crmo-tile-001</div>
-        <div class="admin-pill" id="adminSyncState">sync: local</div>
-        <div class="admin-pill" id="adminUserEmail" hidden></div>
-      </section>
-    </div>
+    </header>
 
     <main class="stage">
       <div class="tile-wrap" id="tileWrap">
@@ -586,7 +651,7 @@
       </div>
     </main>
 
-    <footer id="footerVersionLabel">CRMO_v3002 · Single editable tile · local + auth + cloud-ready</footer>
+    <footer id="footerVersionLabel">CRMO_v3003 · Single editable tile · local + auth + cloud-ready</footer>
   </div>
 
   <dialog id="lightboxDialog" aria-label="Lightbox">
@@ -671,11 +736,11 @@
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3002';
+      const VERSION = 'CRMO_v3004';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
-      const LOCAL_CONN_KEY = 'CRMO_V3002_CONNECTION';
-      const LOCAL_TILE_KEY = 'CRMO_V3002_TILE';
+      const LOCAL_CONN_KEY = 'CRMO_V3004_CONNECTION';
+      const LOCAL_TILE_KEY = 'CRMO_V3004_TILE';
       const TOUCH_OVERLAY_MS = 1600;
 
       const APP_CONNECTION_DEFAULTS = Object.freeze({
@@ -729,8 +794,9 @@
         payloadColumnInput: $('payloadColumnInput'),
         sessionLabel: $('sessionLabel'),
         statusLabel: $('statusLabel'),
-        adminBar: $('adminBar'),
+        adminDashboard: $('adminDashboard'),
         adminSyncState: $('adminSyncState'),
+        authNote: $('authNote'),
         adminUserEmail: $('adminUserEmail'),
         adminVersionPill: $('adminVersionPill'),
         adminTileId: $('adminTileId'),
@@ -809,7 +875,7 @@
             await loadFromCloudAndMerge(true);
           }
         } catch (err) {
-          console.error('[CRMO_v3002] initSupabase failed', err);
+          console.error('[CRMO_v3003] initSupabase failed', err);
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
           updateAuthUI(false);
         }
@@ -825,6 +891,9 @@
         els.loginBtn.addEventListener('click', login);
         els.logoutBtn.addEventListener('click', logout);
         els.refreshBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
+        document.querySelectorAll('[data-dashboard-tab]').forEach((tabBtn) => {
+          tabBtn.addEventListener('click', () => setDashboardTab(tabBtn.dataset.dashboardTab || 'status'));
+        });
         els.editBtn.addEventListener('click', openEditor);
         els.closeEditorBtn.addEventListener('click', closeEditor);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
@@ -902,7 +971,7 @@
           if (error) throw error;
           setStatus('התחברות הצליחה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3002] login failed', err);
+          console.error('[CRMO_v3003] login failed', err);
           setStatus('התחברות נכשלה: ' + safeMessage(err), 'error');
         }
       }
@@ -918,22 +987,37 @@
           updateAuthUI(false);
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3002] logout failed', err);
+          console.error('[CRMO_v3003] logout failed', err);
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
       }
 
+      function setDashboardTab(name) {
+        document.querySelectorAll('[data-dashboard-tab]').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.dashboardTab === name);
+        });
+        document.querySelectorAll('[data-dashboard-panel]').forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.dashboardPanel === name);
+        });
+      }
+
       function updateAuthUI(isLoggedIn) {
         const email = session?.user?.email || '';
-        els.sessionLabel.textContent = isLoggedIn
-          ? `מצב: מחובר${email ? ' · ' + email : ''}`
-          : 'מצב: מנותק';
-        els.adminBar.classList.toggle('visible', isLoggedIn);
+        els.sessionLabel.textContent = isLoggedIn ? 'מצב: מחובר' : 'מצב: מנותק';
+        els.adminDashboard.classList.toggle('visible', isLoggedIn);
         els.tileWrap.classList.toggle('editable', isLoggedIn);
         els.adminSyncState.textContent = isLoggedIn ? 'sync: cloud enabled' : 'sync: local only';
 
         els.loginBtn.hidden = isLoggedIn;
         els.logoutBtn.hidden = !isLoggedIn;
+        els.emailInput.disabled = isLoggedIn;
+        els.passwordInput.disabled = isLoggedIn;
+
+        if (els.authNote) {
+          els.authNote.textContent = isLoggedIn
+            ? 'מחובר. פעולות ניהול, סטטוס חיבור והגדרות מתקדמות עברו לדאשבורד העליון.'
+            : 'מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.';
+        }
 
         if (els.adminUserEmail) {
           els.adminUserEmail.hidden = !isLoggedIn || !email;
@@ -1088,7 +1172,7 @@
           renderLayersEditor();
           setStatus(`נוספו ${layers.length} מדיות`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3002] addFiles failed', err);
+          console.error('[CRMO_v3003] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -1151,7 +1235,7 @@
           els.adminSyncState.textContent = 'sync: cloud saved';
           setStatus('נשמר לענן ולוקאלי', 'success');
         } catch (err) {
-          console.error('[CRMO_v3002] saveToCloud failed', err);
+          console.error('[CRMO_v3003] saveToCloud failed', err);
           els.adminSyncState.textContent = 'sync: local only';
           setStatus('שמירת ענן נכשלה. נשמר לוקאלית: ' + safeMessage(err), 'error');
         }
@@ -1178,7 +1262,7 @@
           els.adminSyncState.textContent = 'sync: cloud loaded';
           setStatus('נטען מהענן', 'success');
         } catch (err) {
-          console.error('[CRMO_v3002] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3003] loadFromCloudAndMerge failed', err);
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
         }
       }
@@ -1200,9 +1284,15 @@
 
 
       function getEffectivePageTitle() {
-        const path = String(window.location.pathname || '');
-        const fileName = path.split('/').pop() || '';
-        return /^index(?:\.[a-z0-9]+)?$/i.test(fileName)
+        const href = String(window.location.href || '').toLowerCase();
+        const path = decodeURIComponent(window.location.pathname || '');
+        const normalized = path.replace(/\/+$|\?+$/g, '');
+        const fileName = normalized.split('/').pop() || '';
+        const isIndexLike = /^index(?:\.[a-z0-9]+)?$/i.test(fileName);
+        const isGithubPagesRoot = /haimusan\.github\.io\/crmo-smart\/?(?:index\.html)?(?:[#?].*)?$/.test(href);
+        const isRepoRootPath = /\/crmo-smart$/i.test(normalized);
+        const isRootLike = !fileName || isRepoRootPath || /^(CRMO-SMART)$/i.test(fileName);
+        return (isRootLike || isIndexLike || isGithubPagesRoot)
           ? 'CRMO | sales oriented design'
           : VERSION;
       }
@@ -1449,8 +1539,16 @@
       }
 
       function setStatus(message, kind) {
-        els.statusLabel.textContent = message;
-        els.statusLabel.className = 'status-inline' + (kind ? ' ' + kind : '');
+        if (els.statusLabel) {
+          els.statusLabel.textContent = message;
+          els.statusLabel.className = 'status-inline' + (kind ? ' ' + kind : '');
+        }
+        if (els.authNote && !session) {
+          els.authNote.textContent = message;
+          els.authNote.className = 'auth-note' + (kind ? ' ' + kind : '');
+        } else if (els.authNote) {
+          els.authNote.className = 'auth-note';
+        }
       }
 
       function ratioToCss(value) {
