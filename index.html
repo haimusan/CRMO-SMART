@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRMO_v3004</title>
+  <title>CRMO_v3005</title>
   <style>
     :root {
       --bg: #f2f2f2;
@@ -197,22 +197,38 @@
       gap: 18px;
     }
 
-    .tile-wrap {
+    
+.tile-wrap {
       position: relative;
-      width: min(100%, 1100px);
+      width: min(100%, 1180px);
       margin: 0 auto;
+      display: grid;
+      gap: 12px;
     }
 
     .tile {
       position: relative;
       aspect-ratio: var(--tile-ratio);
-      border-radius: var(--tile-radius);
+      border-radius: 0;
       overflow: hidden;
       background: #ddd;
       border: var(--stroke-width) solid rgba(0,0,0,.18);
-      box-shadow: var(--shadow);
+      box-shadow: 0 18px 48px rgba(0,0,0,.12);
       cursor: pointer;
       isolation: isolate;
+    }
+
+    .tile-shell {
+      position: relative;
+      min-height: 100%;
+      background: #efefef;
+    }
+
+    .tile-media-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #ddd;
     }
 
     .tile-media,
@@ -242,15 +258,15 @@
 
     .tile-edit-btn {
       position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 5;
+      top: 14px;
+      left: 14px;
+      z-index: 9;
       width: 44px;
       height: 44px;
       border-radius: 999px;
       display: none;
       place-items: center;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.96);
       border: 1px solid rgba(0,0,0,.12);
       box-shadow: 0 10px 20px rgba(0,0,0,.16);
       cursor: pointer;
@@ -260,18 +276,109 @@
 
     .tile-wrap.editable .tile-edit-btn { display: grid; }
 
-    .tile-overlay {
+    .tile-topbar {
+      position: absolute;
+      top: 0;
+      inset-inline: 0;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 18px 18px 0;
+      pointer-events: none;
+    }
+
+    .tile-touch-info,
+    .tile-subnav {
+      pointer-events: auto;
+      background: rgba(255,255,255,.9);
+      color: #111;
+      border: 1px solid rgba(0,0,0,.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .tile-touch-info {
+      justify-self: end;
+      width: min(540px, calc(100% - 60px));
+      padding: 12px 14px 11px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.1);
+      transform: translateY(-6px);
+      opacity: 0;
+      transition: opacity .24s ease, transform .24s ease;
+    }
+
+    .tile:hover .tile-touch-info,
+    .tile:focus-visible .tile-touch-info,
+    .tile.touch-show-overlay .tile-touch-info {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tile-info-kicker {
+      margin: 0 0 5px;
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.48);
+      text-align: left;
+      direction: ltr;
+    }
+
+    .tile-info-title {
+      margin: 0;
+      font-size: clamp(18px, 2vw, 28px);
+      line-height: 1.02;
+      font-weight: 600;
+      white-space: pre-line;
+      text-align: right;
+      color: #111;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .tile-info-desc {
+      margin: 7px 0 0;
+      font-size: clamp(12px, 1.18vw, 15px);
+      line-height: 1.42;
+      color: rgba(0,0,0,.72);
+      white-space: pre-line;
+      text-align: right;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .tile-bottom {
       position: absolute;
       inset-inline: 0;
       bottom: 0;
+      z-index: 3;
+      display: grid;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    .tile-overlay {
+      position: relative;
+      inset: auto;
       z-index: 2;
-      background: var(--overlay-bg);
-      color: #fff;
-      padding: 18px 20px 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.88) 30%, rgba(255,255,255,.97));
+      color: #111;
+      padding: 44px 22px 18px;
       transform: translateY(101%);
       opacity: 0;
       transition: transform .28s ease, opacity .28s ease;
       pointer-events: none;
+      min-height: 154px;
+      display: grid;
+      align-content: end;
+      gap: 8px;
+      border-top: 1px solid rgba(0,0,0,.08);
     }
 
     .tile:hover .tile-overlay,
@@ -282,32 +389,119 @@
     }
 
     .ov-title {
-      font-size: clamp(18px, 2.2vw, 28px);
-      font-weight: 800;
-      line-height: 1.05;
-      margin: 0 0 6px;
+      font-size: clamp(22px, 2.7vw, 38px);
+      font-weight: 500;
+      line-height: .98;
+      margin: 0;
       white-space: pre-line;
       text-align: right;
+      letter-spacing: -.02em;
+      color: #111;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .ov-desc {
-      font-size: clamp(13px, 1.4vw, 16px);
-      line-height: 1.35;
+      font-size: clamp(12px, 1.18vw, 15px);
+      line-height: 1.42;
       white-space: pre-line;
       margin: 0;
       text-align: right;
+      color: rgba(0,0,0,.74);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ov-link-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      min-height: 22px;
     }
 
     .ov-link {
-      margin-top: 10px;
       display: inline-flex;
       direction: ltr;
       text-align: left;
-      color: #fff;
-      text-decoration: underline;
+      color: #111;
+      text-decoration: none;
       word-break: break-word;
-      font-size: 13px;
-      opacity: .95;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(0,0,0,.22);
+      padding-bottom: 1px;
+      justify-self: start;
+    }
+
+    .tile-subnav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      min-height: 46px;
+      border-top: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 -10px 24px rgba(0,0,0,.06);
+    }
+
+    .tile-subnav-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tile-layer-counter {
+      font-size: 12px;
+      color: rgba(0,0,0,.56);
+      direction: ltr;
+      text-align: left;
+      min-width: 36px;
+    }
+
+    .tile-nav-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.12);
+      background: rgba(255,255,255,.8);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      display: inline-grid;
+      place-items: center;
+      color: #111;
+    }
+
+    .tile-nav-btn:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .tile-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tile-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      padding: 0;
+      border: none;
+      background: rgba(0,0,0,.22);
+      cursor: pointer;
+    }
+
+    .tile-dot.active {
+      background: #111;
+      transform: scale(1.12);
     }
 
     .meta-row {
@@ -324,15 +518,15 @@
     dialog {
       border: none;
       padding: 0;
-      max-width: min(1000px, calc(100vw - 24px));
-      width: min(1000px, calc(100vw - 24px));
-      border-radius: 20px;
+      max-width: min(1120px, calc(100vw - 24px));
+      width: min(1120px, calc(100vw - 24px));
+      border-radius: 0;
       overflow: hidden;
       box-shadow: 0 20px 80px rgba(0,0,0,.3);
       background: #fff;
     }
 
-    dialog::backdrop { background: rgba(0,0,0,.58); }
+    dialog::backdrop { background: rgba(255,255,255,.9); }
 
     .modal-shell {
       display: grid;
@@ -345,14 +539,16 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      padding: 14px 16px;
+      padding: 16px 18px;
       border-bottom: 1px solid var(--line);
-      background: #f7f7f7;
+      background: #fbfbfb;
     }
 
     .modal-head h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: .02em;
     }
 
     .x-btn,
@@ -360,23 +556,23 @@
     .ghost-btn,
     .danger-btn {
       min-height: 40px;
-      border-radius: 10px;
+      border-radius: 0;
       border: 1px solid var(--line);
       background: #fff;
       padding: 8px 12px;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .danger-btn {
-      border-color: rgba(141,17,17,.25);
+      border-color: rgba(141,17,17,.2);
       color: var(--danger);
-      background: #fff5f5;
+      background: #fff;
     }
 
     .lightbox-body {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .62fr);
       min-height: 560px;
     }
 
@@ -387,34 +583,38 @@
     }
 
     .lightbox-side {
-      padding: 18px;
+      padding: 22px 22px 20px;
       overflow: auto;
       background: #fff;
       display: grid;
       align-content: start;
-      gap: 14px;
+      gap: 16px;
+      border-inline-start: 1px solid rgba(0,0,0,.08);
     }
 
     .lb-title {
-      font-size: 28px;
-      line-height: 1.03;
-      font-weight: 800;
+      font-size: 32px;
+      line-height: .98;
+      font-weight: 500;
       margin: 0;
       white-space: pre-line;
       text-align: right;
+      letter-spacing: -.02em;
     }
 
     .lb-desc {
       margin: 0;
       white-space: pre-line;
-      line-height: 1.45;
+      line-height: 1.5;
       text-align: right;
+      color: rgba(0,0,0,.76);
     }
 
     .lb-link {
       direction: ltr;
       text-align: left;
       word-break: break-word;
+      color: #111;
     }
 
     .lb-controls {
@@ -431,7 +631,7 @@
 
     .thumb-btn {
       aspect-ratio: 16 / 9;
-      border-radius: 10px;
+      border-radius: 0;
       overflow: hidden;
       border: 1px solid var(--line);
       padding: 0;
@@ -440,32 +640,92 @@
       position: relative;
     }
 
-    .thumb-btn.active { outline: 2px solid #111; }
+    .thumb-btn.active { outline: 1px solid #111; }
     .thumb-btn img,
     .thumb-btn video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .editor-body {
-      padding: 16px;
+      padding: 0;
       overflow: auto;
       display: grid;
-      gap: 14px;
+      gap: 0;
+      background: #fff;
+    }
+
+    .editor-shell {
+      display: grid;
+      gap: 0;
+    }
+
+    .editor-main {
+      padding: 18px 18px 16px;
+      display: grid;
+      gap: 16px;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+
+    .editor-section-title {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.46);
+      text-align: left;
+      direction: ltr;
     }
 
     .editor-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
 
     .editor-grid textarea,
     .layer-fields textarea {
-      min-height: 96px;
+      min-height: 108px;
       resize: vertical;
     }
 
+    .editor-grid input,
+    .editor-grid textarea,
+    .layer-fields input,
+    .layer-fields textarea {
+      border-radius: 0;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      padding: 11px 12px;
+      font: inherit;
+      color: #111;
+    }
+
+    .editor-grid label,
+    .layer-fields label {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(0,0,0,.54);
+      line-height: 1.3;
+    }
+
+    .editor-options-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .checkline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
     .dropzone {
-      border: 2px dashed #b8b8b8;
-      border-radius: 14px;
+      border: 1px dashed rgba(0,0,0,.26);
+      border-radius: 0;
       background: #fafafa;
       padding: 18px;
       text-align: center;
@@ -484,33 +744,51 @@
       flex-wrap: wrap;
     }
 
+    .layers-zone {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
     .layers-list {
       display: grid;
-      gap: 10px;
+      gap: 12px;
     }
 
     .layer-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
+      border: 1px solid rgba(0,0,0,.1);
+      border-radius: 0;
+      padding: 0;
       background: #fff;
       display: grid;
-      gap: 10px;
+      gap: 0;
+      overflow: hidden;
     }
 
     .layer-top {
       display: grid;
-      grid-template-columns: 110px 1fr auto;
-      gap: 10px;
-      align-items: start;
+      grid-template-columns: 42px 144px minmax(0, 1fr) 110px;
+      gap: 0;
+      align-items: stretch;
+    }
+
+    .layer-drag {
+      display: grid;
+      place-items: center;
+      border-inline-end: 1px solid rgba(0,0,0,.08);
+      background: #fafafa;
+      color: rgba(0,0,0,.48);
+      cursor: grab;
+      font-size: 18px;
+      user-select: none;
     }
 
     .layer-preview {
-      aspect-ratio: 16 / 9;
-      border-radius: 10px;
+      aspect-ratio: auto;
+      min-height: 112px;
       background: #ececec;
       overflow: hidden;
-      border: 1px solid var(--line);
+      border-inline-end: 1px solid rgba(0,0,0,.08);
       position: relative;
     }
 
@@ -520,30 +798,44 @@
     .layer-fields {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
+      gap: 10px;
+      padding: 12px;
+      align-content: start;
     }
 
     .layer-controls {
       display: grid;
       gap: 8px;
+      padding: 12px;
+      border-inline-start: 1px solid rgba(0,0,0,.08);
+      background: #fcfcfc;
+      align-content: start;
     }
 
     .layer-controls button {
       min-width: 54px;
     }
 
-    .checkline {
+    .layer-foot {
       display: flex;
+      justify-content: space-between;
+      gap: 12px;
       align-items: center;
-      gap: 8px;
-      color: var(--ink);
-      font-size: 14px;
+      padding: 10px 12px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      flex-wrap: wrap;
     }
 
     .note {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.35;
+    }
+
+    .field-ltr {
+      direction: ltr;
+      text-align: left;
     }
 
     footer {
@@ -552,18 +844,72 @@
       text-align: center;
       font-size: 12px;
     }
-
-    @media (max-width: 980px) {
+@media (max-width: 980px) {
       .site-header,
       .auth-row,
       .advanced-grid,
       .editor-grid,
-      .layer-fields,
       .lightbox-body {
         grid-template-columns: 1fr;
       }
-      .layer-top { grid-template-columns: 1fr; }
+
+      .tile-topbar {
+        grid-template-columns: 1fr;
+        padding: 14px 14px 0;
+      }
+
+      .tile-touch-info {
+        width: 100%;
+        justify-self: stretch;
+      }
+
+      .tile-overlay {
+        padding: 38px 16px 16px;
+      }
+
+      .layer-top,
+      .layer-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .layer-preview,
+      .layer-controls,
+      .layer-drag {
+        border-inline-end: none;
+        border-inline-start: none;
+        border-top: 1px solid rgba(0,0,0,.08);
+      }
+
+      .layer-drag {
+        min-height: 42px;
+      }
+
       .tile-edit-btn { top: 10px; left: 10px; }
+    }
+
+    @media (max-width: 640px) {
+      .tile-subnav {
+        padding: 8px 10px;
+      }
+
+      .tile-touch-info {
+        padding: 10px 12px;
+      }
+
+      .ov-title {
+        font-size: 22px;
+      }
+
+      .ov-desc,
+      .tile-info-desc {
+        -webkit-line-clamp: 2;
+      }
+
+      .lightbox-side,
+      .editor-main,
+      .layers-zone {
+        padding: 14px;
+      }
     }
   </style>
 </head>
@@ -572,7 +918,7 @@
     <section id="adminDashboard" class="admin-dashboard" aria-label="דאשבורד ניהול">
       <div class="dashboard-top">
         <div class="dashboard-pill">ADMIN DASHBOARD</div>
-        <div class="dashboard-pill" id="adminVersionPill">CRMO_v3004</div>
+        <div class="dashboard-pill" id="adminVersionPill">CRMO_v3005</div>
         <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
         <div class="dashboard-pill" id="adminSyncState">sync: local</div>
         <div class="dashboard-pill" id="sessionLabel">מצב: מנותק</div>
@@ -636,12 +982,38 @@
       <div class="tile-wrap" id="tileWrap">
         <button class="tile-edit-btn" id="editBtn" type="button" aria-label="עריכת אריח">✎</button>
         <article class="tile" id="tile" tabindex="0" aria-label="CRMO Tile">
-          <div id="tileMediaHost"></div>
-          <div id="tileFallback" class="tile-fallback">CRMO TILE<br />16:9</div>
-          <div class="tile-overlay" id="tileOverlay">
-            <h2 class="ov-title" id="ovTitle"></h2>
-            <p class="ov-desc" id="ovDesc"></p>
-            <a class="ov-link" id="ovLink" target="_blank" rel="noopener"></a>
+          <div class="tile-shell">
+            <div class="tile-media-stage">
+              <div id="tileMediaHost"></div>
+              <div id="tileFallback" class="tile-fallback">CRMO TILE<br />16:9</div>
+            </div>
+
+            <div class="tile-topbar">
+              <section class="tile-touch-info" id="tileTouchInfo" aria-label="מידע ראשוני">
+                <div class="tile-info-kicker" id="tileInfoKicker">CRMO SMART</div>
+                <h2 class="tile-info-title" id="tileInfoTitle"></h2>
+                <p class="tile-info-desc" id="tileInfoDesc"></p>
+              </section>
+            </div>
+
+            <div class="tile-bottom">
+              <div class="tile-overlay" id="tileOverlay">
+                <h2 class="ov-title" id="ovTitle"></h2>
+                <p class="ov-desc" id="ovDesc"></p>
+                <div class="ov-link-row">
+                  <a class="ov-link" id="ovLink" target="_blank" rel="noopener"></a>
+                </div>
+              </div>
+
+              <nav class="tile-subnav" id="tileSubnav" aria-label="ניווט תתי־מדיה">
+                <div class="tile-subnav-left">
+                  <button class="tile-nav-btn" id="tilePrevBtn" type="button" aria-label="הקודם">←</button>
+                  <button class="tile-nav-btn" id="tileNextBtn" type="button" aria-label="הבא">→</button>
+                  <span class="tile-layer-counter" id="tileLayerCounter">0/0</span>
+                </div>
+                <div class="tile-dots" id="tileDots"></div>
+              </nav>
+            </div>
           </div>
         </article>
         <div class="meta-row">
@@ -651,7 +1023,7 @@
       </div>
     </main>
 
-    <footer id="footerVersionLabel">CRMO_v3003 · Single editable tile · local + auth + cloud-ready</footer>
+    <footer id="footerVersionLabel">CRMO_v3005 · Single editable tile · local + auth + cloud-ready</footer>
   </div>
 
   <dialog id="lightboxDialog" aria-label="Lightbox">
@@ -686,47 +1058,72 @@
         <button class="x-btn" id="closeEditorBtn" type="button" aria-label="סגור">✕</button>
       </div>
       <div class="editor-body">
-        <div class="editor-grid">
-          <label>כותרת ברירת מחדל לאריח
-            <textarea id="tileTitleInput" placeholder="כותרת שיופיע במאוס אובר/לייטבוקס אם אין טקסט נפרד למדיה"></textarea>
-          </label>
-          <label>טקסט ברירת מחדל לאריח
-            <textarea id="tileDescInput" placeholder="תיאור ברירת מחדל"></textarea>
-          </label>
-          <label>קישור ברירת מחדל לאריח
-            <input id="tileLinkInput" type="text" placeholder="https://example.com" />
-          </label>
-          <label>כותרת ללייטבוקס בלבד (אופציונלי)
-            <textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
-          </label>
-          <label>טקסט ללייטבוקס בלבד (אופציונלי)
-            <textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
-          </label>
-          <label>קישור ללייטבוקס בלבד (אופציונלי)
-            <input id="tileLbLinkInput" type="text" placeholder="אם ריק — ישתמש בקישור הראשי" />
-          </label>
-        </div>
+        <div class="editor-shell">
+          <section class="editor-main">
+            <div class="editor-section-title">tile editor</div>
+            <div class="editor-grid">
+              <label>Client / קו לקוח
+                <input id="tileClientInput" type="text" placeholder="Client" class="field-ltr" />
+              </label>
+              <label>Brand / מותג
+                <input id="tileBrandInput" type="text" placeholder="Brand" class="field-ltr" />
+              </label>
+              <label>Project name / שם פרויקט
+                <textarea id="tileTitleInput" placeholder="שם הפרויקט שיופיע באריח"></textarea>
+              </label>
+              <label>Short description / תיאור קצר
+                <textarea id="tileDescInput" placeholder="תיאור קצר ומדויק לאריח"></textarea>
+              </label>
+              <label>Project link / קישור
+                <input id="tileLinkInput" type="text" placeholder="https://example.com" class="field-ltr" />
+              </label>
+              <label>Lightbox title / כותרת ללייטבוקס
+                <textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
+              </label>
+              <label>Lightbox text / טקסט ללייטבוקס
+                <textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
+              </label>
+              <label>Lightbox link / קישור ללייטבוקס
+                <input id="tileLbLinkInput" type="text" placeholder="אם ריק — ישתמש בקישור הראשי" class="field-ltr" />
+              </label>
+            </div>
 
-        <div class="editor-actions">
-          <button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
-          <input id="fileInput" type="file" hidden multiple accept="image/*,video/*,.gif" />
-          <button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
-          <button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
-          <button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
-        </div>
+            <div class="editor-options-row">
+              <label class="checkline">
+                <input id="showLinkInTileInput" type="checkbox" />
+                Show link in tile
+              </label>
+              <label class="checkline">
+                <input id="openInNewTabInput" type="checkbox" checked />
+                Open link in new tab
+              </label>
+            </div>
 
-        <div class="dropzone" id="dropzone">
-          גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
-          <div class="note" style="margin-top:8px;">
-            לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
-          </div>
-        </div>
+            <div class="editor-actions">
+              <button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
+              <input id="fileInput" type="file" hidden multiple accept="image/*,video/*,.gif" />
+              <button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
+              <button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
+              <button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
+            </div>
 
-        <div class="note">
-          גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
-        </div>
+            <div class="dropzone" id="dropzone">
+              גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
+              <div class="note" style="margin-top:8px;">
+                לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
+              </div>
+            </div>
+          </section>
 
-        <section class="layers-list" id="layersList"></section>
+          <section class="layers-zone">
+            <div class="editor-section-title">sub items</div>
+            <div class="note">
+              גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
+            </div>
+
+            <section class="layers-list" id="layersList"></section>
+          </section>
+        </div>
       </div>
     </div>
   </dialog>
@@ -736,11 +1133,11 @@
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3004';
+      const VERSION = 'CRMO_v3005';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
-      const LOCAL_CONN_KEY = 'CRMO_V3004_CONNECTION';
-      const LOCAL_TILE_KEY = 'CRMO_V3004_TILE';
+      const LOCAL_CONN_KEY = 'CRMO_V3005_CONNECTION';
+      const LOCAL_TILE_KEY = 'CRMO_V3005_TILE';
       const TOUCH_OVERLAY_MS = 1600;
 
       const APP_CONNECTION_DEFAULTS = Object.freeze({
@@ -758,6 +1155,14 @@
         updatedAt: null,
         strokeWidth: 1,
         ratio: '16:9',
+        meta: {
+          client: '',
+          brand: ''
+        },
+        settings: {
+          showLinkInTile: true,
+          openInNewTab: true
+        },
         overlay: {
           title: 'כותרת ראשית של האריח',
           desc: 'טקסט ברירת מחדל למאוס אובר. אפשר להפריד טקסט שונה לכל מדיה בתוך האריח.',
@@ -805,6 +1210,14 @@
         editBtn: $('editBtn'),
         tileMediaHost: $('tileMediaHost'),
         tileFallback: $('tileFallback'),
+        tileTouchInfo: $('tileTouchInfo'),
+        tileInfoKicker: $('tileInfoKicker'),
+        tileInfoTitle: $('tileInfoTitle'),
+        tileInfoDesc: $('tileInfoDesc'),
+        tilePrevBtn: $('tilePrevBtn'),
+        tileNextBtn: $('tileNextBtn'),
+        tileLayerCounter: $('tileLayerCounter'),
+        tileDots: $('tileDots'),
         ovTitle: $('ovTitle'),
         ovDesc: $('ovDesc'),
         ovLink: $('ovLink'),
@@ -823,12 +1236,16 @@
         thumbStrip: $('thumbStrip'),
         editorDialog: $('editorDialog'),
         closeEditorBtn: $('closeEditorBtn'),
+        tileClientInput: $('tileClientInput'),
+        tileBrandInput: $('tileBrandInput'),
         tileTitleInput: $('tileTitleInput'),
         tileDescInput: $('tileDescInput'),
         tileLinkInput: $('tileLinkInput'),
         tileLbTitleInput: $('tileLbTitleInput'),
         tileLbDescInput: $('tileLbDescInput'),
         tileLbLinkInput: $('tileLbLinkInput'),
+        showLinkInTileInput: $('showLinkInTileInput'),
+        openInNewTabInput: $('openInNewTabInput'),
         pickFilesBtn: $('pickFilesBtn'),
         fileInput: $('fileInput'),
         saveTileBtn: $('saveTileBtn'),
@@ -875,7 +1292,7 @@
             await loadFromCloudAndMerge(true);
           }
         } catch (err) {
-          console.error('[CRMO_v3003] initSupabase failed', err);
+          console.error('[CRMO_v3005] initSupabase failed', err);
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
           updateAuthUI(false);
         }
@@ -897,11 +1314,19 @@
         els.editBtn.addEventListener('click', openEditor);
         els.closeEditorBtn.addEventListener('click', closeEditor);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
+        els.tilePrevBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          shiftTileMedia(-1);
+        });
+        els.tileNextBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          shiftTileMedia(1);
+        });
         els.tile.addEventListener('click', handleTileClick);
         els.tile.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openLightbox(0);
+            openLightbox(currentLayerIndex);
           }
         });
         els.pickFilesBtn.addEventListener('click', () => els.fileInput.click());
@@ -951,7 +1376,7 @@
           clearTimeout(overlayTouchTimer);
           overlayTouchTimer = setTimeout(() => els.tile.classList.remove('touch-show-overlay'), TOUCH_OVERLAY_MS);
         }
-        openLightbox(0);
+        openLightbox(currentLayerIndex);
       }
 
       async function login() {
@@ -971,7 +1396,7 @@
           if (error) throw error;
           setStatus('התחברות הצליחה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3003] login failed', err);
+          console.error('[CRMO_v3005] login failed', err);
           setStatus('התחברות נכשלה: ' + safeMessage(err), 'error');
         }
       }
@@ -987,7 +1412,7 @@
           updateAuthUI(false);
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3003] logout failed', err);
+          console.error('[CRMO_v3005] logout failed', err);
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
       }
@@ -1058,16 +1483,28 @@
       }
 
       function fillEditor(data) {
+        els.tileClientInput.value = data.meta?.client || '';
+        els.tileBrandInput.value = data.meta?.brand || '';
         els.tileTitleInput.value = data.overlay?.title || '';
         els.tileDescInput.value = data.overlay?.desc || '';
         els.tileLinkInput.value = data.overlay?.link || '';
         els.tileLbTitleInput.value = data.lightbox?.title || '';
         els.tileLbDescInput.value = data.lightbox?.desc || '';
         els.tileLbLinkInput.value = data.lightbox?.link || '';
+        els.showLinkInTileInput.checked = data.settings?.showLinkInTile !== false;
+        els.openInNewTabInput.checked = data.settings?.openInNewTab !== false;
       }
 
       function collectEditorHeader() {
         return {
+          meta: {
+            client: els.tileClientInput.value.trim(),
+            brand: els.tileBrandInput.value.trim()
+          },
+          settings: {
+            showLinkInTile: !!els.showLinkInTileInput.checked,
+            openInNewTab: !!els.openInNewTabInput.checked
+          },
           overlay: {
             title: els.tileTitleInput.value,
             desc: els.tileDescInput.value,
@@ -1090,16 +1527,17 @@
           card.dataset.index = String(idx);
           card.innerHTML = `
             <div class="layer-top">
+              <div class="layer-drag" title="גרור לשינוי סדר">⋮⋮</div>
               <div class="layer-preview">${renderPreviewHTML(layer)}</div>
               <div class="layer-fields">
-                <label>כותרת למדיה
+                <label>Sub-item title
                   <textarea data-field="title">${escapeHtml(layer.title || '')}</textarea>
                 </label>
-                <label>טקסט למדיה
+                <label>Sub-item text
                   <textarea data-field="desc">${escapeHtml(layer.desc || '')}</textarea>
                 </label>
-                <label>קישור למדיה
-                  <input data-field="link" type="text" value="${escapeAttr(layer.link || '')}" />
+                <label>Sub-item link
+                  <input data-field="link" type="text" class="field-ltr" value="${escapeAttr(layer.link || '')}" />
                 </label>
               </div>
               <div class="layer-controls">
@@ -1108,11 +1546,13 @@
                 <button class="danger-btn" type="button" data-action="remove">מחק</button>
               </div>
             </div>
-            <label class="checkline">
-              <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
-              טקסט נפרד למדיה זו
-            </label>
-            <div class="note">סוג: ${layer.type} · ${layer.name || 'ללא שם'}</div>
+            <div class="layer-foot">
+              <label class="checkline">
+                <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
+                Separate text for this sub-item
+              </label>
+              <div class="note">#${idx + 1} · סוג: ${layer.type} · ${layer.name || 'ללא שם'}</div>
+            </div>
           `;
 
           const fields = card.querySelectorAll('[data-field]');
@@ -1120,10 +1560,14 @@
             field.addEventListener('input', () => {
               const key = field.dataset.field;
               editorDraft.layers[idx][key] = field.type === 'checkbox' ? field.checked : field.value;
+              if (field.dataset.field === 'title' || field.dataset.field === 'desc' || field.dataset.field === 'link' || field.dataset.field === 'useOwnText') {
+                renderTile();
+              }
             });
             if (field.type === 'checkbox') {
               field.addEventListener('change', () => {
                 editorDraft.layers[idx][field.dataset.field] = field.checked;
+                renderTile();
               });
             }
           });
@@ -1132,7 +1576,9 @@
           card.querySelector('[data-action="down"]').addEventListener('click', () => moveLayer(idx, idx + 1));
           card.querySelector('[data-action="remove"]').addEventListener('click', () => {
             editorDraft.layers.splice(idx, 1);
+            if (currentLayerIndex >= editorDraft.layers.length) currentLayerIndex = Math.max(0, editorDraft.layers.length - 1);
             renderLayersEditor();
+            renderTile();
           });
 
           card.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', String(idx)));
@@ -1152,7 +1598,9 @@
         if (from === to || from < 0 || to < 0 || from >= editorDraft.layers.length || to >= editorDraft.layers.length) return;
         const [item] = editorDraft.layers.splice(from, 1);
         editorDraft.layers.splice(to, 0, item);
+        if (currentLayerIndex === from) currentLayerIndex = to;
         renderLayersEditor();
+        renderTile();
       }
 
       async function addFiles(fileList) {
@@ -1172,7 +1620,7 @@
           renderLayersEditor();
           setStatus(`נוספו ${layers.length} מדיות`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3003] addFiles failed', err);
+          console.error('[CRMO_v3005] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -1201,6 +1649,8 @@
           return;
         }
         const header = collectEditorHeader();
+        editorDraft.meta = header.meta;
+        editorDraft.settings = header.settings;
         editorDraft.overlay = header.overlay;
         editorDraft.lightbox = header.lightbox;
         editorDraft.updatedAt = new Date().toISOString();
@@ -1235,7 +1685,7 @@
           els.adminSyncState.textContent = 'sync: cloud saved';
           setStatus('נשמר לענן ולוקאלי', 'success');
         } catch (err) {
-          console.error('[CRMO_v3003] saveToCloud failed', err);
+          console.error('[CRMO_v3005] saveToCloud failed', err);
           els.adminSyncState.textContent = 'sync: local only';
           setStatus('שמירת ענן נכשלה. נשמר לוקאלית: ' + safeMessage(err), 'error');
         }
@@ -1262,7 +1712,7 @@
           els.adminSyncState.textContent = 'sync: cloud loaded';
           setStatus('נטען מהענן', 'success');
         } catch (err) {
-          console.error('[CRMO_v3003] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3005] loadFromCloudAndMerge failed', err);
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
         }
       }
@@ -1315,22 +1765,58 @@
         els.tileIdLabel.textContent = state.tileId;
         els.adminTileId.textContent = `tile: ${state.tileId}`;
         els.layerCountLabel.textContent = String(state.layers.length);
+        if (currentLayerIndex >= state.layers.length) currentLayerIndex = Math.max(0, state.layers.length - 1);
         renderTile();
       }
 
       function renderTile() {
         els.tileMediaHost.innerHTML = '';
-        const layer = state.layers[0] || null;
+        const layer = state.layers[currentLayerIndex] || state.layers[0] || null;
         if (!layer?.src) {
           els.tileFallback.hidden = false;
         } else {
           els.tileFallback.hidden = true;
           els.tileMediaHost.appendChild(createMediaElement(layer, 'tile-media'));
         }
-        const tileText = getDisplayTextForLayer(0, 'overlay');
+        const tileText = getDisplayTextForLayer(currentLayerIndex, 'overlay');
+        const kickerParts = [state.meta?.client, state.meta?.brand].filter(Boolean);
+        els.tileInfoKicker.textContent = kickerParts.length ? kickerParts.join(' / ') : 'CRMO SMART';
+        els.tileInfoTitle.textContent = tileText.title || '';
+        els.tileInfoDesc.textContent = tileText.desc || '';
         els.ovTitle.textContent = tileText.title || '';
         els.ovDesc.textContent = tileText.desc || '';
-        bindLink(els.ovLink, tileText.link);
+        bindLink(els.ovLink, state.settings?.showLinkInTile === false ? '' : tileText.link, state.settings?.openInNewTab !== false);
+        renderTileNavigator();
+      }
+
+      function renderTileNavigator() {
+        const count = state.layers.length;
+        if (els.tileLayerCounter) {
+          els.tileLayerCounter.textContent = count ? `${currentLayerIndex + 1}/${count}` : '0/0';
+        }
+        if (els.tilePrevBtn) els.tilePrevBtn.disabled = count <= 1;
+        if (els.tileNextBtn) els.tileNextBtn.disabled = count <= 1;
+        if (els.tileDots) {
+          els.tileDots.innerHTML = '';
+          state.layers.forEach((_, idx) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'tile-dot' + (idx === currentLayerIndex ? ' active' : '');
+            dot.setAttribute('aria-label', `מעבר למדיה ${idx + 1}`);
+            dot.addEventListener('click', (e) => {
+              e.stopPropagation();
+              currentLayerIndex = idx;
+              renderTile();
+            });
+            els.tileDots.appendChild(dot);
+          });
+        }
+      }
+
+      function shiftTileMedia(delta) {
+        if (!state.layers.length) return;
+        currentLayerIndex = (currentLayerIndex + delta + state.layers.length) % state.layers.length;
+        renderTile();
       }
 
       function renderLightbox() {
@@ -1346,7 +1832,7 @@
         const lbText = getDisplayTextForLayer(currentLayerIndex, 'lightbox');
         els.lbTitle.textContent = lbText.title || '';
         els.lbDesc.textContent = lbText.desc || '';
-        bindLink(els.lbLink, lbText.link);
+        bindLink(els.lbLink, lbText.link, state.settings?.openInNewTab !== false);
         renderThumbs();
       }
 
@@ -1420,7 +1906,7 @@
         return `<img src="${escapeAttr(layer.src)}" alt="preview" />`;
       }
 
-      function bindLink(anchor, url) {
+      function bindLink(anchor, url, openInNewTab = true) {
         const clean = (url || '').trim();
         if (!clean) {
           anchor.hidden = true;
@@ -1430,6 +1916,8 @@
         }
         anchor.hidden = false;
         anchor.href = clean;
+        anchor.target = openInNewTab ? '_blank' : '_self';
+        anchor.rel = openInNewTab ? 'noopener' : '';
         anchor.textContent = prettifyUrl(clean);
       }
 
@@ -1451,6 +1939,8 @@
         const merged = {
           ...base,
           ...(input || {}),
+          meta: { ...base.meta, ...(input?.meta || {}) },
+          settings: { ...base.settings, ...(input?.settings || {}) },
           overlay: { ...base.overlay, ...(input?.overlay || {}) },
           lightbox: { ...base.lightbox, ...(input?.lightbox || {}) },
           layers: Array.isArray(input?.layers) ? input.layers.slice(0, MAX_LAYERS).map(normalizeLayer) : []
