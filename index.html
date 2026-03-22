@@ -1,10 +1,11 @@
-<!doctype html>
-<html lang="he" dir="rtl">
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRMO_v3005</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CRMO_v3028</title>
+<style>
     :root {
       --bg: #f2f2f2;
       --panel: #ffffff;
@@ -178,10 +179,58 @@
 
     .auth-row {
       display: grid;
-      grid-template-columns: 1fr 1fr auto auto;
+      grid-template-columns: 1fr minmax(0, 1fr) auto auto;
       gap: 8px;
       align-items: center;
     }
+
+    .auth-password-field {
+      position: relative;
+      min-width: 0;
+    }
+
+    .auth-password-field input {
+      width: 100%;
+      padding-inline-end: 34px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      inset-inline-end: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      min-width: 24px;
+      height: 24px;
+      min-height: 24px;
+      padding: 0;
+      border-radius: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #111;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .password-toggle-btn:hover { background: transparent; opacity: .72; }
+    .password-toggle-btn svg { width: 18px; height: 18px; display: block; }
+
+    .icon-btn-clean {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .icon-btn-clean:hover {
+      background: transparent;
+      opacity: .76;
+    }
+
 
     .auth-row > * { min-width: 0; }
 
@@ -191,44 +240,62 @@
       min-height: 20px;
     }
 
+    .auth-feedback {
+      font-size: 13px;
+      min-height: 20px;
+      color: var(--muted);
+    }
+
+    .auth-feedback.success { color: var(--success); }
+    .auth-feedback.error { color: var(--danger); }
+
+    .dash-inline-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 18px;
+      margin-top: 12px;
+    }
+
+    .dash-inline-tools .editor-toggle {
+      margin: 0;
+    }
+
+    .dashboard-counter-field {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dashboard-counter-field input {
+      width: 88px;
+      min-width: 88px;
+    }
+
     .stage {
       display: grid;
       grid-template-columns: 1fr;
       gap: 18px;
     }
 
-    
-.tile-wrap {
+    .tile-wrap {
       position: relative;
-      width: min(100%, 1180px);
+      width: min(100%, 1100px);
       margin: 0 auto;
-      display: grid;
-      gap: 12px;
     }
 
     .tile {
       position: relative;
       aspect-ratio: var(--tile-ratio);
-      border-radius: 0;
+      border-radius: var(--tile-radius);
       overflow: hidden;
       background: #ddd;
       border: var(--stroke-width) solid rgba(0,0,0,.18);
-      box-shadow: 0 18px 48px rgba(0,0,0,.12);
+      box-shadow: var(--shadow);
       cursor: pointer;
       isolation: isolate;
-    }
-
-    .tile-shell {
-      position: relative;
-      min-height: 100%;
-      background: #efefef;
-    }
-
-    .tile-media-stage {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      background: #ddd;
     }
 
     .tile-media,
@@ -258,15 +325,15 @@
 
     .tile-edit-btn {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      z-index: 9;
+      top: 12px;
+      left: 12px;
+      z-index: 5;
       width: 44px;
       height: 44px;
       border-radius: 999px;
       display: none;
       place-items: center;
-      background: rgba(255,255,255,.96);
+      background: rgba(255,255,255,.92);
       border: 1px solid rgba(0,0,0,.12);
       box-shadow: 0 10px 20px rgba(0,0,0,.16);
       cursor: pointer;
@@ -276,109 +343,18 @@
 
     .tile-wrap.editable .tile-edit-btn { display: grid; }
 
-    .tile-topbar {
-      position: absolute;
-      top: 0;
-      inset-inline: 0;
-      z-index: 3;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 18px 18px 0;
-      pointer-events: none;
-    }
-
-    .tile-touch-info,
-    .tile-subnav {
-      pointer-events: auto;
-      background: rgba(255,255,255,.9);
-      color: #111;
-      border: 1px solid rgba(0,0,0,.08);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .tile-touch-info {
-      justify-self: end;
-      width: min(540px, calc(100% - 60px));
-      padding: 12px 14px 11px;
-      box-shadow: 0 12px 28px rgba(0,0,0,.1);
-      transform: translateY(-6px);
-      opacity: 0;
-      transition: opacity .24s ease, transform .24s ease;
-    }
-
-    .tile:hover .tile-touch-info,
-    .tile:focus-visible .tile-touch-info,
-    .tile.touch-show-overlay .tile-touch-info {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .tile-info-kicker {
-      margin: 0 0 5px;
-      font-size: 11px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: rgba(0,0,0,.48);
-      text-align: left;
-      direction: ltr;
-    }
-
-    .tile-info-title {
-      margin: 0;
-      font-size: clamp(18px, 2vw, 28px);
-      line-height: 1.02;
-      font-weight: 600;
-      white-space: pre-line;
-      text-align: right;
-      color: #111;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .tile-info-desc {
-      margin: 7px 0 0;
-      font-size: clamp(12px, 1.18vw, 15px);
-      line-height: 1.42;
-      color: rgba(0,0,0,.72);
-      white-space: pre-line;
-      text-align: right;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .tile-bottom {
+    .tile-overlay {
       position: absolute;
       inset-inline: 0;
       bottom: 0;
-      z-index: 3;
-      display: grid;
-      gap: 0;
-      pointer-events: none;
-    }
-
-    .tile-overlay {
-      position: relative;
-      inset: auto;
       z-index: 2;
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.88) 30%, rgba(255,255,255,.97));
-      color: #111;
-      padding: 44px 22px 18px;
+      background: var(--overlay-bg);
+      color: #fff;
+      padding: 18px 20px 16px;
       transform: translateY(101%);
       opacity: 0;
       transition: transform .28s ease, opacity .28s ease;
       pointer-events: none;
-      min-height: 154px;
-      display: grid;
-      align-content: end;
-      gap: 8px;
-      border-top: 1px solid rgba(0,0,0,.08);
     }
 
     .tile:hover .tile-overlay,
@@ -389,119 +365,32 @@
     }
 
     .ov-title {
-      font-size: clamp(22px, 2.7vw, 38px);
-      font-weight: 500;
-      line-height: .98;
-      margin: 0;
+      font-size: clamp(18px, 2.2vw, 28px);
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 0 0 6px;
       white-space: pre-line;
       text-align: right;
-      letter-spacing: -.02em;
-      color: #111;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
     }
 
     .ov-desc {
-      font-size: clamp(12px, 1.18vw, 15px);
-      line-height: 1.42;
+      font-size: clamp(13px, 1.4vw, 16px);
+      line-height: 1.35;
       white-space: pre-line;
       margin: 0;
       text-align: right;
-      color: rgba(0,0,0,.74);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .ov-link-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      min-height: 22px;
     }
 
     .ov-link {
+      margin-top: 10px;
       display: inline-flex;
       direction: ltr;
       text-align: left;
-      color: #111;
-      text-decoration: none;
+      color: #fff;
+      text-decoration: underline;
       word-break: break-word;
-      font-size: 12px;
-      border-bottom: 1px solid rgba(0,0,0,.22);
-      padding-bottom: 1px;
-      justify-self: start;
-    }
-
-    .tile-subnav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
-      min-height: 46px;
-      border-top: 1px solid rgba(0,0,0,.06);
-      box-shadow: 0 -10px 24px rgba(0,0,0,.06);
-    }
-
-    .tile-subnav-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tile-layer-counter {
-      font-size: 12px;
-      color: rgba(0,0,0,.56);
-      direction: ltr;
-      text-align: left;
-      min-width: 36px;
-    }
-
-    .tile-nav-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: rgba(255,255,255,.8);
-      cursor: pointer;
-      font-size: 14px;
-      line-height: 1;
-      display: inline-grid;
-      place-items: center;
-      color: #111;
-    }
-
-    .tile-nav-btn:disabled {
-      opacity: .45;
-      cursor: default;
-    }
-
-    .tile-dots {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .tile-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      padding: 0;
-      border: none;
-      background: rgba(0,0,0,.22);
-      cursor: pointer;
-    }
-
-    .tile-dot.active {
-      background: #111;
-      transform: scale(1.12);
+      font-size: 13px;
+      opacity: .95;
     }
 
     .meta-row {
@@ -515,18 +404,48 @@
 
     .meta-row strong { color: var(--ink); }
 
+    .server-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .server-badge.is-verified {
+      color: var(--success);
+      border-color: rgba(15,111,47,.28);
+      background: rgba(15,111,47,.08);
+    }
+
+    .server-badge.is-pending {
+      color: #7a5a00;
+      border-color: rgba(122,90,0,.24);
+      background: rgba(122,90,0,.08);
+    }
+
+    .server-badge.is-local {
+      color: var(--muted);
+      background: #f3f3f3;
+    }
+
     dialog {
       border: none;
       padding: 0;
-      max-width: min(1120px, calc(100vw - 24px));
-      width: min(1120px, calc(100vw - 24px));
-      border-radius: 0;
+      max-width: min(1000px, calc(100vw - 24px));
+      width: min(1000px, calc(100vw - 24px));
+      border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 20px 80px rgba(0,0,0,.3);
       background: #fff;
     }
 
-    dialog::backdrop { background: rgba(255,255,255,.9); }
+    dialog::backdrop { background: rgba(0,0,0,.58); }
 
     .modal-shell {
       display: grid;
@@ -539,16 +458,14 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      padding: 16px 18px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--line);
-      background: #fbfbfb;
+      background: #f7f7f7;
     }
 
     .modal-head h2 {
       margin: 0;
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: .02em;
+      font-size: 18px;
     }
 
     .x-btn,
@@ -556,23 +473,23 @@
     .ghost-btn,
     .danger-btn {
       min-height: 40px;
-      border-radius: 0;
+      border-radius: 10px;
       border: 1px solid var(--line);
       background: #fff;
       padding: 8px 12px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .danger-btn {
-      border-color: rgba(141,17,17,.2);
+      border-color: rgba(141,17,17,.25);
       color: var(--danger);
-      background: #fff;
+      background: #fff5f5;
     }
 
     .lightbox-body {
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .62fr);
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
       min-height: 560px;
     }
 
@@ -583,38 +500,34 @@
     }
 
     .lightbox-side {
-      padding: 22px 22px 20px;
+      padding: 18px;
       overflow: auto;
       background: #fff;
       display: grid;
       align-content: start;
-      gap: 16px;
-      border-inline-start: 1px solid rgba(0,0,0,.08);
+      gap: 14px;
     }
 
     .lb-title {
-      font-size: 32px;
-      line-height: .98;
-      font-weight: 500;
+      font-size: 28px;
+      line-height: 1.03;
+      font-weight: 800;
       margin: 0;
       white-space: pre-line;
       text-align: right;
-      letter-spacing: -.02em;
     }
 
     .lb-desc {
       margin: 0;
       white-space: pre-line;
-      line-height: 1.5;
+      line-height: 1.45;
       text-align: right;
-      color: rgba(0,0,0,.76);
     }
 
     .lb-link {
       direction: ltr;
       text-align: left;
       word-break: break-word;
-      color: #111;
     }
 
     .lb-controls {
@@ -631,7 +544,7 @@
 
     .thumb-btn {
       aspect-ratio: 16 / 9;
-      border-radius: 0;
+      border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--line);
       padding: 0;
@@ -640,92 +553,32 @@
       position: relative;
     }
 
-    .thumb-btn.active { outline: 1px solid #111; }
+    .thumb-btn.active { outline: 2px solid #111; }
     .thumb-btn img,
     .thumb-btn video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .editor-body {
-      padding: 0;
+      padding: 16px;
       overflow: auto;
       display: grid;
-      gap: 0;
-      background: #fff;
-    }
-
-    .editor-shell {
-      display: grid;
-      gap: 0;
-    }
-
-    .editor-main {
-      padding: 18px 18px 16px;
-      display: grid;
-      gap: 16px;
-      border-bottom: 1px solid rgba(0,0,0,.08);
-    }
-
-    .editor-section-title {
-      margin: 0;
-      font-size: 12px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: rgba(0,0,0,.46);
-      text-align: left;
-      direction: ltr;
+      gap: 14px;
     }
 
     .editor-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
 
     .editor-grid textarea,
     .layer-fields textarea {
-      min-height: 108px;
+      min-height: 96px;
       resize: vertical;
     }
 
-    .editor-grid input,
-    .editor-grid textarea,
-    .layer-fields input,
-    .layer-fields textarea {
-      border-radius: 0;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      padding: 11px 12px;
-      font: inherit;
-      color: #111;
-    }
-
-    .editor-grid label,
-    .layer-fields label {
-      display: grid;
-      gap: 6px;
-      font-size: 12px;
-      color: rgba(0,0,0,.54);
-      line-height: 1.3;
-    }
-
-    .editor-options-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .checkline {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--ink);
-      font-size: 14px;
-    }
-
     .dropzone {
-      border: 1px dashed rgba(0,0,0,.26);
-      border-radius: 0;
+      border: 2px dashed #b8b8b8;
+      border-radius: 14px;
       background: #fafafa;
       padding: 18px;
       text-align: center;
@@ -744,51 +597,33 @@
       flex-wrap: wrap;
     }
 
-    .layers-zone {
-      padding: 18px;
-      display: grid;
-      gap: 12px;
-    }
-
     .layers-list {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .layer-card {
-      border: 1px solid rgba(0,0,0,.1);
-      border-radius: 0;
-      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
       background: #fff;
       display: grid;
-      gap: 0;
-      overflow: hidden;
+      gap: 10px;
     }
 
     .layer-top {
       display: grid;
-      grid-template-columns: 42px 144px minmax(0, 1fr) 110px;
-      gap: 0;
-      align-items: stretch;
-    }
-
-    .layer-drag {
-      display: grid;
-      place-items: center;
-      border-inline-end: 1px solid rgba(0,0,0,.08);
-      background: #fafafa;
-      color: rgba(0,0,0,.48);
-      cursor: grab;
-      font-size: 18px;
-      user-select: none;
+      grid-template-columns: 110px 1fr auto;
+      gap: 10px;
+      align-items: start;
     }
 
     .layer-preview {
-      aspect-ratio: auto;
-      min-height: 112px;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
       background: #ececec;
       overflow: hidden;
-      border-inline-end: 1px solid rgba(0,0,0,.08);
+      border: 1px solid var(--line);
       position: relative;
     }
 
@@ -798,44 +633,30 @@
     .layer-fields {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      padding: 12px;
-      align-content: start;
+      gap: 8px;
     }
 
     .layer-controls {
       display: grid;
       gap: 8px;
-      padding: 12px;
-      border-inline-start: 1px solid rgba(0,0,0,.08);
-      background: #fcfcfc;
-      align-content: start;
     }
 
     .layer-controls button {
       min-width: 54px;
     }
 
-    .layer-foot {
+    .checkline {
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
       align-items: center;
-      padding: 10px 12px;
-      border-top: 1px solid rgba(0,0,0,.08);
-      background: #fff;
-      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 14px;
     }
 
     .note {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.35;
-    }
-
-    .field-ltr {
-      direction: ltr;
-      text-align: left;
     }
 
     footer {
@@ -844,300 +665,1306 @@
       text-align: center;
       font-size: 12px;
     }
-@media (max-width: 980px) {
+
+    @media (max-width: 980px) {
       .site-header,
       .auth-row,
       .advanced-grid,
       .editor-grid,
+      .layer-fields,
       .lightbox-body {
         grid-template-columns: 1fr;
       }
+      .layer-top { grid-template-columns: 1fr; }
+      .tile-edit-btn { top: 10px; left: 10px; }
+    }
 
-      .tile-topbar {
-        grid-template-columns: 1fr;
-        padding: 14px 14px 0;
+    /* CRMO_v3015 tile/editor surgical rebuild: tile + editor only */
+    .tile-wrap {
+      width: min(100%, 1120px);
+    }
+
+    .tile {
+      border-radius: 0;
+      border: 1px solid #bdbdbd;
+      box-shadow: 0 18px 44px rgba(0,0,0,.14);
+      background: #ececec;
+    }
+
+    .tile-media-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #d9d9d9;
+    }
+
+    .tile-media,
+    .lightbox-media {
+      transition: transform .36s ease, opacity .26s ease;
+    }
+
+    .tile:hover .tile-media,
+    .tile:focus-visible .tile-media {
+      transform: scale(1.018);
+    }
+
+    .tile-edit-btn {
+      top: 10px;
+      left: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 0;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+      font-size: 16px;
+    }
+
+    .tile-touch-bar {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      left: 60px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.12);
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      backdrop-filter: blur(6px);
+    }
+
+    .tile-touch-copy {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+      align-content: center;
+    }
+
+    .tile-touch-kicker {
+      display: none !important;
+    }
+
+    .tile-touch-title {
+      min-width: 0;
+      font-size: 13px;
+      line-height: 1.25;
+      color: #202020;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: right;
+    }
+
+    .tile-touch-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      direction: ltr;
+    }
+
+    .tile-touch-count {
+      font-size: 12px;
+      color: #5a5a5a;
+      white-space: nowrap;
+    }
+
+    .tile-touch-info-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 0;
+      border: 1px solid rgba(0,0,0,.2);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .tile-touch-bar {
+        display: flex;
       }
 
-      .tile-touch-info {
-        width: 100%;
-        justify-self: stretch;
+      .tile.touch-show-overlay .tile-overlay {
+        transform: translateY(calc(100% - 1px));
+        pointer-events: none;
       }
+    }
 
-      .tile-overlay {
-        padding: 38px 16px 16px;
-      }
+    .tile-like-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      direction: ltr;
+    }
 
-      .layer-top,
+    .tile-like-btn {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      min-height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #111;
+      cursor: pointer;
+    }
+
+    .tile-like-btn svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .tile-like-btn.is-liked {
+      color: #d21d42;
+    }
+
+    .tile-like-count {
+      font-size: 12px;
+      color: #5a5a5a;
+      white-space: nowrap;
+      min-width: 10px;
+      text-align: left;
+    }
+
+    .tile-overlay-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 0;
+      max-height: 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.08);
+      transition: max-height .22s ease, opacity .22s ease;
+      opacity: 0;
+      padding-inline: 18px;
+    }
+
+    .tile.has-action-line .tile-overlay-actions {
+      min-height: 38px;
+      max-height: 48px;
+      opacity: 1;
+    }
+
+    .tile-overlay-like {
+      padding-block: 7px 8px;
+    }
+
+    .tile-overlay-actions .ov-link {
+      padding-inline: 0;
+      padding-block: 9px 10px;
+      flex: 1 1 auto;
+    }
+
+    .tile-overlay {
+      inset-inline: 0;
+      bottom: 0;
+      background: rgba(255,255,255,.94);
+      color: #1d1d1d;
+      padding: 0;
+      transform: translateY(calc(100% - 1px));
+      transition: transform .26s ease, opacity .26s ease;
+      pointer-events: none;
+      opacity: 1;
+      border-top: 1px solid rgba(0,0,0,.12);
+    }
+
+    .tile-overlay-inner {
+      display: grid;
+      gap: 0;
+    }
+
+    .tile-text-mini {
+      padding: 14px 18px 12px;
+    }
+
+    .tile-link-line {
+      min-height: 0;
+      max-height: 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.08);
+      transition: max-height .22s ease, opacity .22s ease;
+      opacity: 0;
+    }
+
+    .tile.has-link-line .tile-link-line {
+      min-height: 30px;
+      max-height: 44px;
+      opacity: 1;
+    }
+
+    .tile:hover .tile-overlay,
+    .tile:focus-visible .tile-overlay,
+    .tile.touch-show-overlay .tile-overlay {
+      transform: translateY(0);
+    }
+
+    .ov-kicker,
+    .lb-kicker {
+      display: none !important;
+    }
+
+    .ov-kicker[hidden],
+    .lb-kicker[hidden] {
+      display: none;
+    }
+
+    .ov-title {
+      margin: 0 0 4px;
+      color: #161616;
+      font-size: clamp(19px, 2vw, 24px);
+      line-height: 1.04;
+      font-weight: 700;
+      letter-spacing: .01em;
+      text-align: right;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: pre-line;
+    }
+
+    .ov-desc {
+      margin: 0;
+      color: #303030;
+      font-size: clamp(13px, 1.2vw, 15px);
+      line-height: 1.38;
+      text-align: right;
+      white-space: pre-line;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ov-link {
+      display: block;
+      padding: 9px 18px 10px;
+      color: #0b63ff;
+      direction: ltr;
+      text-align: left;
+      text-decoration: none;
+      word-break: break-word;
+      font-size: 12px;
+      line-height: 1.35;
+      pointer-events: auto;
+    }
+
+    .ov-link:hover { text-decoration: underline; }
+
+    .tile-nav {
+      position: absolute;
+      top: 50%;
+      z-index: 4;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 54px;
+      border: none;
+      background: rgba(255,255,255,.88);
+      color: #111;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      opacity: 0;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .tile-nav-prev { right: 12px; }
+    .tile-nav-next { left: 12px; }
+
+    .tile.has-multiple:hover .tile-nav,
+    .tile.has-multiple:focus-visible .tile-nav,
+    .tile.has-multiple.touch-nav .tile-nav {
+      opacity: 1;
+    }
+
+    .tile-dots {
+      position: absolute;
+      right: 16px;
+      bottom: 12px;
+      left: 16px;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .tile-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.7);
+      box-shadow: 0 1px 4px rgba(0,0,0,.24);
+      pointer-events: auto;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .tile-dot.active {
+      width: 22px;
+      background: #fff;
+    }
+
+    .meta-row {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #5d5d5d;
+    }
+
+    .editor-shell {
+      display: grid;
+      gap: 14px;
+      background: #fff;
+    }
+
+    .editor-section {
+      border: 1px solid rgba(0,0,0,.11);
+      background: #fff;
+      padding: 14px;
+    }
+
+    .editor-section-head {
+      display: grid;
+      gap: 3px;
+      margin-bottom: 12px;
+    }
+
+    .editor-section-head h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    .editor-section-head p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #666;
+    }
+
+    .editor-grid-main {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .editor-field-span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .editor-field-compact input[type="text"] {
+      min-height: 42px;
+    }
+
+    .editor-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .editor-field-label {
+      font-size: 12px;
+      letter-spacing: .02em;
+      color: #5d5d5d;
+      text-transform: none;
+    }
+
+    .editor-grid textarea,
+    .editor-grid input[type="text"],
+    .layer-fields textarea,
+    .layer-fields input[type="text"] {
+      min-height: 42px;
+      border-radius: 0;
+      border: 1px solid #cfcfcf;
+      padding: 10px 12px;
+      background: #fff;
+      color: #151515;
+    }
+
+    .editor-grid textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .editor-toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,.08);
+    }
+
+    .editor-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #2a2a2a;
+      cursor: pointer;
+    }
+
+    .editor-toggle input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .editor-actions {
+      padding: 0 2px;
+    }
+
+    .dropzone {
+      border-radius: 0;
+      border-style: dashed;
+      background: #fafafa;
+    }
+
+    .layers-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .layer-card {
+      display: grid;
+      gap: 10px;
+      border: 1px solid #d6d6d6;
+      background: #fcfcfc;
+      padding: 12px;
+      border-radius: 0;
+      cursor: default;
+    }
+
+    .layer-card.is-hidden {
+      opacity: .72;
+      background: #f7f7f7;
+    }
+
+    .layer-top {
+      display: grid;
+      grid-template-columns: 34px 126px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .layer-preview {
+      width: 126px;
+      aspect-ratio: 16 / 9;
+      border-radius: 0;
+      overflow: hidden;
+      border: 1px solid #d0d0d0;
+      background: #ececec;
+    }
+
+    .layer-preview img,
+    .layer-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .layer-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      align-items: start;
+    }
+
+    .layer-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .layer-row-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid #d4d4d4;
+      font-size: 11px;
+      color: #555;
+      direction: ltr;
+      background: #fff;
+    }
+
+    .layer-fields textarea {
+      min-height: 72px;
+    }
+
+    .layer-controls {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .layer-controls .ghost-btn,
+    .layer-controls .danger-btn {
+      min-width: 60px;
+    }
+
+    .layer-drag {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(0,0,0,.18);
+      background: rgba(255,255,255,.94);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .layer-drag::before {
+      content: '↕';
+      font-size: 16px;
+      line-height: 1;
+      opacity: .75;
+    }
+
+    .layer-drag:active { cursor: grabbing; }
+
+    .layer-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 16px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      padding-top: 9px;
+    }
+
+    .layer-bottom-left,
+    .layer-bottom-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .checkline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #2a2a2a;
+      margin: 0;
+    }
+
+    .checkline input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .layer-meta-note {
+      font-size: 12px;
+      color: #666;
+      direction: ltr;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    @media (max-width: 900px) {
+      .editor-grid-main,
       .layer-fields {
         grid-template-columns: 1fr;
       }
 
-      .layer-preview,
-      .layer-controls,
-      .layer-drag {
-        border-inline-end: none;
-        border-inline-start: none;
-        border-top: 1px solid rgba(0,0,0,.08);
+      .layer-top {
+        grid-template-columns: 34px 1fr;
       }
 
-      .layer-drag {
-        min-height: 42px;
+      .layer-preview {
+        width: 100%;
+        grid-column: 1 / -1;
       }
 
-      .tile-edit-btn { top: 10px; left: 10px; }
+      .layer-fields {
+        grid-column: 1 / -1;
+      }
+
+      .layer-controls {
+        grid-column: 1 / -1;
+        grid-auto-flow: column;
+        justify-content: start;
+      }
+
+      .tile-touch-bar {
+        left: 54px;
+      }
     }
 
-    @media (max-width: 640px) {
-      .tile-subnav {
-        padding: 8px 10px;
+    @media (max-width: 720px) {
+      .tile {
+        border-radius: 0;
       }
 
-      .tile-touch-info {
-        padding: 10px 12px;
+      .tile-touch-bar {
+        top: 8px;
+        right: 8px;
+        left: 54px;
+        min-height: 38px;
+        padding: 6px 10px;
+      }
+
+      .tile-nav {
+        opacity: 1;
+        width: 34px;
+        height: 48px;
       }
 
       .ov-title {
-        font-size: 22px;
+        font-size: 18px;
       }
 
-      .ov-desc,
-      .tile-info-desc {
-        -webkit-line-clamp: 2;
+      .tile-overlay {
+        transform: translateY(calc(100% - 1px));
       }
 
-      .lightbox-side,
-      .editor-main,
-      .layers-zone {
-        padding: 14px;
+      .tile.touch-show-overlay .tile-overlay {
+        transform: translateY(0);
+      }
+
+      .editor-body {
+        padding: 12px;
+      }
+
+      .modal-head h2 {
+        font-size: 16px;
       }
     }
-  </style>
-</head>
+
+  
+    @media (hover: none), (pointer: coarse) {
+      .tile.touch-show-overlay .tile-overlay,
+      .tile:hover .tile-overlay,
+      .tile:focus-visible .tile-overlay {
+        transform: translateY(calc(100% - 1px));
+        pointer-events: none;
+      }
+    }
+
+    .tile-text-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+
+.auth-modal-entry{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.auth-open-btn{min-width:170px;height:42px;border-radius:999px;border:1px solid rgba(0,0,0,.14);background:#111;color:#fff;padding:0 18px;font:inherit;cursor:pointer}
+.auth-open-btn:hover{transform:translateY(-1px)}
+.auth-open-btn[hidden]{display:none!important}
+#tileTouchLikeWrap,#tileOverlayLikeWrap{display:none!important}
+
+</style>
+<style id="crmo-auth-modal-inline-css">
+:root{
+  --crmo-auth-panel-bg:#fff;
+  --crmo-auth-border:rgba(0,0,0,.11);
+  --crmo-auth-text:#111;
+  --crmo-auth-muted:rgba(0,0,0,.60);
+  --crmo-auth-accent:#111;
+  --crmo-auth-danger:#e44a3a;
+  --crmo-auth-radius:28px;
+  --crmo-auth-field-bg:#eef3ff;
+  --crmo-auth-field-border:#dbe4f2;
+  --crmo-auth-shadow:0 20px 48px rgba(0,0,0,.18);
+  --crmo-auth-shell-max:700px;
+  --crmo-auth-content-max:560px;
+  --crmo-auth-header-icon-space:84px;
+}
+body.crmo-auth-modal-open{overflow:hidden}
+.crmo-auth-modal[hidden]{display:none!important}
+.crmo-auth-modal{position:fixed; inset:0; z-index:1200; display:flex; align-items:flex-start; justify-content:center; padding:12px 10px}
+.crmo-auth-modal__backdrop{position:absolute; inset:0; background:rgba(0,0,0,.42)}
+.crmo-auth-modal__panel{
+  position:relative;
+  width:min(760px, calc(100vw - 24px));
+  max-height:calc(100vh - 24px);
+  overflow:auto;
+  background:var(--crmo-auth-panel-bg);
+  color:var(--crmo-auth-text);
+  border:1px solid var(--crmo-auth-border);
+  border-radius:var(--crmo-auth-radius);
+  box-shadow:var(--crmo-auth-shadow);
+  z-index:1;
+}
+.crmo-auth-modal__toolbar{
+  position:absolute;
+  top:14px;
+  left:14px;
+  display:flex;
+  gap:10px;
+  z-index:4;
+}
+.crmo-auth-modal__toolbtn{
+  width:44px;
+  height:44px;
+  border-radius:15px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  color:#111;
+  cursor:pointer;
+  font:inherit;
+  font-size:29px;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  padding:0;
+}
+.crmo-auth-modal__toolbtn svg{width:18px; height:18px; display:block}
+.crmo-auth-modal__settings{display:none}
+body.role-admin .crmo-auth-modal__settings,
+body.role-master .crmo-auth-modal__settings,
+body.role-ux .crmo-auth-modal__settings{display:grid}
+.crmo-auth-modal__header{
+  padding:56px 28px 22px 28px;
+  border-bottom:1px solid #eee;
+}
+.crmo-auth-modal__close{
+  position:absolute;
+  top:16px;
+  left:16px;
+  width:44px;
+  height:44px;
+  border-radius:15px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  color:#111;
+  cursor:pointer;
+  font:inherit;
+  font-size:30px;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  padding:0;
+  z-index:5;
+}
+.crmo-auth-modal__head-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 240px;
+  gap:18px;
+  align-items:center;
+  direction:ltr;
+}
+.crmo-auth-modal__titlewrap{
+  direction:rtl;
+  min-width:0;
+  max-width:540px;
+  justify-self:end;
+}
+.crmo-auth-modal__title{
+  margin:0;
+  text-align:right;
+  font-size:19px;
+  font-weight:400;
+  line-height:1.85;
+  letter-spacing:0;
+}
+.crmo-auth-modal__mascot{
+  width:240px;
+  min-height:180px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.crmo-auth-modal__mascot img{
+  width:100%;
+  max-width:220px;
+  max-height:196px;
+  display:block;
+  object-fit:contain;
+}
+.crmo-auth-modal__body{padding:14px 28px 20px}
+.crmo-auth-modal__modebtns{
+  display:flex;
+  gap:14px;
+  width:min(700px, 100%);
+  margin:0 auto 10px;
+}
+.crmo-auth-modal__modebtn{
+  flex:1;
+  height:50px;
+  border-radius:14px;
+  font:inherit;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,.18);
+  background:#fff;
+  color:#111;
+}
+.crmo-auth-modal__modebtn.is-active{background:#111;color:#fff;border-color:#111}
+.crmo-auth-modal__sso{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin:0 auto 8px;
+  width:min(700px, 100%);
+}
+.crmo-auth-modal__sso-btn{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  border:0;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  padding:0;
+  background:transparent;
+}
+.crmo-auth-modal__sso-btn img{width:40px; height:40px; display:block}
+.crmo-auth-modal__privacy{
+  width:min(700px, 100%);
+  margin:0 auto 10px;
+  text-align:center;
+  font-size:12px;
+  color:var(--crmo-auth-muted);
+  line-height:1.5;
+}
+.crmo-auth-modal__form{
+  width:min(700px, 100%);
+  margin:0 auto;
+}
+.crmo-auth-modal__register-only[hidden],
+.crmo-auth-modal__login-only[hidden]{display:none!important}
+.crmo-auth-modal__name-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:8px;
+}
+.crmo-auth-modal__field{margin-bottom:8px}
+.crmo-auth-modal__label{
+  display:block;
+  font-size:12.5px;
+  color:var(--crmo-auth-muted);
+  margin:0 0 5px;
+  text-align:right;
+}
+.crmo-auth-modal__input,
+.crmo-auth-modal__password-input{
+  width:100%;
+  height:52px;
+  border-radius:14px;
+  border:1px solid var(--crmo-auth-field-border);
+  background:var(--crmo-auth-field-bg);
+  color:#111;
+  font:inherit;
+  font-size:15px;
+  padding:0 16px;
+  box-sizing:border-box;
+}
+.crmo-auth-modal__input::placeholder,
+.crmo-auth-modal__password-input::placeholder{color:rgba(0,0,0,.55)}
+.crmo-auth-modal__input--ltr{direction:ltr;text-align:left;unicode-bidi:plaintext}
+.crmo-auth-modal__input--rtl{direction:rtl;text-align:right}
+.crmo-auth-modal__password{position:relative}
+.crmo-auth-modal__password-input{
+  direction:ltr;
+  text-align:left;
+  unicode-bidi:plaintext;
+  padding-inline-start:16px;
+  padding-inline-end:50px;
+}
+.crmo-auth-modal__password-toggle{
+  position:absolute;
+  top:50%;
+  right:14px;
+  transform:translateY(-50%);
+  width:24px;
+  height:24px;
+  border:0;
+  background:transparent;
+  color:#111;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  padding:0;
+}
+.crmo-auth-modal__password-toggle svg{width:20px; height:20px; display:block}
+.crmo-auth-modal__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  direction:rtl;
+  gap:12px;
+  margin:4px 0 10px;
+}
+.crmo-auth-modal__login-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  direction:rtl;
+  gap:12px;
+  margin:4px 0 10px;
+}
+.crmo-auth-modal__link{
+  color:var(--crmo-auth-danger);
+  text-decoration:none;
+  font-size:13px;
+}
+.crmo-auth-modal__remember{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  direction:rtl;
+  white-space:nowrap;
+}
+.crmo-auth-modal__remember input{width:16px; height:16px; margin:0}
+.crmo-auth-modal__submit{
+  width:100%;
+  padding:14px 16px;
+  border-radius:16px;
+  font:inherit;
+  font-size:17px;
+  font-weight:700;
+  background:#111;
+  color:#fff;
+  border:1px solid #111;
+  cursor:pointer;
+}
+.crmo-auth-modal__submit[disabled]{opacity:.65; cursor:wait}
+.crmo-auth-modal__feedback{
+  min-height:20px;
+  margin-top:8px;
+  font-size:13px;
+  text-align:right;
+}
+.crmo-auth-modal__feedback.is-error{color:#b00020}
+.crmo-auth-modal__feedback.is-success{color:#156d2f}
+.crmo-auth-modal__bottom{
+  display:flex;
+  justify-content:center;
+  gap:5px;
+  margin-top:10px;
+  font-size:13px;
+}
+.crmo-auth-modal__status{
+  display:none;
+  text-align:center;
+  font-size:12px;
+  color:var(--crmo-auth-muted);
+  margin-top:8px;
+}
+.crmo-auth-modal__status.is-visible{display:block}
+
+/* shared popup form primitives for future popups */
+.crmo-popup-field,
+.crmo-popup-select,
+.crmo-popup-textarea{
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--crmo-auth-field-border);
+  background:var(--crmo-auth-field-bg);
+  color:#111;
+  font:inherit;
+  font-size:15px;
+  box-sizing:border-box;
+}
+.crmo-popup-field,
+.crmo-popup-select{height:56px; padding:0 16px}
+.crmo-popup-textarea{min-height:120px; padding:14px 16px; resize:vertical}
+.crmo-popup-actions{display:flex; gap:12px}
+.crmo-popup-actions > *{flex:1}
+
+@media (max-width:760px){
+  .crmo-auth-modal__panel{width:min(680px, calc(100vw - 14px))}
+  .crmo-auth-modal__header{padding:26px 18px 16px calc(18px + 70px)}
+  .crmo-auth-modal__head-grid{grid-template-columns:minmax(0,1fr) 170px; gap:16px}
+  .crmo-auth-modal__title{font-size:16px}
+  .crmo-auth-modal__mascot{width:170px; min-height:132px}
+  .crmo-auth-modal__mascot img{max-width:156px; max-height:152px}
+  .crmo-auth-modal__body{padding:12px 18px 18px}
+}
+@media (max-width:560px){
+  .crmo-auth-modal{padding:6px}
+  .crmo-auth-modal__panel{width:calc(100vw - 8px); max-height:calc(100vh - 12px); border-radius:24px}
+  .crmo-auth-modal__toolbar{top:12px; left:12px}
+  .crmo-auth-modal__toolbtn{width:42px; height:42px; border-radius:14px}
+  .crmo-auth-modal__header{padding:22px 12px 12px calc(12px + 64px)}
+  .crmo-auth-modal__head-grid{grid-template-columns:1fr 120px; gap:10px; align-items:start}
+  .crmo-auth-modal__titlewrap{max-width:none}
+  .crmo-auth-modal__title{font-size:15px; line-height:1.65}
+  .crmo-auth-modal__mascot{width:120px; min-height:100px}
+  .crmo-auth-modal__mascot img{max-width:108px; max-height:112px}
+  .crmo-auth-modal__body{padding:10px 12px 14px}
+  .crmo-auth-modal__modebtns{gap:10px; margin-bottom:10px}
+  .crmo-auth-modal__modebtn{height:48px; font-size:16px}
+  .crmo-auth-modal__sso-btn{width:44px; height:44px}
+  .crmo-auth-modal__sso-btn img{width:36px; height:36px}
+  .crmo-auth-modal__name-grid{grid-template-columns:1fr; gap:10px; margin-bottom:8px}
+  .crmo-auth-modal__field{margin-bottom:8px}
+  .crmo-auth-modal__input,.crmo-auth-modal__password-input{height:52px; border-radius:13px}
+  .crmo-auth-modal__submit{padding:14px 12px; font-size:16px}
+}
+</style></head>
 <body>
-  <div class="app">
-    <section id="adminDashboard" class="admin-dashboard" aria-label="דאשבורד ניהול">
-      <div class="dashboard-top">
-        <div class="dashboard-pill">ADMIN DASHBOARD</div>
-        <div class="dashboard-pill" id="adminVersionPill">CRMO_v3005</div>
-        <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
-        <div class="dashboard-pill" id="adminSyncState">sync: local</div>
-        <div class="dashboard-pill" id="sessionLabel">מצב: מנותק</div>
-        <div class="dashboard-pill" id="adminUserEmail" hidden></div>
-        <div class="dashboard-actions">
-          <button id="refreshBtn" type="button">רענן מהענן</button>
-          <button id="saveConnBtn" type="button">שמור הגדרות</button>
-        </div>
-      </div>
-      <div class="dashboard-tabs" role="tablist" aria-label="לשוניות ניהול">
-        <button class="dashboard-tab active" type="button" data-dashboard-tab="status">Status</button>
-        <button class="dashboard-tab" type="button" data-dashboard-tab="connection">Connection</button>
-      </div>
-      <section class="dashboard-tab-panel active" id="dashboardPanelStatus" data-dashboard-panel="status">
-        <div id="statusLabel" class="status-inline">מוכן</div>
-      </section>
-      <section class="dashboard-tab-panel" id="dashboardPanelConnection" data-dashboard-panel="connection">
-        <div class="advanced-grid">
-          <label>Supabase URL
-            <input id="sbUrlInput" type="text" placeholder="https://PROJECT.supabase.co" />
-          </label>
-          <label>Anon Key
-            <input id="sbAnonInput" type="password" placeholder="הדבק anon key" />
-          </label>
-          <label>Table Name
-            <input id="tableInput" type="text" value="crmo_site_config" />
-          </label>
-          <label>Row Key Column
-            <input id="keyColumnInput" type="text" value="key" />
-          </label>
-          <label>Row Key Value
-            <input id="rowKeyInput" type="text" value="crmo_v3000_tile_demo" />
-          </label>
-          <label>Payload Column
-            <input id="payloadColumnInput" type="text" value="payload" />
-          </label>
-        </div>
-        <div class="note" style="margin-top:8px;">
+<div class="app">
+<section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
+<div class="dashboard-top">
+<div class="dashboard-pill">ADMIN DASHBOARD</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3028</div>
+<div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
+<div class="dashboard-pill" id="adminSyncState">sync: local</div>
+<div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
+<div class="dashboard-pill" id="sessionLabel">מצב: מנותק</div>
+<div class="dashboard-pill" hidden="" id="adminUserEmail"></div>
+<div class="dashboard-actions">
+<button id="refreshBtn" type="button">רענן מהענן</button>
+<button id="saveConnBtn" type="button">שמור הגדרות</button>
+</div>
+</div>
+<div aria-label="לשוניות ניהול" class="dashboard-tabs" role="tablist">
+<button class="dashboard-tab active" data-dashboard-tab="status" type="button">Status</button>
+<button class="dashboard-tab" data-dashboard-tab="connection" type="button">Connection</button>
+<button class="dashboard-tab" data-dashboard-tab="diagnostics" type="button">Diagnostics</button>
+</div>
+<section class="dashboard-tab-panel active" data-dashboard-panel="status" id="dashboardPanelStatus">
+<div class="status-inline" id="statusLabel">מוכן · local draft</div>
+<div class="dash-inline-tools">
+
+
+
+</div>
+</section>
+<section class="dashboard-tab-panel" data-dashboard-panel="connection" id="dashboardPanelConnection">
+<div class="advanced-grid">
+<label>Supabase URL
+            <input id="sbUrlInput" placeholder="https://PROJECT.supabase.co" type="text"/>
+</label>
+<label>Anon Key
+            <input id="sbAnonInput" placeholder="הדבק anon key" type="password"/>
+</label>
+<label>Table Name
+            <input id="tableInput" type="text" value="crmo_site_config"/>
+</label>
+<label>Row Key Column
+            <input id="keyColumnInput" type="text" value="key"/>
+</label>
+<label>Row Key Value
+            <input id="rowKeyInput" type="text" value="crmo_v3013_tile_demo"/>
+</label>
+<label>Payload Column
+            <input id="payloadColumnInput" type="text" value="payload"/>
+</label>
+</div>
+<div class="note" style="margin-top:8px;">
           ברירת המחדל מיועדת לטבלת config עם מזהה שורה קבוע ועמודת payload מסוג json/jsonb. אם אצלך שם העמודות אחר – אפשר לעדכן כאן בלי לשנות קוד.
         </div>
-      </section>
-    </section>
-
-    <header class="site-header" aria-label="Header">
-      <section class="header-brand">
-        <h1>CRMO | Sales Oriented Design</h1>
-        <p>אותו קובץ, אותה לוגיקה, אותו אריח — עובד לוקאלית וגם בשרת. דאשבורד הניהול מופיע רק במצב מחובר ודוחף את ההדר מטה כשהוא מתרחב.</p>
-      </section>
-      <section class="auth-box" aria-label="התחברות">
-        <div class="auth-row">
-          <input id="emailInput" type="email" placeholder="אימייל" autocomplete="username" />
-          <input id="passwordInput" type="password" placeholder="סיסמה" autocomplete="current-password" />
-          <button id="loginBtn" type="button">התחבר</button>
-          <button id="logoutBtn" type="button">התנתק</button>
-        </div>
-        <div id="authNote" class="auth-note">מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.</div>
-      </section>
-    </header>
-
-    <main class="stage">
-      <div class="tile-wrap" id="tileWrap">
-        <button class="tile-edit-btn" id="editBtn" type="button" aria-label="עריכת אריח">✎</button>
-        <article class="tile" id="tile" tabindex="0" aria-label="CRMO Tile">
-          <div class="tile-shell">
-            <div class="tile-media-stage">
-              <div id="tileMediaHost"></div>
-              <div id="tileFallback" class="tile-fallback">CRMO TILE<br />16:9</div>
-            </div>
-
-            <div class="tile-topbar">
-              <section class="tile-touch-info" id="tileTouchInfo" aria-label="מידע ראשוני">
-                <div class="tile-info-kicker" id="tileInfoKicker">CRMO SMART</div>
-                <h2 class="tile-info-title" id="tileInfoTitle"></h2>
-                <p class="tile-info-desc" id="tileInfoDesc"></p>
-              </section>
-            </div>
-
-            <div class="tile-bottom">
-              <div class="tile-overlay" id="tileOverlay">
-                <h2 class="ov-title" id="ovTitle"></h2>
-                <p class="ov-desc" id="ovDesc"></p>
-                <div class="ov-link-row">
-                  <a class="ov-link" id="ovLink" target="_blank" rel="noopener"></a>
-                </div>
-              </div>
-
-              <nav class="tile-subnav" id="tileSubnav" aria-label="ניווט תתי־מדיה">
-                <div class="tile-subnav-left">
-                  <button class="tile-nav-btn" id="tilePrevBtn" type="button" aria-label="הקודם">←</button>
-                  <button class="tile-nav-btn" id="tileNextBtn" type="button" aria-label="הבא">→</button>
-                  <span class="tile-layer-counter" id="tileLayerCounter">0/0</span>
-                </div>
-                <div class="tile-dots" id="tileDots"></div>
-              </nav>
-            </div>
+</section>
+<section class="dashboard-tab-panel" data-dashboard-panel="diagnostics" id="dashboardPanelDiagnostics">
+<div class="dashboard-actions" style="margin-bottom:10px;">
+<button id="runConnTestBtn" type="button">בדיקת Supabase</button>
+<button id="runSmokeBtn" type="button">Smoke Test</button>
+<button id="copyDiagBtn" type="button">העתק דיאגנוסטיקה</button>
+</div>
+<div class="advanced-grid">
+<div class="note" id="diagSummary">טרם הורצה בדיקה.</div>
+<div class="note" id="diagRuntime"></div>
+</div>
+<pre class="note" id="diagLog" style="margin-top:10px; white-space:pre-wrap; max-height:240px; overflow:auto;"></pre>
+</section>
+</section>
+<header aria-label="Header" class="site-header">
+<section class="header-brand">
+<h1>CRMO | Sales Oriented Design</h1>
+<p>אותו קובץ, אותה לוגיקה, אותו אריח — עובד לוקאלית וגם בשרת. הגרסה הזו ממוקדת ב־Tile System בלבד ושומרת על שאר ההדרים וה־auth ללא שינוי מבני.</p>
+</section>
+<section aria-label="כניסה והרשמה" class="auth-box auth-launcher">
+<div class="auth-row auth-modal-entry">
+<button class="auth-open-btn" id="openAuthModalBtn" type="button" onclick="window.CRMOForceOpenAuthModal&&window.CRMOForceOpenAuthModal(event)">התחבר / הרשמה</button>
+<button hidden="" id="logoutBtn" type="button">התנתק</button>
+</div>
+<div class="auth-note" id="authNote">מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.</div>
+<div aria-live="polite" class="auth-feedback" id="authFeedback"></div>
+</section>
+</header>
+<main class="stage">
+<div class="tile-wrap" id="tileWrap">
+<button aria-label="עריכת אריח" class="tile-edit-btn" id="editBtn" type="button">✎</button>
+<article aria-label="CRMO Tile" class="tile" id="tile" tabindex="0">
+<div class="tile-media-stage" id="tileMediaStage">
+<div id="tileMediaHost"></div>
+<div class="tile-fallback" id="tileFallback">CRMO TILE<br/>16:9</div>
+</div>
+<div aria-hidden="true" class="tile-touch-bar" id="tileTouchBar">
+<div class="tile-touch-copy">
+<div class="tile-touch-kicker" hidden="" id="tileTouchKicker"></div>
+<div class="tile-touch-title" id="tileTouchTitle"></div>
+<div class="tile-touch-title" id="tileTouchDesc"></div>
+</div>
+<div class="tile-touch-meta">
+<span class="tile-touch-count" id="tileTouchCount">1/1</span>
+<div hidden="" id="tileTouchLikeWrap"><button aria-label="Like tile" hidden="" id="tileTouchLikeBtn" type="button">♥</button><span hidden="" id="tileTouchLikeCount">0</span></div>
+<button aria-label="הצג מידע" class="tile-touch-info-btn" id="tileTouchInfoBtn" type="button">i</button>
+</div>
+</div>
+<button aria-label="המדיה הקודמת" class="tile-nav tile-nav-prev" id="tilePrevBtn" type="button">‹</button>
+<button aria-label="המדיה הבאה" class="tile-nav tile-nav-next" id="tileNextBtn" type="button">›</button>
+<div class="tile-overlay" id="tileOverlay">
+<div class="tile-overlay-inner">
+<div class="tile-text-mini tile-text-grid">
+<div class="ov-kicker" id="ovKicker"></div>
+<h2 class="ov-title" id="ovTitle"></h2>
+<p class="ov-desc" id="ovDesc"></p>
+</div>
+<div class="tile-overlay-actions" id="tileActionLine">
+<div hidden="" id="tileOverlayLikeWrap"><button aria-label="Like tile" hidden="" id="tileOverlayLikeBtn" type="button">♥</button><span hidden="" id="tileOverlayLikeCount">0</span></div>
+<a class="ov-link" id="ovLink" rel="noopener" target="_blank"></a>
+</div>
+</div>
+</div>
+<div aria-label="ניווט מדיות" class="tile-dots" id="tileDots"></div>
+</article>
+<div class="meta-row">
+<div><strong>Tile ID:</strong> <span id="tileIdLabel">crmo-tile-001</span></div>
+<div><strong>Layers:</strong> <span id="layerCountLabel">0</span>/18</div>
+<div class="server-badge is-local" id="tileVerifyBadge">LOCAL DRAFT</div>
+</div>
+</div>
+</main>
+<footer id="footerVersionLabel">CRMO_v3028 · Popup system polish · local + auth + cloud-ready</footer>
+</div>
+<dialog aria-label="Lightbox" id="lightboxDialog">
+<div class="modal-shell">
+<div class="modal-head">
+<h2>Lightbox</h2>
+<button aria-label="סגור" class="x-btn" id="closeLightboxBtn" type="button">✕</button>
+</div>
+<div class="lightbox-body">
+<div class="lightbox-view" id="lightboxView">
+<div id="lightboxMediaHost"></div>
+<div class="lightbox-fallback" id="lightboxFallback">No media</div>
+</div>
+<aside class="lightbox-side">
+<div class="lb-kicker" id="lbKicker"></div>
+<h3 class="lb-title" id="lbTitle"></h3>
+<p class="lb-desc" id="lbDesc"></p>
+<a class="lb-link" id="lbLink" rel="noopener" target="_blank"></a>
+<div class="lb-controls">
+<button class="small-btn" id="prevLayerBtn" type="button">הקודם</button>
+<button class="small-btn" id="nextLayerBtn" type="button">הבא</button>
+</div>
+<div class="thumb-strip" id="thumbStrip"></div>
+</aside>
+</div>
+</div>
+</dialog>
+<dialog aria-label="עורך אריח" id="editorDialog">
+<div class="modal-shell">
+<div class="modal-head">
+<h2>עורך אריח — crmo-tile-001</h2>
+<button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
+</div>
+<div class="editor-body editor-shell">
+<section class="editor-section editor-section-main">
+<div class="editor-section-head">
+<h3>הגדרות טקסט וקישור</h3>
+<p>עריכת אריח בודד בלבד: טקסט + תמונה/מדיה, עם בסיס יציב לריבוי שכבות בהמשך.</p>
+</div>
+<div class="editor-grid editor-grid-main">
+<label class="editor-field editor-field-compact">
+<span class="editor-field-label">Client</span>
+<input id="tileClientInput" placeholder="שם לקוח" type="text"/>
+</label>
+<label class="editor-field editor-field-compact">
+<span class="editor-field-label">Brand</span>
+<input id="tileBrandInput" placeholder="שם מותג" type="text"/>
+</label>
+<label class="editor-field editor-field-span-2">
+<span class="editor-field-label">Project title</span>
+<textarea id="tileTitleInput" placeholder="כותרת שיופיע במאוס אובר/לייטבוקס אם אין טקסט נפרד למדיה"></textarea>
+</label>
+<label class="editor-field editor-field-span-2">
+<span class="editor-field-label">Short description</span>
+<textarea id="tileDescInput" placeholder="תיאור ברירת מחדל"></textarea>
+</label>
+<label class="editor-field editor-field-link editor-field-span-2">
+<span class="editor-field-label">Project link</span>
+<input id="tileLinkInput" placeholder="https://example.com" type="text"/>
+</label>
+<label class="editor-field">
+<span class="editor-field-label">Lightbox title</span>
+<textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
+</label>
+<label class="editor-field">
+<span class="editor-field-label">Lightbox description</span>
+<textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
+</label>
+<label class="editor-field editor-field-link editor-field-span-2">
+<span class="editor-field-label">Lightbox link</span>
+<input id="tileLbLinkInput" placeholder="אם ריק — ישתמש בקישור הראשי" type="text"/>
+</label>
+</div>
+<div class="editor-toggle-row">
+<input hidden="" id="showLikeInput" type="checkbox"/>
+<input hidden="" id="showLikeCountInput" type="checkbox"/>
+<input hidden="" id="likeCountInput" type="number" value="0"/>
+<label class="editor-toggle">
+<input id="showLinkInTileInput" type="checkbox"/>
+<span>Show link in tile</span>
+</label>
+<label class="editor-toggle">
+<input id="openLinkInNewTabInput" type="checkbox"/>
+<span>Open link in new tab</span>
+</label>
+</div>
+</section>
+<div class="editor-actions">
+<button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
+<input accept="image/*,video/*,.gif" hidden="" id="fileInput" multiple="" type="file"/>
+<button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
+<button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
+<button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
+</div>
+<div class="dropzone" id="dropzone">
+          גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
+          <div class="note" style="margin-top:8px;">
+            לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
           </div>
-        </article>
-        <div class="meta-row">
-          <div><strong>Tile ID:</strong> <span id="tileIdLabel">crmo-tile-001</span></div>
-          <div><strong>Layers:</strong> <span id="layerCountLabel">0</span>/18</div>
+</div>
+<div class="note">
+          גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
         </div>
-      </div>
-    </main>
-
-    <footer id="footerVersionLabel">CRMO_v3005 · Single editable tile · local + auth + cloud-ready</footer>
-  </div>
-
-  <dialog id="lightboxDialog" aria-label="Lightbox">
-    <div class="modal-shell">
-      <div class="modal-head">
-        <h2>Lightbox</h2>
-        <button class="x-btn" id="closeLightboxBtn" type="button" aria-label="סגור">✕</button>
-      </div>
-      <div class="lightbox-body">
-        <div class="lightbox-view" id="lightboxView">
-          <div id="lightboxMediaHost"></div>
-          <div id="lightboxFallback" class="lightbox-fallback">No media</div>
-        </div>
-        <aside class="lightbox-side">
-          <h3 class="lb-title" id="lbTitle"></h3>
-          <p class="lb-desc" id="lbDesc"></p>
-          <a class="lb-link" id="lbLink" target="_blank" rel="noopener"></a>
-          <div class="lb-controls">
-            <button class="small-btn" id="prevLayerBtn" type="button">הקודם</button>
-            <button class="small-btn" id="nextLayerBtn" type="button">הבא</button>
-          </div>
-          <div class="thumb-strip" id="thumbStrip"></div>
-        </aside>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog id="editorDialog" aria-label="עורך אריח">
-    <div class="modal-shell">
-      <div class="modal-head">
-        <h2>עורך אריח — crmo-tile-001</h2>
-        <button class="x-btn" id="closeEditorBtn" type="button" aria-label="סגור">✕</button>
-      </div>
-      <div class="editor-body">
-        <div class="editor-shell">
-          <section class="editor-main">
-            <div class="editor-section-title">tile editor</div>
-            <div class="editor-grid">
-              <label>Client / קו לקוח
-                <input id="tileClientInput" type="text" placeholder="Client" class="field-ltr" />
-              </label>
-              <label>Brand / מותג
-                <input id="tileBrandInput" type="text" placeholder="Brand" class="field-ltr" />
-              </label>
-              <label>Project name / שם פרויקט
-                <textarea id="tileTitleInput" placeholder="שם הפרויקט שיופיע באריח"></textarea>
-              </label>
-              <label>Short description / תיאור קצר
-                <textarea id="tileDescInput" placeholder="תיאור קצר ומדויק לאריח"></textarea>
-              </label>
-              <label>Project link / קישור
-                <input id="tileLinkInput" type="text" placeholder="https://example.com" class="field-ltr" />
-              </label>
-              <label>Lightbox title / כותרת ללייטבוקס
-                <textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
-              </label>
-              <label>Lightbox text / טקסט ללייטבוקס
-                <textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
-              </label>
-              <label>Lightbox link / קישור ללייטבוקס
-                <input id="tileLbLinkInput" type="text" placeholder="אם ריק — ישתמש בקישור הראשי" class="field-ltr" />
-              </label>
-            </div>
-
-            <div class="editor-options-row">
-              <label class="checkline">
-                <input id="showLinkInTileInput" type="checkbox" />
-                Show link in tile
-              </label>
-              <label class="checkline">
-                <input id="openInNewTabInput" type="checkbox" checked />
-                Open link in new tab
-              </label>
-            </div>
-
-            <div class="editor-actions">
-              <button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
-              <input id="fileInput" type="file" hidden multiple accept="image/*,video/*,.gif" />
-              <button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
-              <button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
-              <button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
-            </div>
-
-            <div class="dropzone" id="dropzone">
-              גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
-              <div class="note" style="margin-top:8px;">
-                לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
-              </div>
-            </div>
-          </section>
-
-          <section class="layers-zone">
-            <div class="editor-section-title">sub items</div>
-            <div class="note">
-              גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
-            </div>
-
-            <section class="layers-list" id="layersList"></section>
-          </section>
-        </div>
-      </div>
-    </div>
-  </dialog>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
+<section class="editor-section editor-section-layers">
+<div class="editor-section-head">
+<h3>Sub-items</h3>
+<p>שורות מדיה מדויקות יותר: preview, drag, טקסט נפרד, סדר ותצוגה.</p>
+</div>
+<section class="layers-list" id="layersList"></section>
+</section>
+</div>
+</div>
+</dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3005';
+      const VERSION = 'CRMO_v3028';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
-      const LOCAL_CONN_KEY = 'CRMO_V3005_CONNECTION';
-      const LOCAL_TILE_KEY = 'CRMO_V3005_TILE';
+      const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
+      const LOCAL_TILE_KEY = 'CRMO_SMART_TILE';
       const TOUCH_OVERLAY_MS = 1600;
 
       const APP_CONNECTION_DEFAULTS = Object.freeze({
@@ -1145,7 +1972,7 @@
         anonKey: 'sb_publishable_iy8PYn5zkjZb6I7YQtW8Bg_w8eKvrWs',
         table: 'crmo_site_config',
         keyColumn: 'key',
-        rowKey: 'crmo_v3000_tile_demo',
+        rowKey: 'crmo_v3018_tile_demo',
         payloadColumn: 'payload'
       });
 
@@ -1157,11 +1984,8 @@
         ratio: '16:9',
         meta: {
           client: '',
-          brand: ''
-        },
-        settings: {
-          showLinkInTile: true,
-          openInNewTab: true
+          brand: '',
+          tags: []
         },
         overlay: {
           title: 'כותרת ראשית של האריח',
@@ -1173,20 +1997,49 @@
           desc: '',
           link: ''
         },
+        display: {
+          showLinkInTile: true,
+          openLinkInNewTab: true,
+          multiItemMode: true,
+          showLike: true,
+          showLikeCount: true,
+          likeCount: 0
+        },
+        verifiedOnServer: false,
+        serverVerifiedAt: '',
+        hooks: {
+          tileTags: [],
+          structuredMeta: {},
+          lightboxReady: true
+        },
         layers: []
       };
 
       let state = loadLocalTile() || structuredClone(DEFAULT_STATE);
       let currentLayerIndex = 0;
+      let currentTileIndex = 0;
       let editorDraft = null;
       let supabaseClient = null;
       let session = null;
       let overlayTouchTimer = null;
+      let viewerLiked = false;
+      let authSubscription = null;
+      let bootCycleId = 0;
+      let lastCloudWriteAt = '';
+      let lastServerVerifyAt = '';
+      let lastServerVerifyResult = 'local draft';
+      let saveInFlight = false;
+      let loginInFlight = false;
+      const diagEntries = [];
 
       const $ = (id) => document.getElementById(id);
       const els = {
+        openAuthModalBtn: $('openAuthModalBtn'),
+        loginForm: $('loginForm'),
         emailInput: $('emailInput'),
         passwordInput: $('passwordInput'),
+        passwordToggleBtn: $('passwordToggleBtn'),
+        passwordToggleIcon: $('passwordToggleIcon'),
         loginBtn: $('loginBtn'),
         logoutBtn: $('logoutBtn'),
         saveConnBtn: $('saveConnBtn'),
@@ -1199,9 +2052,20 @@
         payloadColumnInput: $('payloadColumnInput'),
         sessionLabel: $('sessionLabel'),
         statusLabel: $('statusLabel'),
+        runConnTestBtn: $('runConnTestBtn'),
+        runSmokeBtn: $('runSmokeBtn'),
+        copyDiagBtn: $('copyDiagBtn'),
+        diagSummary: $('diagSummary'),
+        diagRuntime: $('diagRuntime'),
+        diagLog: $('diagLog'),
         adminDashboard: $('adminDashboard'),
         adminSyncState: $('adminSyncState'),
+        serverVerifyPill: $('serverVerifyPill'),
         authNote: $('authNote'),
+        authFeedback: $('authFeedback'),
+        showLikeInput: $('showLikeInput'),
+        showLikeCountInput: $('showLikeCountInput'),
+        likeCountInput: $('likeCountInput'),
         adminUserEmail: $('adminUserEmail'),
         adminVersionPill: $('adminVersionPill'),
         adminTileId: $('adminTileId'),
@@ -1209,25 +2073,38 @@
         tile: $('tile'),
         editBtn: $('editBtn'),
         tileMediaHost: $('tileMediaHost'),
+        tileMediaStage: $('tileMediaStage'),
         tileFallback: $('tileFallback'),
-        tileTouchInfo: $('tileTouchInfo'),
-        tileInfoKicker: $('tileInfoKicker'),
-        tileInfoTitle: $('tileInfoTitle'),
-        tileInfoDesc: $('tileInfoDesc'),
+        tileTouchBar: $('tileTouchBar'),
+        tileTouchKicker: $('tileTouchKicker'),
+        tileTouchDesc: $('tileTouchDesc'),
+        tileTouchTitle: $('tileTouchTitle'),
+        tileTouchCount: $('tileTouchCount'),
+        tileTouchLikeWrap: $('tileTouchLikeWrap'),
+        tileTouchLikeBtn: $('tileTouchLikeBtn'),
+        tileTouchLikeCount: $('tileTouchLikeCount'),
+        tileTouchInfoBtn: $('tileTouchInfoBtn'),
         tilePrevBtn: $('tilePrevBtn'),
         tileNextBtn: $('tileNextBtn'),
-        tileLayerCounter: $('tileLayerCounter'),
         tileDots: $('tileDots'),
+        tileOverlay: $('tileOverlay'),
+        tileActionLine: $('tileActionLine'),
+        tileOverlayLikeWrap: $('tileOverlayLikeWrap'),
+        tileOverlayLikeBtn: $('tileOverlayLikeBtn'),
+        tileOverlayLikeCount: $('tileOverlayLikeCount'),
+        ovKicker: $('ovKicker'),
         ovTitle: $('ovTitle'),
         ovDesc: $('ovDesc'),
         ovLink: $('ovLink'),
         tileIdLabel: $('tileIdLabel'),
         layerCountLabel: $('layerCountLabel'),
+        tileVerifyBadge: $('tileVerifyBadge'),
         footerVersionLabel: $('footerVersionLabel'),
         lightboxDialog: $('lightboxDialog'),
         closeLightboxBtn: $('closeLightboxBtn'),
         lightboxMediaHost: $('lightboxMediaHost'),
         lightboxFallback: $('lightboxFallback'),
+        lbKicker: $('lbKicker'),
         lbTitle: $('lbTitle'),
         lbDesc: $('lbDesc'),
         lbLink: $('lbLink'),
@@ -1245,7 +2122,7 @@
         tileLbDescInput: $('tileLbDescInput'),
         tileLbLinkInput: $('tileLbLinkInput'),
         showLinkInTileInput: $('showLinkInTileInput'),
-        openInNewTabInput: $('openInNewTabInput'),
+        openLinkInNewTabInput: $('openLinkInNewTabInput'),
         pickFilesBtn: $('pickFilesBtn'),
         fileInput: $('fileInput'),
         saveTileBtn: $('saveTileBtn'),
@@ -1255,20 +2132,275 @@
         layersList: $('layersList')
       };
 
+
+      function logDiag(message, meta = null) {
+        const stamp = new Date().toISOString().replace('T', ' ').replace('Z', '');
+        const line = meta ? `[${stamp}] ${message} :: ${JSON.stringify(meta)}` : `[${stamp}] ${message}`;
+        diagEntries.unshift(line);
+        while (diagEntries.length > 60) diagEntries.pop();
+        if (els.diagLog) els.diagLog.textContent = diagEntries.join('\n');
+        if (meta) {
+          try { console.debug('[CRMO_v3028]', message, meta); } catch (_) {}
+        } else {
+          try { console.debug('[CRMO_v3028]', message); } catch (_) {}
+        }
+      }
+
+      function setSyncState(text) {
+        if (els.adminSyncState) els.adminSyncState.textContent = text;
+      }
+
+      function updatePasswordToggleUI() {
+        const isVisible = els.passwordInput?.type === 'text';
+        if (els.passwordToggleBtn) {
+          els.passwordToggleBtn.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+          els.passwordToggleBtn.setAttribute('aria-label', isVisible ? 'הסתר סיסמה' : 'הצג סיסמה');
+          els.passwordToggleBtn.title = isVisible ? 'הסתר סיסמה' : 'הצג או הסתר סיסמה';
+        }
+        if (els.passwordToggleIcon) {
+          els.passwordToggleIcon.innerHTML = isVisible
+            ? '<path fill="currentColor" d="M2.1 3.51 20.49 21.9l1.41-1.41-3.1-3.1A12.62 12.62 0 0 0 23 12c-1.73-3.89-5.77-7-11-7-1.96 0-3.76.43-5.33 1.2L3.51 2.1 2.1 3.51ZM12 7c3.82 0 6.88 2.06 8.65 5-.74 1.23-1.72 2.33-2.87 3.2l-2.2-2.2a3.99 3.99 0 0 0-4.58-4.58L8.96 6.38A10.31 10.31 0 0 1 12 7Zm0 10c-3.82 0-6.88-2.06-8.65-5a11.83 11.83 0 0 1 2.88-3.2l1.77 1.77A3.96 3.96 0 0 0 8 12a4 4 0 0 0 4 4c.49 0 .96-.09 1.39-.24l1.84 1.84c-1 .26-2.08.4-3.23.4Z"/>'
+            : '<path fill="currentColor" d="M12 5c5.23 0 9.27 3.11 11 7-1.73 3.89-5.77 7-11 7S2.73 15.89 1 12c1.73-3.89 5.77-7 11-7Zm0 2C8.18 7 5.12 9.06 3.35 12 5.12 14.94 8.18 17 12 17s6.88-2.06 8.65-5C18.88 9.06 15.82 7 12 7Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"/>';
+        }
+      }
+
+      function togglePasswordVisibility() {
+        if (!els.passwordInput) return;
+        els.passwordInput.type = els.passwordInput.type === 'password' ? 'text' : 'password';
+        updatePasswordToggleUI();
+      }
+
+      function setSaveButtonBusy(isBusy) {
+        saveInFlight = !!isBusy;
+        if (els.saveTileBtn) {
+          els.saveTileBtn.disabled = !!isBusy;
+          els.saveTileBtn.textContent = isBusy ? 'שומר...' : 'שמור מקומי + ענן';
+        }
+      }
+
+      function renderVerificationBadge() {
+        const verifiedAt = state?.serverVerifiedAt || lastServerVerifyAt || '';
+        let text = 'LOCAL DRAFT';
+        let mode = 'local';
+        if (lastServerVerifyResult === 'verified' && verifiedAt) {
+          text = 'OK · VERIFIED';
+          mode = 'verified';
+        } else if (lastServerVerifyResult === 'saving') {
+          text = 'SAVING...';
+          mode = 'pending';
+        } else if (lastServerVerifyResult === 'cloud write ok') {
+          text = 'VERIFYING...';
+          mode = 'pending';
+        } else if (lastServerVerifyResult === 'not verified') {
+          text = 'PENDING SAVE';
+          mode = 'pending';
+        } else if (lastServerVerifyResult === 'local only') {
+          text = 'LOCAL ONLY';
+          mode = 'local';
+        } else if (lastServerVerifyResult === 'verification failed') {
+          text = 'VERIFY FAILED';
+          mode = 'pending';
+        }
+        if (els.serverVerifyPill) {
+          els.serverVerifyPill.textContent = `server: ${text}${verifiedAt ? ' · ' + verifiedAt.replace('T', ' ').replace('Z', '') : ''}`;
+        }
+        if (els.tileVerifyBadge) {
+          els.tileVerifyBadge.textContent = text;
+          els.tileVerifyBadge.className = `server-badge ${mode === 'verified' ? 'is-verified' : mode === 'pending' ? 'is-pending' : 'is-local'}`;
+          els.tileVerifyBadge.title = verifiedAt ? `verified at ${verifiedAt}` : text;
+        }
+      }
+
+      function markVerification(result, verifiedAt = '') {
+        lastServerVerifyResult = result || 'not verified';
+        lastServerVerifyAt = verifiedAt || '';
+        renderRuntimeInfo();
+        renderVerificationBadge();
+      }
+
+      function stampLocalDraft(payload) {
+        if (payload && typeof payload === 'object') {
+          payload.verifiedOnServer = false;
+          payload.serverVerifiedAt = '';
+        }
+      }
+
+      async function verifyCloudPayload(expectedPayload) {
+        const cloud = await withTimeout(readCloudPayload(), 12000, 'verifyCloudPayload');
+        if (!cloud) throw new Error('לא נמצאה שורת payload אחרי שמירה');
+        const expected = JSON.stringify(normalizeState(expectedPayload));
+        const actual = JSON.stringify(normalizeState(cloud));
+        if (expected !== actual) {
+          throw new Error('payload mismatch אחרי read-back');
+        }
+        const verifiedAt = new Date().toISOString();
+        if (expectedPayload && typeof expectedPayload === 'object') {
+          expectedPayload.verifiedOnServer = true;
+          expectedPayload.serverVerifiedAt = verifiedAt;
+        }
+        if (state && JSON.stringify(normalizeState(state)) === expected) {
+          state.verifiedOnServer = true;
+          state.serverVerifiedAt = verifiedAt;
+          saveLocalTile(state);
+          applyStateToUI(state);
+        }
+        markVerification('verified', verifiedAt);
+        logDiag('server verification passed', { verifiedAt, updatedAt: expectedPayload?.updatedAt || '' });
+        return { verifiedAt, cloud };
+      }
+
+      function withTimeout(promise, ms, label) {
+        return Promise.race([
+          promise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} timeout אחרי ${ms}ms`)), ms))
+        ]);
+      }
+
+      function safeMessage(err) {
+        if (!err) return 'Unknown error';
+        if (typeof err === 'string') return err;
+        return err.message || err.error_description || err.details || JSON.stringify(err);
+      }
+
+      function looksLikeMissingColumn(err, columnName) {
+        const msg = safeMessage(err).toLowerCase();
+        return msg.includes(String(columnName || '').toLowerCase()) && (msg.includes('column') || msg.includes('schema cache') || msg.includes('does not exist'));
+      }
+
+      function collectRuntimeInfo() {
+        const conn = getConnectionSettings();
+        return {
+          version: VERSION,
+          runtime: window.location.protocol === 'file:' ? 'file://' : 'web',
+          urlConfigured: !!conn.url,
+          keyConfigured: !!conn.anonKey,
+          table: conn.table || '',
+          rowKeyColumn: conn.keyColumn || 'key',
+          rowKeyValue: conn.rowKey || '',
+          payloadColumn: conn.payloadColumn || 'payload',
+          session: !!session,
+          user: session?.user?.email || '',
+          supabaseLib: !!window.supabase?.createClient,
+          lastCloudWriteAt,
+          lastServerVerifyAt,
+          lastServerVerifyResult
+        };
+      }
+
+      function renderRuntimeInfo() {
+        if (!els.diagRuntime) return;
+        const info = collectRuntimeInfo();
+        els.diagRuntime.textContent =
+          `runtime=${info.runtime} | table=${info.table || '-'} | rowKey=${info.rowKeyValue || '-'} | session=${info.session ? 'yes' : 'no'} | supabaseLib=${info.supabaseLib ? 'yes' : 'no'} | verify=${info.lastServerVerifyResult || 'not verified'}`;
+      }
+
+      async function copyDiagnostics() {
+        const info = collectRuntimeInfo();
+        const text = [
+          `version=${info.version}`,
+          `runtime=${info.runtime}`,
+          `urlConfigured=${info.urlConfigured}`,
+          `keyConfigured=${info.keyConfigured}`,
+          `table=${info.table}`,
+          `rowKeyColumn=${info.rowKeyColumn}`,
+          `rowKeyValue=${info.rowKeyValue}`,
+          `payloadColumn=${info.payloadColumn}`,
+          `session=${info.session}`,
+          `user=${info.user}`,
+          `lastCloudWriteAt=${info.lastCloudWriteAt}`,
+          `lastServerVerifyAt=${info.lastServerVerifyAt}`,
+          `lastServerVerifyResult=${info.lastServerVerifyResult}`,
+          '',
+          'logs:',
+          diagEntries.join('\n')
+        ].join('\n');
+        try {
+          await navigator.clipboard.writeText(text);
+          if (els.diagSummary) els.diagSummary.textContent = 'הדיאגנוסטיקה הועתקה ללוח.';
+        } catch (err) {
+          if (els.diagSummary) els.diagSummary.textContent = 'העתקה נכשלה: ' + safeMessage(err);
+        }
+      }
+
+      async function runConnectionTest() {
+        renderRuntimeInfo();
+        if (els.diagSummary) els.diagSummary.textContent = 'מריץ בדיקת Supabase...';
+        const info = collectRuntimeInfo();
+        logDiag('connection test started', info);
+        if (!info.supabaseLib) {
+          const msg = 'ספריית Supabase לא נטענה.';
+          if (els.diagSummary) els.diagSummary.textContent = msg;
+          logDiag(msg);
+          return;
+        }
+        if (!info.urlConfigured || !info.keyConfigured) {
+          const msg = 'חסרות הגדרות URL / publishable key.';
+          if (els.diagSummary) els.diagSummary.textContent = msg;
+          logDiag(msg);
+          return;
+        }
+        try {
+          const cloud = await withTimeout(readCloudPayload(), 12000, 'readCloudPayload');
+          const layerCount = Array.isArray(cloud?.layers) ? cloud.layers.length : 0;
+          const msg = cloud
+            ? `בדיקת Supabase הצליחה. נטען payload עם ${layerCount} שכבות.`
+            : 'חיבור הצליח אבל לא נמצאה שורת payload.';
+          if (els.diagSummary) els.diagSummary.textContent = msg;
+          setSyncState(cloud ? 'sync: cloud reachable' : 'sync: cloud empty');
+          logDiag('connection test ok', { foundRow: !!cloud, layerCount });
+        } catch (err) {
+          const msg = 'בדיקת Supabase נכשלה: ' + safeMessage(err);
+          if (els.diagSummary) els.diagSummary.textContent = msg;
+          setSyncState('sync: cloud error');
+          logDiag('connection test failed', { message: safeMessage(err) });
+        }
+      }
+
+      async function runSmokeTests() {
+        renderRuntimeInfo();
+        const results = [];
+        const push = (name, ok, details = '') => results.push({ name, ok, details });
+        push('dashboard element', !!els.adminDashboard);
+        push('header exists', !!document.querySelector('.site-header'));
+        push('single tile exists', !!els.tile);
+        push('edit button exists', !!els.editBtn);
+        push('lightbox exists', !!els.lightboxDialog);
+        push('editor exists', !!els.editorDialog);
+        push('supabase library', !!window.supabase?.createClient);
+        push('connection url configured', !!getConnectionSettings().url);
+        push('publishable key configured', !!getConnectionSettings().anonKey);
+        push('version synced in footer', (els.footerVersionLabel?.textContent || '').includes(VERSION));
+        const passCount = results.filter((x) => x.ok).length;
+        const msg = `Smoke: ${passCount}/${results.length} עברו`;
+        if (els.diagSummary) els.diagSummary.textContent = msg;
+        logDiag(msg, results);
+      }
+
+
       hydrateConnectionInputs();
+      updatePasswordToggleUI();
       applyStateToUI(state);
       syncVersionLabels();
+      setSaveButtonBusy(false);
+      renderRuntimeInfo();
+      logDiag('boot start', collectRuntimeInfo());
       wireEvents();
       initSupabase();
 
       async function initSupabase() {
         const conn = getConnectionSettings();
+        const cycleId = ++bootCycleId;
+        renderRuntimeInfo();
         if (!conn.url || !conn.anonKey || !window.supabase?.createClient) {
-          setStatus('חיבור Supabase קבוע נטען מהקובץ', '');
+          logDiag('initSupabase skipped - connection not configured');
+          setStatus('חיבור Supabase לא הוגדר או הספריה לא נטענה', '');
+          setSyncState('sync: local only');
           updateAuthUI(false);
           return;
         }
         try {
+          setSyncState('sync: booting');
+          setStatus('מאתחל Supabase...', '');
           supabaseClient = window.supabase.createClient(conn.url, conn.anonKey, {
             auth: {
               persistSession: true,
@@ -1276,23 +2408,43 @@
               detectSessionInUrl: true
             }
           });
-          const result = await supabaseClient.auth.getSession();
+
+          if (authSubscription?.unsubscribe) {
+            try { authSubscription.unsubscribe(); } catch (_) {}
+          }
+
+          const result = await withTimeout(supabaseClient.auth.getSession(), 10000, 'getSession');
+          if (cycleId !== bootCycleId) return;
           session = result?.data?.session || null;
           updateAuthUI(!!session);
+          renderRuntimeInfo();
+          logDiag('initSupabase session resolved', { hasSession: !!session, user: session?.user?.email || null });
 
-          supabaseClient.auth.onAuthStateChange(async (_event, newSession) => {
+          const authResult = supabaseClient.auth.onAuthStateChange((_event, newSession) => {
             session = newSession || null;
             updateAuthUI(!!session);
+            renderRuntimeInfo();
+            logDiag('auth state changed', { event: _event, hasSession: !!session, user: session?.user?.email || null });
             if (session) {
-              await loadFromCloudAndMerge(true);
+              loadFromCloudAndMerge(true).catch((err) => {
+                logDiag('post-auth cloud load failed', { message: safeMessage(err) });
+              });
+            } else {
+              setSyncState('sync: local only');
             }
           });
+          authSubscription = authResult?.data?.subscription || authResult?.subscription || authResult || null;
 
           if (session) {
             await loadFromCloudAndMerge(true);
+          } else {
+            setStatus('מצב צפייה. אין session פעיל.', '');
+            setSyncState('sync: local only');
           }
         } catch (err) {
-          console.error('[CRMO_v3005] initSupabase failed', err);
+          console.error('[CRMO_v3028] initSupabase failed', err);
+          logDiag('initSupabase failed', { message: safeMessage(err) });
+          setSyncState('sync: init error');
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
           updateAuthUI(false);
         }
@@ -1305,29 +2457,71 @@
           await initSupabase();
         });
 
-        els.loginBtn.addEventListener('click', login);
+        els.openAuthModalBtn?.addEventListener('click', () => {
+          window.CRMOAuthModal?.open('login');
+        });
         els.logoutBtn.addEventListener('click', logout);
         els.refreshBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
+        els.runConnTestBtn?.addEventListener('click', runConnectionTest);
+        els.runSmokeBtn?.addEventListener('click', runSmokeTests);
+        els.copyDiagBtn?.addEventListener('click', copyDiagnostics);
         document.querySelectorAll('[data-dashboard-tab]').forEach((tabBtn) => {
           tabBtn.addEventListener('click', () => setDashboardTab(tabBtn.dataset.dashboardTab || 'status'));
         });
         els.editBtn.addEventListener('click', openEditor);
         els.closeEditorBtn.addEventListener('click', closeEditor);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
-        els.tilePrevBtn?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          shiftTileMedia(-1);
-        });
-        els.tileNextBtn?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          shiftTileMedia(1);
-        });
         els.tile.addEventListener('click', handleTileClick);
         els.tile.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openLightbox(currentLayerIndex);
+            openLightbox(currentTileIndex);
           }
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            shiftTile(-1);
+          }
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            shiftTile(1);
+          }
+        });
+        els.tilePrevBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          shiftTile(-1);
+          revealTileOverlay();
+        });
+        els.tileNextBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          shiftTile(1);
+          revealTileOverlay();
+        });
+        els.tileTouchInfoBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          revealTileOverlay(true);
+        });
+        [els.tileTouchLikeBtn, els.tileOverlayLikeBtn].forEach((btn) => {
+          btn?.addEventListener('click', toggleViewerLike);
+        });
+        els.showLikeInput?.addEventListener('change', () => {
+          state.display = { ...(state.display || {}), showLike: !!els.showLikeInput.checked };
+          renderLikeUI();
+          persistLocalTile();
+          setStatus('תצוגת הלייק עודכנה מקומית', '');
+        });
+        els.showLikeCountInput?.addEventListener('change', () => {
+          state.display = { ...(state.display || {}), showLikeCount: !!els.showLikeCountInput.checked };
+          renderLikeUI();
+          persistLocalTile();
+          setStatus('תצוגת מונה הלייקים עודכנה מקומית', '');
+        });
+        els.likeCountInput?.addEventListener('change', () => {
+          const nextCount = Math.max(0, Number(els.likeCountInput.value || 0) || 0);
+          state.display = { ...(state.display || {}), likeCount: nextCount };
+          if (!nextCount) viewerLiked = false;
+          renderLikeUI();
+          persistLocalTile();
+          setStatus('מונה הלייקים עודכן מקומית', '');
         });
         els.pickFilesBtn.addEventListener('click', () => els.fileInput.click());
         els.fileInput.addEventListener('change', (e) => addFiles(e.target.files));
@@ -1371,50 +2565,265 @@
       }
 
       function handleTileClick(e) {
-        if (state.layers.length > 1 && e.pointerType === 'touch') {
-          els.tile.classList.add('touch-show-overlay');
-          clearTimeout(overlayTouchTimer);
-          overlayTouchTimer = setTimeout(() => els.tile.classList.remove('touch-show-overlay'), TOUCH_OVERLAY_MS);
+        if (e.target.closest('#editBtn, #tilePrevBtn, #tileNextBtn, #tileTouchInfoBtn, #tileTouchLikeBtn, #tileOverlayLikeBtn, #tileDots button, #ovLink')) return;
+        if (getVisibleLayers().length > 1) els.tile.classList.add('touch-nav');
+        if (e.pointerType === 'touch') {
+          if (!els.tile.classList.contains('touch-show-overlay')) {
+            revealTileOverlay(true);
+            return;
+          }
         }
-        openLightbox(currentLayerIndex);
+        openLightbox(currentTileIndex);
       }
 
-      async function login() {
-        if (!supabaseClient) {
-          setStatus('אין חיבור Supabase פעיל. שמור קודם URL ו-anon key', 'error');
-          return;
-        }
-        const email = els.emailInput.value.trim();
-        const password = els.passwordInput.value;
-        if (!email || !password) {
-          setStatus('יש להזין אימייל וסיסמה', 'error');
-          return;
-        }
-        try {
-          setStatus('מתחבר...', '');
-          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          setStatus('התחברות הצליחה', 'success');
-        } catch (err) {
-          console.error('[CRMO_v3005] login failed', err);
-          setStatus('התחברות נכשלה: ' + safeMessage(err), 'error');
-        }
+      function revealTileOverlay(holdLonger = false) {
+        els.tile.classList.add('touch-show-overlay');
+        clearTimeout(overlayTouchTimer);
+        overlayTouchTimer = setTimeout(() => els.tile.classList.remove('touch-show-overlay'), holdLonger ? TOUCH_OVERLAY_MS * 2 : TOUCH_OVERLAY_MS);
       }
 
-      async function logout() {
+      function shiftTile(delta) {
+        const visibleLayers = getVisibleLayers();
+        if (!visibleLayers.length) return;
+        currentTileIndex = (currentTileIndex + delta + visibleLayers.length) % visibleLayers.length;
+        renderTile();
+        renderVerificationBadge();
+      }
+
+      function goToTileLayer(index) {
+        const visibleLayers = getVisibleLayers();
+        if (!visibleLayers.length) return;
+        currentTileIndex = clamp(index, 0, visibleLayers.length - 1);
+        renderTile();
+      }
+
+      function setAuthFeedback(message, kind = '') {
+        if (!els.authFeedback) return;
+        els.authFeedback.textContent = message || '';
+        els.authFeedback.className = 'auth-feedback' + (kind ? ' ' + kind : '');
+      }
+
+      
+function setLoginBusy(isBusy) {
+  loginInFlight = !!isBusy;
+  if (els.openAuthModalBtn) {
+    els.openAuthModalBtn.disabled = !!isBusy;
+    els.openAuthModalBtn.textContent = isBusy ? 'מתחבר...' : 'התחבר / הרשמה';
+  }
+  if (window.CRMOAuthModal?.setBusy) {
+    window.CRMOAuthModal.setBusy(!!isBusy);
+  }
+}
+
+
+      
+async function loginWithPassword(email, password, remember = true) {
+  if (loginInFlight) {
+    setAuthFeedback('התחברות כבר בתהליך...', '');
+    return { ok: false, message: 'התחברות כבר בתהליך...' };
+  }
+  if (!supabaseClient) {
+    const message = 'אין חיבור Supabase פעיל. שמור קודם URL ו-anon key.';
+    setStatus(message, 'error');
+    setAuthFeedback(message, 'error');
+    return { ok: false, message };
+  }
+  email = String(email || '').trim();
+  password = String(password || '');
+  if (!email || !password) {
+    const message = 'יש להזין אימייל וסיסמה.';
+    setStatus(message, 'error');
+    setAuthFeedback(message, 'error');
+    return { ok: false, message };
+  }
+  try {
+    setLoginBusy(true);
+    localStorage.setItem('CRMO_AUTH_REMEMBER_PREF', remember ? '1' : '0');
+    setAuthFeedback('בודק פרטי התחברות...', '');
+    setStatus('מתחבר...', '');
+    logDiag('login requested', { email, remember: !!remember });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    session = data?.session || session;
+    setAuthFeedback('התחברות הצליחה.', 'success');
+    setStatus('התחברות הצליחה', 'success');
+    logDiag('login succeeded', { user: data?.user?.email || email });
+    setSyncState('sync: session active');
+    if (session) updateAuthUI(true);
+    return { ok: true, message: 'התחברות הצליחה.', session };
+  } catch (err) {
+    const message = safeMessage(err);
+    console.error('[CRMO_v3028] login failed', err);
+    logDiag('login failed', { message });
+    setStatus('התחברות נכשלה: ' + message, 'error');
+    setAuthFeedback('התחברות נכשלה: ' + message, 'error');
+    return { ok: false, message };
+  } finally {
+    setLoginBusy(false);
+  }
+}
+
+async function signUpWithPassword(email, password, remember = true, profile = null) {
+  if (!supabaseClient) {
+    const message = 'אין חיבור Supabase פעיל. שמור קודם URL ו-anon key.';
+    setStatus(message, 'error');
+    setAuthFeedback(message, 'error');
+    return { ok: false, message };
+  }
+  email = String(email || '').trim();
+  password = String(password || '');
+  if (!email || !password) {
+    const message = 'יש להזין אימייל וסיסמה.';
+    return { ok: false, message };
+  }
+  try {
+    localStorage.setItem('CRMO_AUTH_REMEMBER_PREF', remember ? '1' : '0');
+    setStatus('יוצר חשבון...', '');
+    const metadata = profile && typeof profile === 'object' ? {
+      first_name: profile.firstName || '',
+      last_name: profile.lastName || ''
+    } : undefined;
+    const { data, error } = await supabaseClient.auth.signUp({ email, password, options: metadata ? { data: metadata } : undefined });
+    if (error) throw error;
+    const hasSession = !!data?.session;
+    if (hasSession) session = data.session;
+    updateAuthUI(!!session);
+    const message = hasSession ? 'ההרשמה הושלמה ואתה מחובר.' : 'ההרשמה נשלחה. בדוק את האימייל להמשך.';
+    setAuthFeedback(message, 'success');
+    setStatus(message, 'success');
+    return { ok: true, message, session };
+  } catch (err) {
+    const message = safeMessage(err);
+    setAuthFeedback('ההרשמה נכשלה: ' + message, 'error');
+    setStatus('ההרשמה נכשלה: ' + message, 'error');
+    return { ok: false, message };
+  }
+}
+
+
+async function loginWithProvider(provider) {
+  if (!supabaseClient) {
+    return { ok: false, message: 'חיבור Supabase לא הוגדר.' };
+  }
+  const normalized = provider === 'linkedin' ? 'linkedin_oidc' : provider;
+  try {
+    const redirectTo = location.href;
+    const { error } = await supabaseClient.auth.signInWithOAuth({ provider: normalized, options: { redirectTo } });
+    if (error) throw error;
+    return { ok: true, message: 'מועבר להתחברות…' };
+  } catch (err) {
+    return { ok: false, message: safeMessage(err) || 'התחברות חברתית נכשלה.' };
+  }
+}
+
+async function requestPasswordReset(email) {
+  if (!supabaseClient) {
+    const message = 'אין חיבור Supabase פעיל. שמור קודם URL ו-anon key.';
+    return { ok: false, message };
+  }
+  email = String(email || '').trim();
+  if (!email) {
+    return { ok: false, message: 'יש להזין אימייל.' };
+  }
+  try {
+    const redirectTo = location.href;
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) throw error;
+    const message = 'נשלח מייל לאיפוס סיסמה, אם החשבון קיים.';
+    setAuthFeedback(message, 'success');
+    setStatus(message, 'success');
+    return { ok: true, message };
+  } catch (err) {
+    const message = safeMessage(err);
+    setAuthFeedback('איפוס סיסמה נכשל: ' + message, 'error');
+    setStatus('איפוס סיסמה נכשל: ' + message, 'error');
+    return { ok: false, message };
+  }
+}
+
+async function login() {
+  if (window.CRMOAuthModal?.open) {
+    window.CRMOAuthModal.open('login');
+    return;
+  }
+  return { ok: false, message: 'מודאל הכניסה לא זמין.' };
+}
+
+async function logout() {
         if (!supabaseClient) {
           updateAuthUI(false);
           return;
         }
         try {
           await supabaseClient.auth.signOut();
+          logDiag('logout succeeded');
           session = null;
           updateAuthUI(false);
+          setAuthFeedback('התנתקת.', '');
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3005] logout failed', err);
+          console.error('[CRMO_v3028] logout failed', err);
+          logDiag('logout failed', { message: safeMessage(err) });
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
+      }
+
+
+      function getLikeCount() {
+        return Math.max(0, Number(state.display?.likeCount || 0) || 0);
+      }
+
+      function setViewerLiked(nextLiked) {
+        const liked = !!nextLiked;
+        if (liked === viewerLiked) return;
+        const delta = liked ? 1 : -1;
+        viewerLiked = liked;
+        const nextCount = Math.max(0, getLikeCount() + delta);
+        state.display = { ...(state.display || {}), likeCount: nextCount };
+        renderLikeUI();
+        persistLocalTile();
+      }
+
+      function toggleViewerLike(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        if (!(state.display?.showLike !== false)) return;
+        setViewerLiked(!viewerLiked);
+        revealTileOverlay();
+      }
+
+      function applyDashboardLikeControls() {
+        if (els.showLikeInput) els.showLikeInput.checked = state.display?.showLike !== false;
+        if (els.showLikeCountInput) els.showLikeCountInput.checked = state.display?.showLikeCount !== false;
+        if (els.likeCountInput) els.likeCountInput.value = String(getLikeCount());
+      }
+
+      function renderLikeUI() {
+        const showLike = state.display?.showLike !== false;
+        const showLikeCount = showLike && state.display?.showLikeCount !== false;
+        const likeCount = getLikeCount();
+        [els.tileTouchLikeWrap, els.tileOverlayLikeWrap].forEach((node) => {
+          if (node) node.hidden = !showLike;
+        });
+        [els.tileTouchLikeCount, els.tileOverlayLikeCount].forEach((node) => {
+          if (!node) return;
+          node.hidden = !showLikeCount;
+          node.textContent = String(likeCount);
+        });
+        [els.tileTouchLikeBtn, els.tileOverlayLikeBtn].forEach((btn) => {
+          if (!btn) return;
+          btn.hidden = !showLike;
+          btn.classList.toggle('is-liked', viewerLiked);
+          btn.setAttribute('aria-pressed', viewerLiked ? 'true' : 'false');
+          btn.setAttribute('aria-label', viewerLiked ? 'הסר לייק מהאריח' : 'תן לייק לאריח');
+          btn.title = viewerLiked ? 'הסר לייק' : 'לייק';
+        });
+        const showLinkInTile = !!String(els.ovLink?.getAttribute('href') || '').trim() && state.display?.showLinkInTile !== false;
+        els.tile.classList.toggle('has-action-line', showLike || showLinkInTile);
+        if (els.tileActionLine) els.tileActionLine.hidden = !(showLike || showLinkInTile);
+        applyDashboardLikeControls();
       }
 
       function setDashboardTab(name) {
@@ -1426,29 +2835,41 @@
         });
       }
 
-      function updateAuthUI(isLoggedIn) {
-        const email = session?.user?.email || '';
-        els.sessionLabel.textContent = isLoggedIn ? 'מצב: מחובר' : 'מצב: מנותק';
-        els.adminDashboard.classList.toggle('visible', isLoggedIn);
-        els.tileWrap.classList.toggle('editable', isLoggedIn);
-        els.adminSyncState.textContent = isLoggedIn ? 'sync: cloud enabled' : 'sync: local only';
+      
+function updateAuthUI(isLoggedIn) {
+  const email = session?.user?.email || '';
+  els.sessionLabel.textContent = isLoggedIn ? 'מצב: מחובר' : 'מצב: מנותק';
+  els.adminDashboard.classList.toggle('visible', isLoggedIn);
+  els.tileWrap.classList.toggle('editable', isLoggedIn);
+  if (!String(els.adminSyncState.textContent || '').trim()) {
+    els.adminSyncState.textContent = isLoggedIn ? 'sync: cloud enabled' : 'sync: local only';
+  }
 
-        els.loginBtn.hidden = isLoggedIn;
-        els.logoutBtn.hidden = !isLoggedIn;
-        els.emailInput.disabled = isLoggedIn;
-        els.passwordInput.disabled = isLoggedIn;
+  if (els.openAuthModalBtn) els.openAuthModalBtn.hidden = !!isLoggedIn;
+  els.logoutBtn.hidden = !isLoggedIn;
 
-        if (els.authNote) {
-          els.authNote.textContent = isLoggedIn
-            ? 'מחובר. פעולות ניהול, סטטוס חיבור והגדרות מתקדמות עברו לדאשבורד העליון.'
-            : 'מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.';
-        }
+  if (els.authNote) {
+    els.authNote.textContent = isLoggedIn
+      ? 'מחובר. פעולות ניהול, סטטוס חיבור והגדרות מתקדמות עברו לדאשבורד העליון.'
+      : 'מצב צפייה. התחבר כדי לפתוח את הדאשבורד ואת עורך האריח.';
+  }
+  if (isLoggedIn) {
+    setAuthFeedback('מחובר כ־' + (email || 'אדמין') + '.', 'success');
+    try { window.CRMOAuthModal?.close(); } catch (_) {}
+  } else {
+    setAuthFeedback('');
+  }
 
-        if (els.adminUserEmail) {
-          els.adminUserEmail.hidden = !isLoggedIn || !email;
-          els.adminUserEmail.textContent = email || '';
-        }
-      }
+  if (els.adminUserEmail) {
+    els.adminUserEmail.hidden = !isLoggedIn || !email;
+    els.adminUserEmail.textContent = email || '';
+  }
+  if (window.CRMOAuthModal?.setLoggedInState) {
+    window.CRMOAuthModal.setLoggedInState(!!isLoggedIn, email);
+  }
+  renderRuntimeInfo();
+}
+
 
       function openEditor() {
         if (!session) {
@@ -1467,7 +2888,8 @@
       }
 
       function openLightbox(index = 0) {
-        currentLayerIndex = clamp(index, 0, Math.max(state.layers.length - 1, 0));
+        const visibleLayers = getVisibleLayers();
+        currentLayerIndex = clamp(index, 0, Math.max(visibleLayers.length - 1, 0));
         renderLightbox();
         els.lightboxDialog.showModal();
       }
@@ -1477,8 +2899,9 @@
       }
 
       function shiftLightbox(delta) {
-        if (!state.layers.length) return;
-        currentLayerIndex = (currentLayerIndex + delta + state.layers.length) % state.layers.length;
+        const visibleLayers = getVisibleLayers();
+        if (!visibleLayers.length) return;
+        currentLayerIndex = (currentLayerIndex + delta + visibleLayers.length) % visibleLayers.length;
         renderLightbox();
       }
 
@@ -1491,19 +2914,16 @@
         els.tileLbTitleInput.value = data.lightbox?.title || '';
         els.tileLbDescInput.value = data.lightbox?.desc || '';
         els.tileLbLinkInput.value = data.lightbox?.link || '';
-        els.showLinkInTileInput.checked = data.settings?.showLinkInTile !== false;
-        els.openInNewTabInput.checked = data.settings?.openInNewTab !== false;
+        els.showLinkInTileInput.checked = data.display?.showLinkInTile !== false;
+        els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab !== false;
       }
 
       function collectEditorHeader() {
         return {
           meta: {
             client: els.tileClientInput.value.trim(),
-            brand: els.tileBrandInput.value.trim()
-          },
-          settings: {
-            showLinkInTile: !!els.showLinkInTileInput.checked,
-            openInNewTab: !!els.openInNewTabInput.checked
+            brand: els.tileBrandInput.value.trim(),
+            tags: Array.isArray(editorDraft?.meta?.tags) ? editorDraft.meta.tags.slice() : []
           },
           overlay: {
             title: els.tileTitleInput.value,
@@ -1514,30 +2934,67 @@
             title: els.tileLbTitleInput.value,
             desc: els.tileLbDescInput.value,
             link: els.tileLbLinkInput.value.trim()
+          },
+          display: {
+            showLinkInTile: !!els.showLinkInTileInput.checked,
+            openLinkInNewTab: !!els.openLinkInNewTabInput.checked,
+            multiItemMode: editorDraft?.display?.multiItemMode !== false
+          },
+          hooks: {
+            tileTags: Array.isArray(editorDraft?.hooks?.tileTags) ? editorDraft.hooks.tileTags.slice() : [],
+            structuredMeta: editorDraft?.hooks?.structuredMeta || {},
+            lightboxReady: true
           }
         };
       }
+
+      const layerOps = {
+        move(from, to) {
+          if (!editorDraft || from === to || from < 0 || to < 0 || from >= editorDraft.layers.length || to >= editorDraft.layers.length) return false;
+          const [item] = editorDraft.layers.splice(from, 1);
+          editorDraft.layers.splice(to, 0, item);
+          syncLayerOrder(editorDraft.layers);
+          return true;
+        },
+        remove(index) {
+          if (!editorDraft || index < 0 || index >= editorDraft.layers.length) return false;
+          editorDraft.layers.splice(index, 1);
+          syncLayerOrder(editorDraft.layers);
+          if (currentTileIndex >= editorDraft.layers.length) currentTileIndex = Math.max(editorDraft.layers.length - 1, 0);
+          return true;
+        },
+        patch(index, key, value) {
+          if (!editorDraft?.layers?.[index]) return false;
+          editorDraft.layers[index][key] = value;
+          return true;
+        }
+      };
 
       function renderLayersEditor() {
         els.layersList.innerHTML = '';
         editorDraft.layers.forEach((layer, idx) => {
           const card = document.createElement('section');
-          card.className = 'layer-card';
+          const isVisible = layer.isVisible !== false;
+          card.className = 'layer-card' + (isVisible ? '' : ' is-hidden');
           card.draggable = true;
           card.dataset.index = String(idx);
           card.innerHTML = `
             <div class="layer-top">
-              <div class="layer-drag" title="גרור לשינוי סדר">⋮⋮</div>
+              <button class="layer-drag" type="button" aria-label="גרור לשינוי סדר" title="גרור לשינוי סדר"></button>
               <div class="layer-preview">${renderPreviewHTML(layer)}</div>
               <div class="layer-fields">
+                <div class="layer-row-head">
+                  <span class="layer-row-index">#${idx + 1}</span>
+                  <div class="layer-meta-note">${escapeHtml(layer.type)} · ${escapeHtml(layer.name || 'ללא שם')}</div>
+                </div>
                 <label>Sub-item title
-                  <textarea data-field="title">${escapeHtml(layer.title || '')}</textarea>
+                  <textarea data-field="title" dir="auto">${escapeHtml(layer.title || '')}</textarea>
                 </label>
-                <label>Sub-item text
-                  <textarea data-field="desc">${escapeHtml(layer.desc || '')}</textarea>
+                <label>Sub-item description
+                  <textarea data-field="desc" dir="auto">${escapeHtml(layer.desc || '')}</textarea>
                 </label>
-                <label>Sub-item link
-                  <input data-field="link" type="text" class="field-ltr" value="${escapeAttr(layer.link || '')}" />
+                <label>Link
+                  <input data-field="link" type="text" dir="ltr" value="${escapeAttr(layer.link || '')}" />
                 </label>
               </div>
               <div class="layer-controls">
@@ -1546,12 +3003,20 @@
                 <button class="danger-btn" type="button" data-action="remove">מחק</button>
               </div>
             </div>
-            <div class="layer-foot">
-              <label class="checkline">
-                <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
-                Separate text for this sub-item
-              </label>
-              <div class="note">#${idx + 1} · סוג: ${layer.type} · ${layer.name || 'ללא שם'}</div>
+            <div class="layer-bottom">
+              <div class="layer-bottom-right">
+                <label class="checkline">
+                  <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
+                  <span>טקסט נפרד למדיה זו</span>
+                </label>
+                <label class="checkline">
+                  <input type="checkbox" data-field="isVisible" ${isVisible ? 'checked' : ''} />
+                  <span>הצג באריח</span>
+                </label>
+              </div>
+              <div class="layer-bottom-left">
+                <div class="layer-meta-note">order: ${idx + 1}</div>
+              </div>
             </div>
           `;
 
@@ -1559,15 +3024,17 @@
           fields.forEach((field) => {
             field.addEventListener('input', () => {
               const key = field.dataset.field;
-              editorDraft.layers[idx][key] = field.type === 'checkbox' ? field.checked : field.value;
-              if (field.dataset.field === 'title' || field.dataset.field === 'desc' || field.dataset.field === 'link' || field.dataset.field === 'useOwnText') {
-                renderTile();
+              layerOps.patch(idx, key, field.type === 'checkbox' ? field.checked : field.value);
+              if (key === 'isVisible') {
+                card.classList.toggle('is-hidden', !field.checked);
               }
             });
             if (field.type === 'checkbox') {
               field.addEventListener('change', () => {
-                editorDraft.layers[idx][field.dataset.field] = field.checked;
-                renderTile();
+                layerOps.patch(idx, field.dataset.field, field.checked);
+                if (field.dataset.field === 'isVisible') {
+                  card.classList.toggle('is-hidden', !field.checked);
+                }
               });
             }
           });
@@ -1575,19 +3042,26 @@
           card.querySelector('[data-action="up"]').addEventListener('click', () => moveLayer(idx, idx - 1));
           card.querySelector('[data-action="down"]').addEventListener('click', () => moveLayer(idx, idx + 1));
           card.querySelector('[data-action="remove"]').addEventListener('click', () => {
-            editorDraft.layers.splice(idx, 1);
-            if (currentLayerIndex >= editorDraft.layers.length) currentLayerIndex = Math.max(0, editorDraft.layers.length - 1);
-            renderLayersEditor();
-            renderTile();
+            if (layerOps.remove(idx)) renderLayersEditor();
           });
 
-          card.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', String(idx)));
+          const dragHandle = card.querySelector('.layer-drag');
+          dragHandle.addEventListener('mousedown', () => card.draggable = true);
+          dragHandle.addEventListener('touchstart', () => card.draggable = true, { passive: true });
+
+          card.addEventListener('dragstart', (e) => {
+            if (!e.target.closest('.layer-drag')) {
+              e.preventDefault();
+              return;
+            }
+            e.dataTransfer.setData('text/plain', String(idx));
+          });
           card.addEventListener('dragover', (e) => e.preventDefault());
           card.addEventListener('drop', (e) => {
             e.preventDefault();
             const from = Number(e.dataTransfer.getData('text/plain'));
             const to = idx;
-            moveLayer(from, to);
+            if (layerOps.move(from, to)) renderLayersEditor();
           });
 
           els.layersList.appendChild(card);
@@ -1595,12 +3069,13 @@
       }
 
       function moveLayer(from, to) {
-        if (from === to || from < 0 || to < 0 || from >= editorDraft.layers.length || to >= editorDraft.layers.length) return;
-        const [item] = editorDraft.layers.splice(from, 1);
-        editorDraft.layers.splice(to, 0, item);
-        if (currentLayerIndex === from) currentLayerIndex = to;
-        renderLayersEditor();
-        renderTile();
+        if (layerOps.move(from, to)) renderLayersEditor();
+      }
+
+      function syncLayerOrder(layers) {
+        (layers || []).forEach((layer, idx) => {
+          layer.sortOrder = idx + 1;
+        });
       }
 
       async function addFiles(fileList) {
@@ -1620,7 +3095,7 @@
           renderLayersEditor();
           setStatus(`נוספו ${layers.length} מדיות`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3005] addFiles failed', err);
+          console.error('[CRMO_v3028] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -1638,7 +3113,14 @@
           title: '',
           desc: '',
           link: '',
-          useOwnText: false
+          useOwnText: false,
+          isVisible: true,
+          sortOrder: (editorDraft?.layers?.length || 0) + 1,
+          tags: [],
+          hooks: {
+            subLink: '',
+            subTags: []
+          }
         };
       }
 
@@ -1650,13 +3132,16 @@
         }
         const header = collectEditorHeader();
         editorDraft.meta = header.meta;
-        editorDraft.settings = header.settings;
         editorDraft.overlay = header.overlay;
         editorDraft.lightbox = header.lightbox;
+        editorDraft.display = header.display;
+        editorDraft.hooks = header.hooks;
         editorDraft.updatedAt = new Date().toISOString();
         editorDraft.version = VERSION;
         editorDraft.tileId = TILE_ID;
         state = deepClone(editorDraft);
+        stampLocalDraft(state);
+        markVerification('not verified', '');
         saveLocalTile(state);
         applyStateToUI(state);
         closeEditor();
@@ -1664,30 +3149,67 @@
       }
 
       async function saveToCloud(payload) {
+        if (saveInFlight) {
+          setStatus('שמירה כבר בתהליך. ממתין לסיום ה-write/read-back הקודם.', '');
+          return;
+        }
         if (!session || !supabaseClient) {
-          setStatus('נשמר לוקאלית בלבד', '');
+          stampLocalDraft(payload);
+          markVerification('local only', '');
+          setStatus('טיוטה נשמרה לוקאלית בלבד', '');
+          setSyncState('sync: local only');
+          logDiag('save skipped - no active session');
           return;
         }
         const conn = getConnectionSettings();
         const rowKeyCol = conn.keyColumn || 'key';
         const payloadCol = conn.payloadColumn || 'payload';
-        const row = {
+        stampLocalDraft(payload);
+        const baseRow = {
           [rowKeyCol]: conn.rowKey,
-          [payloadCol]: payload,
+          [payloadCol]: payload
+        };
+        const rowWithTimestamp = {
+          ...baseRow,
           updated_at: payload.updatedAt || new Date().toISOString()
         };
         try {
-          setStatus('שומר לענן...', '');
-          const { error } = await supabaseClient
-            .from(conn.table)
-            .upsert(row, { onConflict: rowKeyCol });
-          if (error) throw error;
-          els.adminSyncState.textContent = 'sync: cloud saved';
-          setStatus('נשמר לענן ולוקאלי', 'success');
+          setStatus('שומר לוקאלית ואז כותב לענן...', '');
+          setSaveButtonBusy(true);
+          markVerification('saving', '');
+          setSyncState('sync: saving');
+          let result = await withTimeout(
+            supabaseClient.from(conn.table).upsert(rowWithTimestamp, { onConflict: rowKeyCol }),
+            12000,
+            'saveToCloud'
+          );
+          if (result?.error && looksLikeMissingColumn(result.error, 'updated_at')) {
+            logDiag('save retry without updated_at');
+            result = await withTimeout(
+              supabaseClient.from(conn.table).upsert(baseRow, { onConflict: rowKeyCol }),
+              12000,
+              'saveToCloud legacy'
+            );
+          }
+          if (result?.error) throw result.error;
+          lastCloudWriteAt = new Date().toISOString();
+          renderRuntimeInfo();
+          markVerification('cloud write ok', '');
+          setSyncState('sync: cloud write ok');
+          setStatus('כתיבה לענן הצליחה. מבצע read-back לאימות...', '');
+          logDiag('saveToCloud write succeeded', { rowKey: conn.rowKey, table: conn.table, lastCloudWriteAt });
+          const verify = await verifyCloudPayload(payload);
+          setSyncState('sync: verified on server');
+          setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
+          if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
         } catch (err) {
-          console.error('[CRMO_v3005] saveToCloud failed', err);
-          els.adminSyncState.textContent = 'sync: local only';
-          setStatus('שמירת ענן נכשלה. נשמר לוקאלית: ' + safeMessage(err), 'error');
+          console.error('[CRMO_v3028] saveToCloud failed', err);
+          markVerification('verification failed', '');
+          setSyncState('sync: local only');
+          setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
+          logDiag('saveToCloud or verify failed', { message: safeMessage(err), table: conn.table, rowKey: conn.rowKey });
+        } finally {
+          setSaveButtonBusy(false);
         }
       }
 
@@ -1698,22 +3220,31 @@
         }
         try {
           setStatus('טוען מהענן...', '');
-          const cloud = await readCloudPayload();
+          setSyncState('sync: loading');
+          const cloud = await withTimeout(readCloudPayload(), 12000, 'loadFromCloudAndMerge');
           if (!cloud) {
-            setStatus('לא נמצאה שורת payload בענן. נשארים עם הלוקאלי', '');
+            setSyncState('sync: no cloud payload yet');
+            setStatus('עדיין אין payload בענן. עובדים עם local draft עד לשמירה הראשונה', '');
+            logDiag('cloud load finished - no row found');
             return;
           }
           const winner = chooseLatest(state, cloud);
           if (applyLatest) {
             state = normalizeState(winner);
+            if (cloud?.verifiedOnServer) {
+              markVerification('verified', cloud.serverVerifiedAt || cloud.updatedAt || '');
+            }
             saveLocalTile(state);
             applyStateToUI(state);
           }
-          els.adminSyncState.textContent = 'sync: cloud loaded';
-          setStatus('נטען מהענן', 'success');
+          setSyncState('sync: cloud loaded');
+          setStatus('נטען מהענן · payload פעיל', 'success');
+          logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
         } catch (err) {
-          console.error('[CRMO_v3005] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3028] loadFromCloudAndMerge failed', err);
+          setSyncState('sync: cloud error');
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
+          logDiag('loadFromCloudAndMerge failed', { message: safeMessage(err) });
         }
       }
 
@@ -1721,15 +3252,30 @@
         const conn = getConnectionSettings();
         const rowKeyCol = conn.keyColumn || 'key';
         const payloadCol = conn.payloadColumn || 'payload';
-        const { data, error } = await supabaseClient
+        let result = await supabaseClient
           .from(conn.table)
           .select(`${rowKeyCol}, ${payloadCol}, updated_at`)
           .eq(rowKeyCol, conn.rowKey)
           .maybeSingle();
-        if (error) throw error;
+        if (result?.error && looksLikeMissingColumn(result.error, 'updated_at')) {
+          logDiag('read retry without updated_at');
+          result = await supabaseClient
+            .from(conn.table)
+            .select(`${rowKeyCol}, ${payloadCol}`)
+            .eq(rowKeyCol, conn.rowKey)
+            .maybeSingle();
+        }
+        if (result?.error) throw result.error;
+        const data = result?.data;
         if (!data) return null;
         const payload = data[payloadCol];
-        return normalizeState(payload);
+        const normalized = normalizeState(payload);
+        if (!normalized.updatedAt && data.updated_at) {
+          normalized.updatedAt = data.updated_at;
+        }
+        if (typeof normalized.verifiedOnServer !== 'boolean') normalized.verifiedOnServer = false;
+        if (!normalized.serverVerifiedAt) normalized.serverVerifiedAt = '';
+        return normalized;
       }
 
 
@@ -1760,67 +3306,74 @@
 
       function applyStateToUI(nextState) {
         state = normalizeState(nextState);
+        currentTileIndex = clamp(currentTileIndex, 0, Math.max(state.layers.length - 1, 0));
         document.documentElement.style.setProperty('--stroke-width', `${Number(state.strokeWidth || 1)}px`);
         document.documentElement.style.setProperty('--tile-ratio', ratioToCss(state.ratio || '16:9'));
         els.tileIdLabel.textContent = state.tileId;
         els.adminTileId.textContent = `tile: ${state.tileId}`;
         els.layerCountLabel.textContent = String(state.layers.length);
-        if (currentLayerIndex >= state.layers.length) currentLayerIndex = Math.max(0, state.layers.length - 1);
         renderTile();
+        applyDashboardLikeControls();
       }
 
       function renderTile() {
         els.tileMediaHost.innerHTML = '';
-        const layer = state.layers[currentLayerIndex] || state.layers[0] || null;
+        const visibleLayers = getVisibleLayers();
+        currentTileIndex = clamp(currentTileIndex, 0, Math.max(visibleLayers.length - 1, 0));
+        const layer = visibleLayers[currentTileIndex] || null;
+        const hasMultiple = visibleLayers.length > 1;
+        els.tile.classList.toggle('has-multiple', hasMultiple);
         if (!layer?.src) {
           els.tileFallback.hidden = false;
+          els.tile.classList.remove('has-link-line');
         } else {
           els.tileFallback.hidden = true;
           els.tileMediaHost.appendChild(createMediaElement(layer, 'tile-media'));
         }
-        const tileText = getDisplayTextForLayer(currentLayerIndex, 'overlay');
-        const kickerParts = [state.meta?.client, state.meta?.brand].filter(Boolean);
-        els.tileInfoKicker.textContent = kickerParts.length ? kickerParts.join(' / ') : 'CRMO SMART';
-        els.tileInfoTitle.textContent = tileText.title || '';
-        els.tileInfoDesc.textContent = tileText.desc || '';
+        const tileText = getDisplayTextForLayer(currentTileIndex, 'overlay');
+        const metaLabel = getMetaLabel();
+        els.ovKicker.hidden = true;
+        els.ovKicker.textContent = '';
         els.ovTitle.textContent = tileText.title || '';
         els.ovDesc.textContent = tileText.desc || '';
-        bindLink(els.ovLink, state.settings?.showLinkInTile === false ? '' : tileText.link, state.settings?.openInNewTab !== false);
-        renderTileNavigator();
+        if (els.tileTouchKicker) {
+          els.tileTouchKicker.hidden = true;
+          els.tileTouchKicker.textContent = '';
+        }
+        els.tileTouchTitle.textContent = tileText.title || layer?.name || 'CRMO';
+        if (els.tileTouchDesc) els.tileTouchDesc.textContent = tileText.desc || '';
+        els.tileTouchCount.textContent = `${visibleLayers.length ? currentTileIndex + 1 : 0}/${Math.max(visibleLayers.length, 1)}`;
+        bindLink(els.ovLink, tileText.link, state.display?.openLinkInNewTab !== false);
+        const showLinkInTile = !!tileText.link && state.display?.showLinkInTile !== false;
+        if (!showLinkInTile) {
+          els.ovLink.hidden = true;
+        }
+        renderLikeUI();
+        renderTileDots();
       }
 
-      function renderTileNavigator() {
-        const count = state.layers.length;
-        if (els.tileLayerCounter) {
-          els.tileLayerCounter.textContent = count ? `${currentLayerIndex + 1}/${count}` : '0/0';
-        }
-        if (els.tilePrevBtn) els.tilePrevBtn.disabled = count <= 1;
-        if (els.tileNextBtn) els.tileNextBtn.disabled = count <= 1;
-        if (els.tileDots) {
-          els.tileDots.innerHTML = '';
-          state.layers.forEach((_, idx) => {
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'tile-dot' + (idx === currentLayerIndex ? ' active' : '');
-            dot.setAttribute('aria-label', `מעבר למדיה ${idx + 1}`);
-            dot.addEventListener('click', (e) => {
-              e.stopPropagation();
-              currentLayerIndex = idx;
-              renderTile();
-            });
-            els.tileDots.appendChild(dot);
+      function renderTileDots() {
+        const visibleLayers = getVisibleLayers();
+        els.tileDots.innerHTML = '';
+        if (visibleLayers.length <= 1) return;
+        visibleLayers.forEach((_, idx) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'tile-dot' + (idx === currentTileIndex ? ' active' : '');
+          dot.setAttribute('aria-label', `עבור למדיה ${idx + 1}`);
+          dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToTileLayer(idx);
+            revealTileOverlay();
           });
-        }
-      }
-
-      function shiftTileMedia(delta) {
-        if (!state.layers.length) return;
-        currentLayerIndex = (currentLayerIndex + delta + state.layers.length) % state.layers.length;
-        renderTile();
+          els.tileDots.appendChild(dot);
+        });
       }
 
       function renderLightbox() {
-        const layer = state.layers[currentLayerIndex] || null;
+        const visibleLayers = getVisibleLayers();
+        currentLayerIndex = clamp(currentLayerIndex, 0, Math.max(visibleLayers.length - 1, 0));
+        const layer = visibleLayers[currentLayerIndex] || null;
         els.lightboxMediaHost.innerHTML = '';
         if (!layer?.src) {
           els.lightboxFallback.hidden = false;
@@ -1830,15 +3383,19 @@
         }
 
         const lbText = getDisplayTextForLayer(currentLayerIndex, 'lightbox');
+        const metaLabel = getMetaLabel();
+        els.lbKicker.hidden = !metaLabel;
+        els.lbKicker.textContent = metaLabel;
         els.lbTitle.textContent = lbText.title || '';
         els.lbDesc.textContent = lbText.desc || '';
-        bindLink(els.lbLink, lbText.link, state.settings?.openInNewTab !== false);
+        bindLink(els.lbLink, lbText.link, state.display?.openLinkInNewTab !== false);
         renderThumbs();
       }
 
       function renderThumbs() {
         els.thumbStrip.innerHTML = '';
-        state.layers.forEach((layer, idx) => {
+        const visibleLayers = getVisibleLayers();
+        visibleLayers.forEach((layer, idx) => {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'thumb-btn' + (idx === currentLayerIndex ? ' active' : '');
@@ -1852,7 +3409,8 @@
       }
 
       function getDisplayTextForLayer(index, mode) {
-        const layer = state.layers[index] || null;
+        const visibleLayers = getVisibleLayers();
+        const layer = visibleLayers[index] || state.layers[index] || null;
         const base = mode === 'lightbox'
           ? {
               title: state.lightbox?.title || state.overlay?.title || '',
@@ -1872,6 +3430,18 @@
           };
         }
         return base;
+      }
+
+      function getMetaLabel() {
+        const brand = String(state.meta?.brand || '').trim();
+        const client = String(state.meta?.client || '').trim();
+        if (brand && client) return `${brand} · ${client}`;
+        return brand || client || '';
+      }
+
+      function getVisibleLayers() {
+        const visible = state.layers.filter((layer) => layer.isVisible !== false);
+        return visible.length ? visible : state.layers;
       }
 
       function createMediaElement(layer, className = '', autoplay = false, muted = true) {
@@ -1940,13 +3510,16 @@
           ...base,
           ...(input || {}),
           meta: { ...base.meta, ...(input?.meta || {}) },
-          settings: { ...base.settings, ...(input?.settings || {}) },
           overlay: { ...base.overlay, ...(input?.overlay || {}) },
           lightbox: { ...base.lightbox, ...(input?.lightbox || {}) },
+          display: { ...base.display, ...(input?.display || {}) },
+          hooks: { ...base.hooks, ...(input?.hooks || {}) },
           layers: Array.isArray(input?.layers) ? input.layers.slice(0, MAX_LAYERS).map(normalizeLayer) : []
         };
         merged.tileId = TILE_ID;
         merged.version = VERSION;
+        merged.verifiedOnServer = !!merged.verifiedOnServer;
+        merged.serverVerifiedAt = merged.serverVerifiedAt || '';
         return merged;
       }
 
@@ -1959,8 +3532,50 @@
           title: layer?.title || '',
           desc: layer?.desc || '',
           link: layer?.link || '',
-          useOwnText: !!layer?.useOwnText
+          useOwnText: !!layer?.useOwnText,
+          isVisible: layer?.isVisible !== false,
+          sortOrder: Number(layer?.sortOrder || 0) || 0,
+          tags: Array.isArray(layer?.tags) ? layer.tags.slice() : [],
+          hooks: {
+            subLink: layer?.hooks?.subLink || '',
+            subTags: Array.isArray(layer?.hooks?.subTags) ? layer.hooks.subTags.slice() : []
+          }
         };
+      }
+
+      function ensureTileSystemShell() {
+        if (!els.tileTouchBar) return;
+
+        if (!els.tileTouchKicker) {
+          const kicker = document.createElement('div');
+          kicker.id = 'tileTouchKicker';
+          kicker.hidden = true;
+          kicker.className = 'tile-touch-kicker';
+          els.tileTouchBar.querySelector('.tile-touch-copy')?.prepend(kicker);
+          els.tileTouchKicker = kicker;
+        }
+
+        if (!els.tileTouchLikeWrap) {
+          const wrap = document.createElement('div');
+          wrap.id = 'tileTouchLikeWrap';
+          wrap.hidden = true;
+          wrap.innerHTML = '<button aria-label="Like tile" hidden id="tileTouchLikeBtn" type="button">♥</button><span hidden id="tileTouchLikeCount">0</span>';
+          els.tileTouchBar.querySelector('.tile-touch-meta')?.insertBefore(wrap, els.tileTouchInfoBtn || null);
+          els.tileTouchLikeWrap = wrap;
+          els.tileTouchLikeBtn = wrap.querySelector('#tileTouchLikeBtn');
+          els.tileTouchLikeCount = wrap.querySelector('#tileTouchLikeCount');
+        }
+
+        if (!els.tileOverlayLikeWrap && els.tileActionLine) {
+          const wrap = document.createElement('div');
+          wrap.id = 'tileOverlayLikeWrap';
+          wrap.hidden = true;
+          wrap.innerHTML = '<button aria-label="Like tile" hidden id="tileOverlayLikeBtn" type="button">♥</button><span hidden id="tileOverlayLikeCount">0</span>';
+          els.tileActionLine.insertBefore(wrap, els.ovLink || null);
+          els.tileOverlayLikeWrap = wrap;
+          els.tileOverlayLikeBtn = wrap.querySelector('#tileOverlayLikeBtn');
+          els.tileOverlayLikeCount = wrap.querySelector('#tileOverlayLikeCount');
+        }
       }
 
       function resetTile() {
@@ -2033,10 +3648,7 @@
           els.statusLabel.textContent = message;
           els.statusLabel.className = 'status-inline' + (kind ? ' ' + kind : '');
         }
-        if (els.authNote && !session) {
-          els.authNote.textContent = message;
-          els.authNote.className = 'auth-note' + (kind ? ' ' + kind : '');
-        } else if (els.authNote) {
+        if (els.authNote) {
           els.authNote.className = 'auth-note';
         }
       }
@@ -2048,10 +3660,6 @@
           return `${w} / ${h}`;
         }
         return '16 / 9';
-      }
-
-      function safeMessage(err) {
-        return err?.message || String(err);
       }
 
       function escapeHtml(text) {
@@ -2083,6 +3691,35 @@
         return JSON.parse(JSON.stringify(obj));
       }
 
+
+window.CRMOAuthBridge = {
+  loginWithPassword,
+  signUpWithPassword,
+  requestPasswordReset,
+  loginWithProvider,
+  logout,
+  open(mode = 'login') {
+    window.CRMOAuthModal?.open(mode);
+  },
+  getRememberPreference() {
+    return localStorage.getItem('CRMO_AUTH_REMEMBER_PREF') !== '0';
+  },
+  getConnection() {
+    return getConnectionSettings();
+  },
+  getAssetBase() {
+    const conn = getConnectionSettings();
+    return window.CRMO_PUBLIC_ASSET_BASE || (conn?.url ? conn.url.replace(/\/$/, '') + '/storage/v1/object/public/assets/' : 'assets/');
+  },
+  isLoggedIn() {
+    return !!session;
+  },
+  getUserEmail() {
+    return session?.user?.email || '';
+  },
+  setBusy: setLoginBusy
+};
+
       window.CRMO_V3000 = {
         getState: () => deepClone(state),
         getSession: () => session,
@@ -2095,5 +3732,264 @@
       };
     })();
   </script>
-</body>
+<script id="crmo-auth-modal-inline-js">
+
+(function(){
+  'use strict';
+  if (window.CRMOAuthModal) return;
+
+  function asset(path){
+    const bridge = window.CRMOAuthBridge;
+    const base = bridge?.getAssetBase?.() || window.CRMO_PUBLIC_ASSET_BASE || (window.CRMO_SUPABASE_URL ? String(window.CRMO_SUPABASE_URL).replace(/\/$/, '') + '/storage/v1/object/public/assets/' : 'assets/');
+    const cleanBase = /\/$/.test(base) ? base : base + '/';
+    return cleanBase + String(path || '').replace(/^\//,'');
+  }
+
+  function eyeSvg(open){
+    return open
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 5c5.23 0 9.27 3.11 11 7-1.73 3.89-5.77 7-11 7S2.73 15.89 1 12c1.73-3.89 5.77-7 11-7Zm0 2C8.18 7 5.12 9.06 3.35 12 5.12 14.94 8.18 17 12 17s6.88-2.06 8.65-5C18.88 9.06 15.82 7 12 7Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m3.28 2.22 18.5 18.5-1.06 1.06-3.08-3.08A12.84 12.84 0 0 1 12 20c-5.23 0-9.27-3.11-11-7a13.9 13.9 0 0 1 4.2-4.86L2.22 3.28l1.06-1.06Zm4.1 7.22A4.49 4.49 0 0 0 7.5 12a4.5 4.5 0 0 0 6.06 4.2l-1.63-1.63A2.5 2.5 0 0 1 9.43 12c0-.35.07-.68.19-.99L7.38 9.44Zm4.46-3.42.16-.01c5.23 0 9.27 3.11 11 7a13.95 13.95 0 0 1-4.22 4.88l-2.91-2.91a4.5 4.5 0 0 0-5.85-5.85L8.03 7.14A13.16 13.16 0 0 1 12 6.02Zm0 3a2.5 2.5 0 0 1 2.5 2.5c0 .36-.07.69-.21 1l-3.29-3.29c.3-.13.64-.21 1-.21Z"></path></svg>';
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'crmo-auth-modal';
+  wrap.id = 'crmoAuthModal';
+  wrap.hidden = true;
+  wrap.innerHTML = `
+    <div class="crmo-auth-modal__backdrop" data-auth-close></div>
+    <div class="crmo-auth-modal__panel" role="dialog" aria-modal="true" aria-labelledby="crmoAuthModalTitle">
+      <button type="button" class="crmo-auth-modal__close" aria-label="סגור" data-auth-close>×</button>
+      <div class="crmo-auth-modal__header">
+        <div class="crmo-auth-modal__head-grid">
+          <div class="crmo-auth-modal__titlewrap">
+            <p class="crmo-auth-modal__title" id="crmoAuthModalTitle">שמחים לראות אותך שוב! הכנס את הפרטים שלך כדי להמשיך.<br>(ואם זה נראה מוכר—כנראה שלא סימנת “זכור אותי” במחשב הזה 😉)</p>
+          </div>
+          <div class="crmo-auth-modal__mascot" aria-hidden="true">
+            <img src="${asset('branding/creamo_characters/creamo_login_tumbnail.png')}" alt="CREAMO">
+          </div>
+        </div>
+      </div>
+      <div class="crmo-auth-modal__body">
+        <div class="crmo-auth-modal__modebtns" aria-label="בחירת פעולה">
+          <button type="button" class="crmo-auth-modal__modebtn is-active" data-auth-mode="login">כניסה</button>
+          <button type="button" class="crmo-auth-modal__modebtn" data-auth-mode="register">הרשמה</button>
+        </div>
+        <div class="crmo-auth-modal__sso" aria-label="כניסה מהירה">
+          <button type="button" class="crmo-auth-modal__sso-btn crmo-auth-modal__sso-btn--google" aria-label="התחברות עם Google"><img src="${asset('branding/icons/social/google.svg')}" alt="Google"></button>
+          <button type="button" class="crmo-auth-modal__sso-btn crmo-auth-modal__sso-btn--linkedin" aria-label="התחברות עם LinkedIn"><img src="${asset('branding/icons/social/linkedin.svg')}" alt="LinkedIn"></button>
+        </div>
+        <p class="crmo-auth-modal__privacy">אנחנו שומרים רק מידע מינימלי (שם, אימייל, תמונת פרופיל). בלי ספאם, בלי רשימות תפוצה. אפשר למחוק הכל בכל עת.</p>
+        <form class="crmo-auth-modal__form" id="crmoAuthForm" novalidate>
+          <div class="crmo-auth-modal__field" id="crmoAuthNameRow" hidden>
+            <div class="crmo-auth-modal__name-grid">
+              <div>
+                <label class="crmo-auth-modal__label" for="crmoAuthFirstName">שם פרטי</label>
+                <input id="crmoAuthFirstName" class="crmo-auth-modal__input" type="text" autocomplete="given-name" placeholder="שם פרטי">
+              </div>
+              <div>
+                <label class="crmo-auth-modal__label" for="crmoAuthLastName">שם משפחה</label>
+                <input id="crmoAuthLastName" class="crmo-auth-modal__input" type="text" autocomplete="family-name" placeholder="שם משפחה">
+              </div>
+            </div>
+          </div>
+          <div class="crmo-auth-modal__field">
+            <label class="crmo-auth-modal__label" for="crmoAuthEmail">אימייל</label>
+            <input id="crmoAuthEmail" class="crmo-auth-modal__input crmo-auth-modal__input--ltr" type="email" autocomplete="email" placeholder="name@example.com">
+          </div>
+          <div class="crmo-auth-modal__field" id="crmoAuthPasswordField">
+            <label class="crmo-auth-modal__label" for="crmoAuthPassword">סיסמה</label>
+            <div class="crmo-auth-modal__password">
+              <input id="crmoAuthPassword" class="crmo-auth-modal__password-input" type="password" autocomplete="current-password" placeholder="Password">
+              <button type="button" class="crmo-auth-modal__password-toggle" id="crmoAuthPasswordToggle" aria-label="הצג סיסמה" aria-pressed="false">${eyeSvg(true)}</button>
+            </div>
+          </div>
+          <div class="crmo-auth-modal__row">
+            <a href="#" class="crmo-auth-modal__link" id="crmoAuthForgot">שכחתי סיסמה</a>
+            <label class="crmo-auth-modal__remember"><span>זכור אותי במחשב זה</span><input type="checkbox" id="crmoAuthRemember"></label>
+          </div>
+          <button type="submit" class="crmo-auth-modal__submit" id="crmoAuthSubmit">כניסה</button>
+          <div class="crmo-auth-modal__feedback" id="crmoAuthFeedback" aria-live="polite"></div>
+          <div class="crmo-auth-modal__bottom"><span id="crmoAuthBottomText">אין לך חשבון?</span> <a href="#" class="crmo-auth-modal__link" id="crmoAuthBottomAction">להרשמה</a></div>
+          <div class="crmo-auth-modal__status" id="crmoAuthLoggedInState"></div>
+        </form>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+
+  const els = {
+    wrap,
+    form: wrap.querySelector('#crmoAuthForm'),
+    email: wrap.querySelector('#crmoAuthEmail'),
+    firstName: wrap.querySelector('#crmoAuthFirstName'),
+    lastName: wrap.querySelector('#crmoAuthLastName'),
+    nameRow: wrap.querySelector('#crmoAuthNameRow'),
+    password: wrap.querySelector('#crmoAuthPassword'),
+    passwordField: wrap.querySelector('#crmoAuthPasswordField'),
+    passwordToggle: wrap.querySelector('#crmoAuthPasswordToggle'),
+    remember: wrap.querySelector('#crmoAuthRemember'),
+    feedback: wrap.querySelector('#crmoAuthFeedback'),
+    submit: wrap.querySelector('#crmoAuthSubmit'),
+    modeBtns: [...wrap.querySelectorAll('[data-auth-mode]')],
+    forgot: wrap.querySelector('#crmoAuthForgot'),
+    bottomText: wrap.querySelector('#crmoAuthBottomText'),
+    bottomAction: wrap.querySelector('#crmoAuthBottomAction'),
+    loggedInState: wrap.querySelector('#crmoAuthLoggedInState'),
+    title: wrap.querySelector('#crmoAuthModalTitle'),
+    mascot: wrap.querySelector('.crmo-auth-modal__mascot img')
+  };
+
+  let mode = 'login';
+  let busy = false;
+  let passwordVisible = false;
+  const LOGIN_TEXT = 'שמחים לראות אותך שוב! הכנס את הפרטים שלך כדי להמשיך.\n(ואם זה נראה מוכר—כנראה שלא סימנת "זכור אותי" במחשב הזה 😉)';
+  const REGISTER_TEXT = 'כיף שהגעתנו! נבקש רק כמה פרטים קטנים כדי לפתוח לך גישה. בלי ספאם, בלי דרמות. יאללה מתחילים 🙂';
+
+  function setFeedback(message, kind=''){
+    els.feedback.textContent = message || '';
+    els.feedback.className = 'crmo-auth-modal__feedback' + (kind ? ' is-' + kind : '');
+  }
+
+  function setBusy(nextBusy){
+    busy = !!nextBusy;
+    els.submit.disabled = busy;
+    els.email.disabled = busy;
+    els.password.disabled = busy || mode === 'reset';
+    els.passwordToggle.disabled = busy || mode === 'reset';
+    if (els.firstName) els.firstName.disabled = busy || mode !== 'register';
+    if (els.lastName) els.lastName.disabled = busy || mode !== 'register';
+  }
+
+  function updatePasswordUI(){
+    els.password.type = passwordVisible ? 'text' : 'password';
+    els.passwordToggle.innerHTML = eyeSvg(!passwordVisible);
+    els.passwordToggle.setAttribute('aria-pressed', passwordVisible ? 'true' : 'false');
+  }
+
+  function setMode(nextMode){
+    mode = nextMode;
+    els.modeBtns.forEach(btn => btn.classList.toggle('is-active', btn.dataset.authMode === mode));
+    const isReset = mode === 'reset';
+    const isRegister = mode === 'register';
+    if (els.title) {
+      els.title.innerHTML = (isRegister ? REGISTER_TEXT : LOGIN_TEXT).replace(/\n/g,'<br>');
+    }
+    if (els.nameRow) els.nameRow.hidden = !isRegister;
+    els.passwordField.hidden = isReset;
+    els.forgot.hidden = isReset || isRegister;
+    if (els.remember?.closest('.crmo-auth-modal__remember')) {
+      els.remember.closest('.crmo-auth-modal__remember').hidden = isReset || isRegister;
+    }
+    els.submit.textContent = isReset ? 'שלח קישור איפוס' : (isRegister ? 'הרשמה' : 'כניסה');
+    els.bottomText.textContent = isReset ? 'נזכרת בסיסמה?' : (isRegister ? 'כבר נרשמת?' : 'עוד לא נרשמת?');
+    els.bottomAction.textContent = isReset ? 'חזרה לכניסה' : (isRegister ? 'כניסה' : 'הרשמה');
+    setFeedback('');
+    if (isReset) {
+      els.password.value = '';
+    }
+  }
+
+  async function submitForm(ev){
+    ev?.preventDefault();
+    const bridge = window.CRMOAuthBridge;
+    if (!bridge) {
+      setFeedback('תשתית ההתחברות עדיין לא עלתה.', 'error');
+      return;
+    }
+    const email = els.email.value.trim();
+    const password = els.password.value;
+    const remember = !!els.remember.checked;
+    setBusy(true);
+    try {
+      let result;
+      if (mode === 'register') {
+        result = await bridge.signUpWithPassword(email, password, remember, { firstName: els.firstName?.value?.trim() || '', lastName: els.lastName?.value?.trim() || '' });
+      } else if (mode === 'reset') {
+        result = await bridge.requestPasswordReset(email);
+      } else {
+        result = await bridge.loginWithPassword(email, password, remember);
+      }
+      setFeedback(result?.message || '', result?.ok ? 'success' : 'error');
+      if (result?.ok && mode === 'login') {
+        close();
+      }
+      if (result?.ok && mode === 'register' && bridge.isLoggedIn?.()) {
+        close();
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function open(nextMode='login'){
+    setMode(nextMode);
+    els.remember.checked = !!window.CRMOAuthBridge?.getRememberPreference?.();
+    if (els.firstName) els.firstName.value = '';
+    if (els.lastName) els.lastName.value = '';
+    wrap.hidden = false;
+    document.body.classList.add('crmo-auth-modal-open');
+    setTimeout(() => els.email.focus(), 20);
+  }
+
+  function close(){
+    wrap.hidden = true;
+    document.body.classList.remove('crmo-auth-modal-open');
+  }
+
+  function setLoggedInState(isLoggedIn, email){
+    els.loggedInState.classList.toggle('is-visible', !!isLoggedIn);
+    els.loggedInState.textContent = isLoggedIn ? ('מחובר כ־' + (email || 'אדמין')) : '';
+  }
+
+  wrap.querySelectorAll('[data-auth-close]').forEach(node => node.addEventListener('click', close));
+  els.form.addEventListener('submit', submitForm);
+  els.modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.authMode)));
+  els.passwordToggle.addEventListener('click', () => { passwordVisible = !passwordVisible; updatePasswordUI(); });
+  els.forgot.addEventListener('click', (e) => { e.preventDefault(); setMode('reset'); });
+  els.bottomAction.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (mode === 'login') setMode('register');
+    else setMode('login');
+  });
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !wrap.hidden) close();
+  });
+  wrap.querySelectorAll('.crmo-auth-modal__sso-btn').forEach(btn => btn.addEventListener('click', async () => {
+    const provider = btn.getAttribute('aria-label')?.includes('LinkedIn') ? 'linkedin_oidc' : 'google';
+    const bridge = window.CRMOAuthBridge;
+    if (!bridge?.loginWithProvider) {
+      setFeedback('חיבור חברתי עדיין לא זמין.', 'error');
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await bridge.loginWithProvider(provider);
+      if (result?.message) setFeedback(result.message, result.ok ? 'success' : 'error');
+    } finally {
+      setBusy(false);
+    }
+  }));
+  updatePasswordUI();
+  setMode('login');
+
+  window.CRMOAuthModal = { open, close, setBusy, setLoggedInState };
+
+window.CRMOForceOpenAuthModal = function(event){
+  try {
+    if (event && typeof event.preventDefault === 'function') event.preventDefault();
+    if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
+    if (window.CRMOAuthModal && typeof window.CRMOAuthModal.open === 'function') {
+      window.CRMOAuthModal.open('login');
+      return false;
+    }
+  } catch (err) {
+    console.error('[CRMO] auth modal open failed', err);
+  }
+  return false;
+};
+})();
+
+</script></body>
 </html>
