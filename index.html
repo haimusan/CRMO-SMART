@@ -2126,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3051';
+      const VERSION = 'CRMO_v3052';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -4738,8 +4738,8 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3051';
-  const STORAGE_KEY = 'CRMO_v3051_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3052';
+  const STORAGE_KEY = 'CRMO_v3052_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -4771,12 +4771,14 @@ window.CRMOForceOpenAuthModal = function(event){
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start">
         <div class="crmo3045-version">${VERSION}</div>
-        <button class="crmo3045-btn-ghost" id="crmo3051ReloadCloud" type="button" style="height:38px;padding:0 12px">Load cloud</button>
-        <button class="crmo3045-btn-ghost" id="crmo3051LoadLocal" type="button" style="height:38px;padding:0 12px">Load local</button>
+        <button class="crmo3045-btn-ghost" id="crmo3052ReloadCloud" type="button" style="height:38px;padding:0 12px">Load cloud</button>
+        <button class="crmo3045-btn-ghost" id="crmo3052LoadLocal" type="button" style="height:38px;padding:0 12px">Load local</button>
+        <button class="crmo3045-btn" id="crmo3052SaveNow" type="button" style="height:38px;padding:0 14px">Save now</button>
       </div>
     </div>
     <div id="crmo3047Status" class="crmo3045-note" style="margin:-2px 0 6px">Sync: initializing…</div>
-    <div id="crmo3051Source" class="crmo3045-note" style="margin:0 0 12px">Source of truth: pending</div>
+    <div id="crmo3052Source" class="crmo3045-note" style="margin:0 0 4px">Source of truth: pending</div>
+    <div id="crmo3052Mode" class="crmo3045-note" style="margin:0 0 12px">Sync mode: pending</div>
     <div class="crmo3047-stack" id="crmo3047GalleryStack"></div>
   `;
   stage.appendChild(shell);
@@ -4866,15 +4868,18 @@ window.CRMOForceOpenAuthModal = function(event){
   document.body.appendChild(tileDialog);
 
   const statusEl = document.getElementById('crmo3047Status');
-  const sourceEl = document.getElementById('crmo3051Source');
+  const sourceEl = document.getElementById('crmo3052Source');
+  const modeEl = document.getElementById('crmo3052Mode');
   const galleryStack = document.getElementById('crmo3047GalleryStack');
   const byId = (id) => document.getElementById(id);
   const escape = (s) => String(s || '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let supabaseClient = null;
 
   let currentSource = 'pending';
+  let syncBusy = false;
   function setStatus(msg) { if (statusEl) statusEl.textContent = msg; }
   function setSource(msg) { currentSource = msg; if (sourceEl) sourceEl.textContent = `Source of truth: ${msg}`; }
+  function setMode(msg) { if (modeEl) modeEl.textContent = `Sync mode: ${msg}`; }
   function getBridge() { return window.CRMOAuthBridge || null; }
   function getConnection() { return getBridge()?.getConnection?.() || window.CRMO_V3000?.getConnectionSettings?.() || null; }
   function getSession() { return window.CRMO_V3000?.getSession?.() || null; }
@@ -4894,10 +4899,12 @@ window.CRMOForceOpenAuthModal = function(event){
     closeEditorsIfUnauthorized();
     renderGalleryStack();
     syncVersionLabels();
+    applyFaviconLaw();
     if (lb.open) renderLightbox();
     if (!preserveStatus) {
       setStatus(canEdit() ? `Sync law: editing enabled · cloud preferred when connected · row ${getCloudRowKey()}` : 'Sync law: viewer mode only. Login to enable editing. Local cache remains available.');
     }
+    setMode(syncBusy ? 'sync locked' : (isLoggedIn() ? 'cloud primary · local cache mirrored' : 'local fallback only'));
   }
   function getCloudRowKey() {
     const conn = getConnection();
@@ -4911,6 +4918,59 @@ window.CRMOForceOpenAuthModal = function(event){
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     return supabaseClient;
+  }
+  function getAssetBase() {
+    const bridgeBase = window.CRMO_PUBLIC_ASSET_BASE;
+    if (bridgeBase) return String(bridgeBase).replace(/\?$/, '').replace(/\/$/, '') + '/';
+    const conn = getConnection();
+    if (conn?.url) return String(conn.url).replace(/\/$/, '') + '/storage/v1/object/public/assets/';
+    return 'assets/';
+  }
+
+  function applyFaviconLaw() {
+    const href = getAssetBase() + 'favicon.svg';
+    let icon = document.querySelector('link[data-crmo-favicon="true"]');
+    if (!icon) {
+      icon = document.createElement('link');
+      icon.setAttribute('data-crmo-favicon', 'true');
+      icon.rel = 'icon';
+      icon.type = 'image/svg+xml';
+      document.head.appendChild(icon);
+    }
+    icon.href = href;
+    let shortcut = document.querySelector('link[data-crmo-favicon-shortcut="true"]');
+    if (!shortcut) {
+      shortcut = document.createElement('link');
+      shortcut.setAttribute('data-crmo-favicon-shortcut', 'true');
+      shortcut.rel = 'shortcut icon';
+      shortcut.type = 'image/svg+xml';
+      document.head.appendChild(shortcut);
+    }
+    shortcut.href = href;
+  }
+
+  function setSyncBusyState(busy, label = '') {
+    syncBusy = !!busy;
+    document.body.classList.toggle('crmo3052-sync-busy', syncBusy);
+    ['crmo3052ReloadCloud','crmo3052LoadLocal','crmo3052SaveNow','crmo3047SaveGallery','crmo3047SaveTile','crmo3047AddMedia','crmo3047ResetGallery','crmo3047ResetTile'].forEach((id) => {
+      const el = byId(id);
+      if (el) el.disabled = syncBusy;
+    });
+    galleryStack?.querySelectorAll('button').forEach((btn) => {
+      if (!btn.closest('#crmo3047Lightbox')) btn.disabled = syncBusy;
+    });
+    if (syncBusy && label) setMode(label);
+  }
+
+  async function runWithSyncLock(label, fn) {
+    if (syncBusy) return false;
+    setSyncBusyState(true, label);
+    try {
+      return await fn();
+    } finally {
+      setSyncBusyState(false);
+      refreshAuthBoundUi({ preserveStatus: true });
+    }
   }
 
   const makeTile = (galleryIndex, tileIndex) => ({
@@ -5021,6 +5081,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function syncVersionLabels() {
     document.title = isIndexRuntime() ? 'CRMO | sales oriented design' : VERSION;
+    applyFaviconLaw();
     const footer = document.getElementById('footerVersionLabel');
     if (footer) footer.textContent = `${VERSION} · multi-gallery context test area`;
     const admin = document.getElementById('adminVersionPill');
@@ -5115,7 +5176,7 @@ window.CRMOForceOpenAuthModal = function(event){
         galleries[galleryIndex].ui.editMode = !galleries[galleryIndex].ui.editMode;
         renderGalleryStack();
         persistLocal(makePayload(galleries));
-        try { await saveGalleriesToCloud(); } catch (err) {
+        try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
           console.error('[CRMO_v3049] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
@@ -5418,6 +5479,7 @@ window.CRMOForceOpenAuthModal = function(event){
     if (lb.open) renderLightbox();
     syncVersionLabels();
     if (sourceLabel) setSource(sourceLabel);
+    setMode(syncBusy ? 'sync locked' : (isLoggedIn() ? 'cloud primary · local cache mirrored' : 'local fallback only'));
     return next;
   }
 
@@ -5432,7 +5494,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const payload = makePayload(galleries);
     persistLocal(payload);
     if (!client || !conn || !isLoggedIn()) {
-      setSource('local only');
+      setSource('local draft not pushed');
       setStatus('Sync law: offline or logged out. Saved to local only.');
       return false;
     }
@@ -5447,7 +5509,7 @@ window.CRMOForceOpenAuthModal = function(event){
     if (result?.error) throw result.error;
     const verify = await readCloudPayload();
     const finalPayload = verify || payload;
-    applyWrapper(finalPayload, 'cloud');
+    applyWrapper(finalPayload, 'cloud active');
     setStatus(`Sync law: saved to cloud and refreshed local cache · row ${getCloudRowKey()}`);
     return true;
   }
@@ -5455,7 +5517,7 @@ window.CRMOForceOpenAuthModal = function(event){
   async function loadFromCloudAndApply() {
     if (!isLoggedIn()) {
       const local = loadLocalWrapper();
-      applyWrapper(local || makePayload(galleries), 'local only', { closeDrafts: true, draftCloseReason: 'Viewer mode applied local cache. Open editors were closed.' });
+      applyWrapper(local || makePayload(galleries), 'local fallback', { closeDrafts: true, draftCloseReason: 'Viewer mode applied local cache. Open editors were closed.' });
       setStatus('Sync law: not logged in. Using local cache only.');
       return false;
     }
@@ -5463,7 +5525,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const cloud = await readCloudPayload();
     const local = loadLocalWrapper();
     if (cloud) {
-      const applied = applyWrapper(cloud, 'cloud', { closeDrafts: true, draftCloseReason: 'Cloud state loaded. Open editors were closed to keep committed state stable.' });
+      const applied = applyWrapper(cloud, 'cloud active', { closeDrafts: true, draftCloseReason: 'Cloud state loaded. Open editors were closed to keep committed state stable.' });
       setStatus(`Sync law: loaded from cloud · row ${getCloudRowKey()} · updated ${applied.updatedAt || 'unknown'}`);
       return true;
     }
@@ -5476,7 +5538,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function loadFromLocalAndApply() {
     const local = loadLocalWrapper();
-    const applied = applyWrapper(local || makePayload(emptyGalleries()), local ? 'local manual load' : 'local empty baseline', { closeDrafts: true, draftCloseReason: 'Local state loaded manually. Open editors were closed to keep state stable.' });
+    const applied = applyWrapper(local || makePayload(emptyGalleries()), local ? 'local draft not pushed' : 'local empty baseline', { closeDrafts: true, draftCloseReason: 'Local state loaded manually. Open editors were closed to keep state stable.' });
     setStatus(local
       ? `Sync law: loaded local cache · updated ${applied.updatedAt || 'unknown'}`
       : 'Sync law: no local cache found. Started empty local baseline.');
@@ -5489,9 +5551,9 @@ window.CRMOForceOpenAuthModal = function(event){
     galleries[galleryEditorIndex] = normalizeGallery(galleryEditorDraft, galleryEditorIndex);
     renderGalleryStack();
     closeGalleryEditor();
-    try { await saveGalleriesToCloud(); }
+    try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3049] gallery save failed', err);
+      console.error('[CRMO_v3052] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5504,9 +5566,9 @@ window.CRMOForceOpenAuthModal = function(event){
     galleries[galleryIndex].tiles[tileIndex] = normalizeTile(workingDraft, galleryIndex, tileIndex);
     renderGalleryStack();
     closeTileEditor();
-    try { await saveGalleriesToCloud(); }
+    try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3049] tile save failed', err);
+      console.error('[CRMO_v3052] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5578,20 +5640,29 @@ window.CRMOForceOpenAuthModal = function(event){
     }
   });
 
-  byId('crmo3051ReloadCloud').addEventListener('click', async () => {
-    try { await loadFromCloudAndApply(); }
+  byId('crmo3052ReloadCloud').addEventListener('click', async () => {
+    try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3051] cloud load failed', err);
+      console.error('[CRMO_v3052] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
 
 
-  byId('crmo3051LoadLocal').addEventListener('click', () => {
-    try { loadFromLocalAndApply(); }
+  byId('crmo3052LoadLocal').addEventListener('click', async () => {
+    try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3051] local load failed', err);
+      console.error('[CRMO_v3052] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
+    }
+  });
+
+  byId('crmo3052SaveNow').addEventListener('click', async () => {
+    try {
+      await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
+    } catch (err) {
+      console.error('[CRMO_v3052] save now failed', err);
+      setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
 
@@ -5607,7 +5678,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function installAuthRefreshBridge() {
     const bridge = getBridge();
-    if (!bridge || bridge.__crmo3051Wrapped) return;
+    if (!bridge || bridge.__crmo3052Wrapped) return;
     ['loginWithPassword','signUpWithPassword','loginWithProvider','logout'].forEach((name) => {
       const original = bridge[name];
       if (typeof original !== 'function') return;
@@ -5619,7 +5690,7 @@ window.CRMOForceOpenAuthModal = function(event){
         return result;
       };
     });
-    bridge.__crmo3051Wrapped = true;
+    bridge.__crmo3052Wrapped = true;
   }
 
   let lastAuthEditable = canEdit();
@@ -5632,7 +5703,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3051] post-auth cloud load failed', err);
+        console.error('[CRMO_v3052] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -5658,14 +5729,15 @@ window.CRMOForceOpenAuthModal = function(event){
   });
 
   syncVersionLabels();
+  applyFaviconLaw();
   renderGalleryStack();
   persistLocal(makePayload(galleries));
-  setSource(isLoggedIn() ? 'cloud pending' : 'local only');
+  setSource(isLoggedIn() ? 'cloud active' : 'local fallback');
   const preferred = getPreferredWrapper(loadLocalWrapper(), null);
-  applyWrapper(preferred, isLoggedIn() ? 'cloud pending' : 'local only', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
+  applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3051] initial cloud load failed', err);
+      console.error('[CRMO_v3052] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
