@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3040</title>
+<title>CRMO_v3042</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3040 tile editor rebuild */
+  /* CRMO_v3042 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1859,7 +1859,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3040</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3042</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -1979,7 +1979,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3041 · save-close and media binding fix</footer>
+<footer id="footerVersionLabel">CRMO_v3042 · version sync and media source binding fix</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2009,7 +2009,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3040</h2>
+<h2>עורך אריח — CRMO_v3042</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2094,7 +2094,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3040';
+      const VERSION = 'CRMO_v3042';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3162,7 +3162,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3040] openEditor failed', err);
+          console.error('[CRMO_v3042] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3513,7 +3513,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3041] addFiles failed', err);
+          console.error('[CRMO_v3042] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3691,19 +3691,25 @@ function updateAuthUI(isLoggedIn) {
             updateEditorSaveNote('שמירת payload לענן נכשלה. העורך נשאר פתוח.');
             return;
           }
-          let applied = nextState;
+          let applied = normalizeState(nextState);
           try {
             const cloud = await readCloudPayload();
-            if (cloud) applied = normalizeState(chooseLatest(nextState, cloud));
+            if (cloud) {
+              const normalizedCloud = normalizeState(cloud);
+              applied = hasRenderableMedia(normalizedCloud.layers) ? normalizedCloud : normalizeState(nextState);
+            }
           } catch (_) {}
           state = normalizeState(applied);
+          currentTileIndex = pickRenderableLayerIndex(getVisibleLayers(), currentTileIndex);
+          currentLayerIndex = pickRenderableLayerIndex(getVisibleLayers(), currentLayerIndex);
           saveLocalTile(state);
           applyStateToUI(state);
           clearEditorDirtyState();
           closeEditor();
+          closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3041] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3042] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -3869,7 +3875,7 @@ function updateAuthUI(isLoggedIn) {
           els.adminVersionPill.textContent = VERSION;
         }
         if (els.footerVersionLabel) {
-          els.footerVersionLabel.textContent = `${VERSION} · Lightbox binding fix build`;
+          els.footerVersionLabel.textContent = `${VERSION} · version sync and media source binding fix`;
         }
       }
 
@@ -3885,13 +3891,22 @@ function updateAuthUI(isLoggedIn) {
         applyDashboardLikeControls();
       }
 
+      function getLayerMediaSrc(layer) {
+        if (!layer) return '';
+        return String(layer?.src || layer?.mediaSrc || layer?.url || layer?.localObjectUrl || '').trim();
+      }
+
+      function hasRenderableMedia(layers) {
+        return (Array.isArray(layers) ? layers : []).some((layer) => !!getLayerMediaSrc(layer));
+      }
+
       function pickRenderableLayerIndex(layers, preferred = 0) {
         const list = Array.isArray(layers) ? layers : [];
         if (!list.length) return 0;
         const safePreferred = clamp(preferred, 0, Math.max(list.length - 1, 0));
         const preferredLayer = list[safePreferred] || null;
-        if (String(preferredLayer?.src || '').trim()) return safePreferred;
-        const withMedia = list.findIndex((layer) => String(layer?.src || '').trim());
+        if (getLayerMediaSrc(preferredLayer)) return safePreferred;
+        const withMedia = list.findIndex((layer) => !!getLayerMediaSrc(layer));
         return withMedia >= 0 ? withMedia : safePreferred;
       }
 
@@ -3902,7 +3917,7 @@ function updateAuthUI(isLoggedIn) {
         const layer = visibleLayers[currentTileIndex] || null;
         const hasMultiple = visibleLayers.length > 1;
         els.tile.classList.toggle('has-multiple', hasMultiple);
-        if (!layer?.src) {
+        if (!getLayerMediaSrc(layer)) {
           els.tileFallback.hidden = false;
           els.tile.classList.remove('has-link-line');
         } else {
@@ -3954,7 +3969,7 @@ function updateAuthUI(isLoggedIn) {
         currentLayerIndex = pickRenderableLayerIndex(visibleLayers, currentLayerIndex);
         const layer = visibleLayers[currentLayerIndex] || null;
         els.lightboxMediaHost.innerHTML = '';
-        if (!layer?.src) {
+        if (!getLayerMediaSrc(layer)) {
           els.lightboxFallback.hidden = false;
         } else {
           els.lightboxFallback.hidden = true;
@@ -4024,7 +4039,7 @@ function updateAuthUI(isLoggedIn) {
         if (layer.type === 'video') {
           const video = document.createElement('video');
           video.className = className;
-          video.src = layer.src;
+          video.src = getLayerMediaSrc(layer);
           video.playsInline = true;
           video.loop = true;
           video.muted = muted;
@@ -4039,17 +4054,17 @@ function updateAuthUI(isLoggedIn) {
         }
         const img = document.createElement('img');
         img.className = className;
-        img.src = layer.src;
+        img.src = getLayerMediaSrc(layer);
         img.alt = layer.title || layer.name || 'CRMO media';
         return img;
       }
 
       function renderPreviewHTML(layer) {
-        if (!layer?.src) return '<div class="note" style="padding:10px;">No preview</div>';
+        if (!getLayerMediaSrc(layer)) return '<div class="note" style="padding:10px;">No preview</div>';
         if (layer.type === 'video') {
-          return `<video src="${escapeAttr(layer.src)}" muted loop autoplay playsinline></video>`;
+          return `<video src="${escapeAttr(getLayerMediaSrc(layer))}" muted loop autoplay playsinline></video>`;
         }
-        return `<img src="${escapeAttr(layer.src)}" alt="preview" />`;
+        return `<img src="${escapeAttr(getLayerMediaSrc(layer))}" alt="preview" />`;
       }
 
       function bindLink(anchor, url, openInNewTab = true) {
@@ -4104,7 +4119,7 @@ function updateAuthUI(isLoggedIn) {
           id: layer?.id || crypto.randomUUID(),
           type: layer?.type || 'image',
           name: layer?.name || '',
-          src: layer?.src || '',
+          src: layer?.src || layer?.mediaSrc || layer?.url || '',
           title: layer?.title || '',
           desc: layer?.desc || '',
           link: layer?.link || '',
