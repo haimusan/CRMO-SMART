@@ -1979,7 +1979,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3040 · Lightbox binding fix build</footer>
+<footer id="footerVersionLabel">CRMO_v3041 · save-close and media binding fix</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -3211,9 +3211,8 @@ function updateAuthUI(isLoggedIn) {
 
       function openLightbox(index = 0) {
         const visibleLayers = getVisibleLayers();
-        const firstWithMedia = visibleLayers.findIndex((layer) => String(layer?.src || '').trim());
-        const safeStart = Number.isFinite(Number(index)) ? Number(index) : (firstWithMedia >= 0 ? firstWithMedia : 0);
-        currentLayerIndex = clamp(safeStart, 0, Math.max(visibleLayers.length - 1, 0));
+        const safeStart = Number.isFinite(Number(index)) ? Number(index) : 0;
+        currentLayerIndex = pickRenderableLayerIndex(visibleLayers, safeStart);
         renderLightbox();
         els.lightboxDialog.showModal();
       }
@@ -3249,7 +3248,7 @@ function updateAuthUI(isLoggedIn) {
         const cloud = (data?.layers || []).filter((layer) => !layer.pendingUpload && /^https?:/i.test(String(layer?.src || ''))).length;
         els.dropzoneMeta.textContent = total
           ? `${total} תמונות בעורך · ${cloud} בענן · ${pending} ממתינות לשמירה`
-          : 'המדיה תיטען לעורך, תוצג מיד באריח, ותישמר לענן בלחיצה על שמירה.';
+          : 'המדיה תיטען לעורך ותישמר לענן רק בלחיצה על שמירה.';
       }
 
       function collectEditorHeader() {
@@ -3511,18 +3510,10 @@ function updateAuthUI(isLoggedIn) {
           syncDraftHeaderFromForm();
           renderEditorPreview();
           updateDropzoneMeta();
-          markEditorDirty('המדיה נטענה לעורך. שמירה תסגור ותציג את התוצאה בלייטבוקס.');
-          if (session && supabaseClient) {
-            setStatus('מעלה מדיה חדשה ל־Storage...', '');
-            await ensureDraftAssetsUploaded(editorDraft);
-            renderEditorPreview();
-            updateDropzoneMeta();
-            setStatus(`נוספו ${layers.length} מדיות והועלו ל־Storage.`, 'success');
-          } else {
-            setStatus(`נוספו ${layers.length} מדיות מקומית. התחבר כדי להעלות אותן לענן.`, '');
-          }
+          markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
+          setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3040] addFiles failed', err);
+          console.error('[CRMO_v3041] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3695,22 +3686,24 @@ function updateAuthUI(isLoggedIn) {
           const nextState = normalizeState(deepClone(editorDraft));
           stampLocalDraft(nextState);
           markVerification('not verified', '');
-          saveLocalTile(nextState);
           const saveOk = await saveToCloud(nextState);
           if (!saveOk) {
             updateEditorSaveNote('שמירת payload לענן נכשלה. העורך נשאר פתוח.');
             return;
           }
-          const loaded = await loadFromCloudAndMerge(true);
-          if (!loaded) {
-            updateEditorSaveNote('השמירה הושלמה אבל טעינה חוזרת מהשרת נכשלה. העורך נשאר פתוח.');
-            return;
-          }
+          let applied = nextState;
+          try {
+            const cloud = await readCloudPayload();
+            if (cloud) applied = normalizeState(chooseLatest(nextState, cloud));
+          } catch (_) {}
+          state = normalizeState(applied);
+          saveLocalTile(state);
+          applyStateToUI(state);
           clearEditorDirtyState();
           closeEditor();
-          openLightbox(0);
+          setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3040] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3041] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -3892,10 +3885,20 @@ function updateAuthUI(isLoggedIn) {
         applyDashboardLikeControls();
       }
 
+      function pickRenderableLayerIndex(layers, preferred = 0) {
+        const list = Array.isArray(layers) ? layers : [];
+        if (!list.length) return 0;
+        const safePreferred = clamp(preferred, 0, Math.max(list.length - 1, 0));
+        const preferredLayer = list[safePreferred] || null;
+        if (String(preferredLayer?.src || '').trim()) return safePreferred;
+        const withMedia = list.findIndex((layer) => String(layer?.src || '').trim());
+        return withMedia >= 0 ? withMedia : safePreferred;
+      }
+
       function renderTile() {
         els.tileMediaHost.innerHTML = '';
         const visibleLayers = getVisibleLayers();
-        currentTileIndex = clamp(currentTileIndex, 0, Math.max(visibleLayers.length - 1, 0));
+        currentTileIndex = pickRenderableLayerIndex(visibleLayers, currentTileIndex);
         const layer = visibleLayers[currentTileIndex] || null;
         const hasMultiple = visibleLayers.length > 1;
         els.tile.classList.toggle('has-multiple', hasMultiple);
@@ -3948,15 +3951,8 @@ function updateAuthUI(isLoggedIn) {
 
       function renderLightbox() {
         const visibleLayers = getVisibleLayers();
-        currentLayerIndex = clamp(currentLayerIndex, 0, Math.max(visibleLayers.length - 1, 0));
-        let layer = visibleLayers[currentLayerIndex] || null;
-        if ((!layer || !String(layer?.src || '').trim()) && visibleLayers.length) {
-          const fallbackIndex = visibleLayers.findIndex((item) => String(item?.src || '').trim());
-          if (fallbackIndex >= 0) {
-            currentLayerIndex = fallbackIndex;
-            layer = visibleLayers[fallbackIndex] || null;
-          }
-        }
+        currentLayerIndex = pickRenderableLayerIndex(visibleLayers, currentLayerIndex);
+        const layer = visibleLayers[currentLayerIndex] || null;
         els.lightboxMediaHost.innerHTML = '';
         if (!layer?.src) {
           els.lightboxFallback.hidden = false;
