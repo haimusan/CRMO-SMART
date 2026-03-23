@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3039</title>
+<title>CRMO_v3040</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3039 tile editor rebuild */
+  /* CRMO_v3040 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1859,7 +1859,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3039</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3040</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -1979,7 +1979,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3039 · Save-load verification build</footer>
+<footer id="footerVersionLabel">CRMO_v3040 · Lightbox binding fix build</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2009,7 +2009,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3039</h2>
+<h2>עורך אריח — CRMO_v3040</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2094,7 +2094,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3039';
+      const VERSION = 'CRMO_v3040';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3162,7 +3162,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3039] openEditor failed', err);
+          console.error('[CRMO_v3040] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3211,7 +3211,9 @@ function updateAuthUI(isLoggedIn) {
 
       function openLightbox(index = 0) {
         const visibleLayers = getVisibleLayers();
-        currentLayerIndex = clamp(index, 0, Math.max(visibleLayers.length - 1, 0));
+        const firstWithMedia = visibleLayers.findIndex((layer) => String(layer?.src || '').trim());
+        const safeStart = Number.isFinite(Number(index)) ? Number(index) : (firstWithMedia >= 0 ? firstWithMedia : 0);
+        currentLayerIndex = clamp(safeStart, 0, Math.max(visibleLayers.length - 1, 0));
         renderLightbox();
         els.lightboxDialog.showModal();
       }
@@ -3520,7 +3522,7 @@ function updateAuthUI(isLoggedIn) {
             setStatus(`נוספו ${layers.length} מדיות מקומית. התחבר כדי להעלות אותן לענן.`, '');
           }
         } catch (err) {
-          console.error('[CRMO_v3039] addFiles failed', err);
+          console.error('[CRMO_v3040] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3708,7 +3710,7 @@ function updateAuthUI(isLoggedIn) {
           closeEditor();
           openLightbox(0);
         } catch (err) {
-          console.error('[CRMO_v3039] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3040] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -3874,7 +3876,7 @@ function updateAuthUI(isLoggedIn) {
           els.adminVersionPill.textContent = VERSION;
         }
         if (els.footerVersionLabel) {
-          els.footerVersionLabel.textContent = `${VERSION} · Save-load verification build`;
+          els.footerVersionLabel.textContent = `${VERSION} · Lightbox binding fix build`;
         }
       }
 
@@ -3947,7 +3949,14 @@ function updateAuthUI(isLoggedIn) {
       function renderLightbox() {
         const visibleLayers = getVisibleLayers();
         currentLayerIndex = clamp(currentLayerIndex, 0, Math.max(visibleLayers.length - 1, 0));
-        const layer = visibleLayers[currentLayerIndex] || null;
+        let layer = visibleLayers[currentLayerIndex] || null;
+        if ((!layer || !String(layer?.src || '').trim()) && visibleLayers.length) {
+          const fallbackIndex = visibleLayers.findIndex((item) => String(item?.src || '').trim());
+          if (fallbackIndex >= 0) {
+            currentLayerIndex = fallbackIndex;
+            layer = visibleLayers[fallbackIndex] || null;
+          }
+        }
         els.lightboxMediaHost.innerHTML = '';
         if (!layer?.src) {
           els.lightboxFallback.hidden = false;
@@ -4261,7 +4270,11 @@ function updateAuthUI(isLoggedIn) {
       }
 
       function clamp(v, min, max) {
-        return Math.min(max, Math.max(min, v));
+        const lo = Number.isFinite(Number(min)) ? Number(min) : 0;
+        const hi = Number.isFinite(Number(max)) ? Number(max) : lo;
+        const value = Number(v);
+        if (!Number.isFinite(value)) return lo;
+        return Math.min(hi, Math.max(lo, value));
       }
 
       function deepClone(obj) {
