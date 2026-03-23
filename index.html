@@ -327,7 +327,9 @@
       position: absolute;
       top: 12px;
       left: 12px;
-      z-index: 5;
+      z-index: 30;
+      pointer-events: auto;
+      touch-action: manipulation;
       width: 44px;
       height: 44px;
       border-radius: 999px;
@@ -1075,7 +1077,9 @@
       right: 16px;
       bottom: 12px;
       left: 16px;
-      z-index: 5;
+      z-index: 30;
+      pointer-events: auto;
+      touch-action: manipulation;
       display: flex;
       justify-content: center;
       gap: 6px;
@@ -1925,7 +1929,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3030 · Smart tile editor · stable import + drag + persistent editor preview</footer>
+<footer id="footerVersionLabel">CRMO_v3031 · Smart tile editor · stable import + drag + persistent editor preview</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -1955,7 +1959,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell">
 <div class="modal-head">
-<h2>עורך אריח — CRMO_v3030</h2>
+<h2>עורך אריח — CRMO_v3031</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="editor-body editor-shell">
@@ -2045,7 +2049,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3030';
+      const VERSION = 'CRMO_v3031';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2229,9 +2233,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         while (diagEntries.length > 60) diagEntries.pop();
         if (els.diagLog) els.diagLog.textContent = diagEntries.join('\n');
         if (meta) {
-          try { console.debug('[CRMO_v3030]', message, meta); } catch (_) {}
+          try { console.debug('[CRMO_v3031]', message, meta); } catch (_) {}
         } else {
-          try { console.debug('[CRMO_v3030]', message); } catch (_) {}
+          try { console.debug('[CRMO_v3031]', message); } catch (_) {}
         }
       }
 
@@ -2531,7 +2535,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
             setSyncState('sync: local only');
           }
         } catch (err) {
-          console.error('[CRMO_v3030] initSupabase failed', err);
+          console.error('[CRMO_v3031] initSupabase failed', err);
           logDiag('initSupabase failed', { message: safeMessage(err) });
           setSyncState('sync: init error');
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
@@ -2557,7 +2561,13 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         document.querySelectorAll('[data-dashboard-tab]').forEach((tabBtn) => {
           tabBtn.addEventListener('click', () => setDashboardTab(tabBtn.dataset.dashboardTab || 'status'));
         });
-        els.editBtn.addEventListener('click', openEditor);
+        ['click','pointerdown','touchstart','mousedown'].forEach((evtName) => {
+          els.editBtn.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openEditor();
+          }, { passive: false });
+        });
         els.closeEditorBtn.addEventListener('click', closeEditor);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
         els.tile.addEventListener('click', handleTileClick);
@@ -2679,7 +2689,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           }, { once: true });
           picker.click();
         } catch (err) {
-          console.error('[CRMO_v3030] picker failed', err);
+          console.error('[CRMO_v3031] picker failed', err);
           try { els.fileInput.click(); } catch (_) {}
         }
       }
@@ -2773,7 +2783,7 @@ async function loginWithPassword(email, password, remember = true) {
     return { ok: true, message: 'התחברות הצליחה.', session };
   } catch (err) {
     const message = safeMessage(err);
-    console.error('[CRMO_v3030] login failed', err);
+    console.error('[CRMO_v3031] login failed', err);
     logDiag('login failed', { message });
     setStatus('התחברות נכשלה: ' + message, 'error');
     setAuthFeedback('התחברות נכשלה: ' + message, 'error');
@@ -2882,7 +2892,7 @@ async function logout() {
           setAuthFeedback('התנתקת.', '');
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3030] logout failed', err);
+          console.error('[CRMO_v3031] logout failed', err);
           logDiag('logout failed', { message: safeMessage(err) });
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
@@ -2994,6 +3004,7 @@ function updateAuthUI(isLoggedIn) {
       function openEditor() {
         if (!session) {
           setStatus('אפשר לערוך רק במצב מחובר', 'error');
+          try { window.CRMOAuthModal?.open('login'); } catch (_) {}
           return;
         }
         editorDraft = deepClone(state);
@@ -3001,8 +3012,9 @@ function updateAuthUI(isLoggedIn) {
         currentEditorLayerIndex = 0;
         renderLayersEditor();
         renderEditorPreview();
-        els.editorDialog.showModal();
+        if (!els.editorDialog.open) els.editorDialog.showModal();
       }
+      window.CRMOOpenTileEditor = openEditor;
 
       function closeEditor() {
         if (els.editorDialog.open) els.editorDialog.close();
@@ -3286,7 +3298,7 @@ function updateAuthUI(isLoggedIn) {
           }
           setStatus(`נוספו ${layers.length} מדיות. יועלו לענן בשמירה.`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3030] addFiles failed', err);
+          console.error('[CRMO_v3031] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3518,7 +3530,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
           if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
         } catch (err) {
-          console.error('[CRMO_v3030] saveToCloud failed', err);
+          console.error('[CRMO_v3031] saveToCloud failed', err);
           markVerification('verification failed', '');
           setSyncState('sync: local only');
           setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
@@ -3556,7 +3568,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נטען מהענן · payload פעיל', 'success');
           logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
         } catch (err) {
-          console.error('[CRMO_v3030] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3031] loadFromCloudAndMerge failed', err);
           setSyncState('sync: cloud error');
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
           logDiag('loadFromCloudAndMerge failed', { message: safeMessage(err) });
