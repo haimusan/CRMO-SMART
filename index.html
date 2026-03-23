@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3044</title>
+<title>CRMO_v3045</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3044 tile editor rebuild */
+  /* CRMO_v3045 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1871,7 +1871,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3044</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3045</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2011,7 +2011,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3044 · single-tile save/render binding fix</footer>
+<footer id="footerVersionLabel">CRMO_v3045 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2041,7 +2041,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3044</h2>
+<h2>עורך אריח — CRMO_v3045</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2126,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3044';
+      const VERSION = 'CRMO_v3045';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3194,7 +3194,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3044] openEditor failed', err);
+          console.error('[CRMO_v3045] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3545,7 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3044] addFiles failed', err);
+          console.error('[CRMO_v3045] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3746,7 +3746,7 @@ function updateAuthUI(isLoggedIn) {
           closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3044] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3045] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -3913,7 +3913,7 @@ function updateAuthUI(isLoggedIn) {
           els.adminVersionPill.textContent = VERSION;
         }
         if (els.footerVersionLabel) {
-          els.footerVersionLabel.textContent = `${VERSION} · single-tile save/render binding fix`;
+          els.footerVersionLabel.textContent = `${VERSION} · tile component rebuild test area`;
         }
       }
 
@@ -4669,5 +4669,423 @@ window.CRMOForceOpenAuthModal = function(event){
 };
 })();
 
-</script></body>
+</script>
+<style id="crmo3045-multitile-css">
+  #tileWrap,#galleryTestSections,#lightboxDialog,#editorDialog{display:none!important}
+  .crmo3045-shell{width:min(1240px,92vw);margin:18px auto 28px;display:grid;gap:16px}
+  .crmo3045-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .crmo3045-title{font-size:18px;font-weight:700}
+  .crmo3045-sub{font-size:12px;color:#666}
+  .crmo3045-version{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:999px;font-size:12px}
+  .crmo3045-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  .crmo3045-tile-wrap{position:relative;display:grid;gap:8px}
+  .crmo3045-tile{position:relative;aspect-ratio:16/9;background:#e5e5e5;border:1px solid rgba(0,0,0,.1);overflow:hidden;cursor:pointer}
+  .crmo3045-tile-media,.crmo3045-lb-media,.crmo3045-thumb img,.crmo3045-thumb video,.crmo3045-stage img,.crmo3045-stage video{width:100%;height:100%;object-fit:cover;display:block}
+  .crmo3045-fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#555;font-size:14px;background:linear-gradient(180deg,#efefef,#dcdcdc)}
+  .crmo3045-pencil{position:absolute;top:10px;left:10px;z-index:3;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 4px 18px rgba(0,0,0,.14);cursor:pointer;font-size:18px}
+  .crmo3045-copy{display:grid;gap:4px;padding:0 2px}
+  .crmo3045-meta{font-size:11px;color:#777}
+  .crmo3045-name{font-size:16px;font-weight:700;color:#111;min-height:20px}
+  .crmo3045-desc{font-size:13px;color:#444;min-height:18px}
+  .crmo3045-count{font-size:11px;color:#666}
+  .crmo3045-dialog{border:none;padding:0;max-width:min(1120px,calc(100vw - 28px));width:min(1120px,calc(100vw - 28px));max-height:calc(100vh - 28px)}
+  .crmo3045-dialog::backdrop{background:rgba(0,0,0,.52)}
+  .crmo3045-modal{display:grid;background:#f3f3f3}
+  .crmo3045-modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.12);background:#f3f3f3}
+  .crmo3045-modal-head h2{font-size:17px;font-weight:700}
+  .crmo3045-x{border:none;background:#fff;width:38px;height:38px;border-radius:999px;cursor:pointer;box-shadow:0 1px 10px rgba(0,0,0,.08)}
+  .crmo3045-lb-body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,.8fr);gap:16px;padding:16px}
+  .crmo3045-lb-view{position:relative;aspect-ratio:16/9;background:#d8d8d8;border:1px solid rgba(0,0,0,.12);overflow:hidden}
+  .crmo3045-lb-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:46px;height:46px;border:none;border-radius:999px;background:rgba(255,255,255,.92);cursor:pointer;font-size:28px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+  .crmo3045-lb-prev{right:12px}.crmo3045-lb-next{left:12px}
+  .crmo3045-lb-side{display:grid;align-content:start;gap:10px}
+  .crmo3045-lb-kicker{font-size:11px;color:#777}
+  .crmo3045-lb-title{font-size:22px;font-weight:700;color:#111}
+  .crmo3045-lb-desc{font-size:14px;color:#333;line-height:1.4}
+  .crmo3045-lb-link{font-size:13px;color:#111;text-decoration:none;word-break:break-all}
+  .crmo3045-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .crmo3045-thumb{border:2px solid transparent;background:#d8d8d8;padding:0;aspect-ratio:16/9;overflow:hidden;cursor:pointer}
+  .crmo3045-thumb.active{border-color:#111}
+  .crmo3045-editor-body{display:grid;gap:12px;padding:14px 18px 18px;overflow:auto}
+  .crmo3045-editor-top{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+  .crmo3045-field{display:grid;gap:4px}
+  .crmo3045-field span{font-size:12px;color:#666}
+  .crmo3045-field input,.crmo3045-field textarea{width:100%;border:1px solid rgba(0,0,0,.16);background:#fff;padding:10px 12px;font:inherit}
+  .crmo3045-field textarea{min-height:72px;resize:vertical}
+  .crmo3045-stage{aspect-ratio:16/9;background:#d8d8d8;border:1px solid rgba(0,0,0,.12);overflow:hidden;position:relative}
+  .crmo3045-drop{padding:16px;border:2px dashed rgba(0,0,0,.28);background:#fafafa;cursor:pointer}
+  .crmo3045-editor-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .crmo3045-btns{display:flex;gap:10px;flex-wrap:wrap}
+  .crmo3045-btn,.crmo3045-btn-ghost,.crmo3045-btn-danger{height:44px;padding:0 16px;border:none;cursor:pointer}
+  .crmo3045-btn{background:#111;color:#fff}.crmo3045-btn-ghost{background:#fff;color:#111;border:1px solid rgba(0,0,0,.12)}.crmo3045-btn-danger{background:#dcdcdc;color:#111}
+  .crmo3045-note{font-size:12px;color:#666}
+  .crmo3045-hidden-input{display:none}
+  @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+
+<script id="crmo3045-multitile-script">
+(() => {
+  'use strict';
+  const VERSION = 'CRMO_v3045';
+  const STORAGE_KEY = 'CRMO_v3045_MULTI_TILE_DEMO';
+  const stage = document.querySelector('main.stage');
+  if (!stage) return;
+  const legacy = {
+    wrap: document.getElementById('tileWrap'),
+    sections: document.getElementById('galleryTestSections'),
+    lb: document.getElementById('lightboxDialog'),
+    ed: document.getElementById('editorDialog')
+  };
+  Object.values(legacy).forEach((el) => {
+    if (!el) return;
+    try { if (el.open) el.close(); } catch (_) {}
+    el.setAttribute('aria-hidden', 'true');
+    el.hidden = true;
+  });
+
+  const shell = document.createElement('section');
+  shell.className = 'crmo3045-shell';
+  shell.innerHTML = `
+    <div class="crmo3045-head">
+      <div>
+        <div class="crmo3045-title">Tile Component Test Area</div>
+        <div class="crmo3045-sub">4 independent tiles · editor per tile · lightbox arrows between tiles only</div>
+      </div>
+      <div class="crmo3045-version">${VERSION}</div>
+    </div>
+    <div class="crmo3045-grid" id="crmo3045Grid"></div>
+  `;
+  stage.appendChild(shell);
+
+  const lb = document.createElement('dialog');
+  lb.className = 'crmo3045-dialog';
+  lb.id = 'crmo3045Lightbox';
+  lb.innerHTML = `
+    <div class="crmo3045-modal">
+      <div class="crmo3045-modal-head">
+        <h2>${VERSION} · Tile Lightbox</h2>
+        <button class="crmo3045-x" type="button" data-close-lightbox>✕</button>
+      </div>
+      <div class="crmo3045-lb-body">
+        <div class="crmo3045-lb-view" id="crmo3045LbView">
+          <button class="crmo3045-lb-arrow crmo3045-lb-prev" type="button" aria-label="Previous tile" id="crmo3045PrevTile">‹</button>
+          <button class="crmo3045-lb-arrow crmo3045-lb-next" type="button" aria-label="Next tile" id="crmo3045NextTile">›</button>
+        </div>
+        <aside class="crmo3045-lb-side">
+          <div class="crmo3045-lb-kicker" id="crmo3045LbMeta"></div>
+          <div class="crmo3045-lb-title" id="crmo3045LbTitle"></div>
+          <div class="crmo3045-lb-desc" id="crmo3045LbDesc"></div>
+          <a class="crmo3045-lb-link" id="crmo3045LbLink" hidden target="_blank" rel="noopener"></a>
+          <div class="crmo3045-strip" id="crmo3045ThumbStrip"></div>
+        </aside>
+      </div>
+    </div>`;
+  document.body.appendChild(lb);
+
+  const ed = document.createElement('dialog');
+  ed.className = 'crmo3045-dialog';
+  ed.id = 'crmo3045Editor';
+  ed.innerHTML = `
+    <div class="crmo3045-modal">
+      <div class="crmo3045-modal-head">
+        <h2>${VERSION} · Tile Editor</h2>
+        <button class="crmo3045-x" type="button" data-close-editor>✕</button>
+      </div>
+      <div class="crmo3045-editor-body">
+        <div class="crmo3045-editor-top">
+          <label class="crmo3045-field"><span>Client</span><input id="crmo3045Client" type="text"></label>
+          <label class="crmo3045-field"><span>Brand</span><input id="crmo3045Brand" type="text"></label>
+          <label class="crmo3045-field"><span>Project title</span><input id="crmo3045Title" type="text"></label>
+          <label class="crmo3045-field"><span>Project description</span><input id="crmo3045Desc" type="text"></label>
+        </div>
+        <div class="crmo3045-stage" id="crmo3045EditorStage"></div>
+        <div class="crmo3045-strip" id="crmo3045EditorStrip"></div>
+        <label class="crmo3045-drop" id="crmo3045Dropzone">Drag media here or click to choose files</label>
+        <label class="crmo3045-field"><span>Link</span><input id="crmo3045Link" type="text" placeholder="https://example.com"></label>
+        <div class="crmo3045-editor-actions">
+          <div class="crmo3045-note" id="crmo3045EditorNote">Draft changes stay inside the popup until Save.</div>
+          <div class="crmo3045-btns">
+            <button class="crmo3045-btn-ghost" id="crmo3045AddMedia" type="button">Add media</button>
+            <button class="crmo3045-btn-danger" id="crmo3045ResetTile" type="button">Reset tile</button>
+            <button class="crmo3045-btn" id="crmo3045SaveTile" type="button">Save</button>
+          </div>
+        </div>
+        <input class="crmo3045-hidden-input" id="crmo3045FileInput" type="file" accept="image/*,video/*,.gif" multiple>
+      </div>
+    </div>`;
+  document.body.appendChild(ed);
+
+  const makeTile = (index) => ({
+    tileId: `crmo-tile-${String(index + 1).padStart(3,'0')}`,
+    meta: { client: '', brand: '' },
+    overlay: { title: '', desc: '', link: '' },
+    display: { openLinkInNewTab: true },
+    media: []
+  });
+  const normalizeTile = (tile, index) => ({
+    tileId: tile?.tileId || `crmo-tile-${String(index + 1).padStart(3,'0')}`,
+    meta: { client: String(tile?.meta?.client || ''), brand: String(tile?.meta?.brand || '') },
+    overlay: {
+      title: String(tile?.overlay?.title || ''),
+      desc: String(tile?.overlay?.desc || ''),
+      link: String(tile?.overlay?.link || '')
+    },
+    display: { openLinkInNewTab: tile?.display?.openLinkInNewTab !== false },
+    media: Array.isArray(tile?.media) ? tile.media.map((m, i) => ({
+      id: String(m?.id || `${Date.now()}-${index}-${i}`),
+      type: String(m?.type || 'image'),
+      src: String(m?.src || ''),
+      title: String(m?.title || ''),
+      desc: String(m?.desc || '')
+    })).filter((m) => m.src) : []
+  });
+  const load = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (raw && Array.isArray(raw.tiles) && raw.tiles.length >= 4) return raw.tiles.slice(0, 4).map(normalizeTile);
+    } catch (_) {}
+    return [0,1,2,3].map((i) => makeTile(i));
+  };
+  let tiles = load();
+  let activeTileIndex = 0;
+  let activeMediaIndex = 0;
+  let editorTileIndex = 0;
+  let editorDraft = null;
+
+  const persist = () => localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, tiles }));
+  const grid = shell.querySelector('#crmo3045Grid');
+  const byId = (id) => document.getElementById(id);
+  const mediaEl = (item, cls = '') => {
+    if (!item?.src) return null;
+    const isVideo = (item.type || '').startsWith('video') || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.src) || item.src.startsWith('data:video');
+    const el = document.createElement(isVideo ? 'video' : 'img');
+    if (isVideo) {
+      el.src = item.src;
+      el.controls = true;
+      el.playsInline = true;
+    } else {
+      el.src = item.src;
+      el.alt = item.title || '';
+      el.loading = 'lazy';
+    }
+    if (cls) el.className = cls;
+    return el;
+  };
+  const escape = (s) => String(s || '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  function syncVersionLabels() {
+    document.title = VERSION;
+    const footer = document.getElementById('footerVersionLabel');
+    if (footer) footer.textContent = `${VERSION} · tile component rebuild test area`;
+    const admin = document.getElementById('adminVersionPill');
+    if (admin) admin.textContent = VERSION;
+    const title = document.querySelector('.app-shell header h1');
+    if (title && /CRMO_v/i.test(title.textContent || '')) title.textContent = VERSION;
+  }
+
+  function renderGrid() {
+    grid.innerHTML = '';
+    tiles.forEach((tile, idx) => {
+      const card = document.createElement('div');
+      card.className = 'crmo3045-tile-wrap';
+      const first = tile.media[0] || null;
+      const meta = [tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
+      card.innerHTML = `
+        <button class="crmo3045-pencil" type="button" aria-label="Edit tile ${idx+1}">✎</button>
+        <article class="crmo3045-tile" tabindex="0" aria-label="Tile ${idx+1}">
+          ${first ? '' : '<div class="crmo3045-fallback">CRMO TILE<br>16:9</div>'}
+        </article>
+        <div class="crmo3045-copy">
+          <div class="crmo3045-meta">${escape(meta || tile.tileId)}</div>
+          <div class="crmo3045-name">${escape(tile.overlay.title || 'Untitled tile')}</div>
+          <div class="crmo3045-desc">${escape(tile.overlay.desc || 'No committed content yet')}</div>
+          <div class="crmo3045-count">${tile.media.length} media · ${tile.tileId}</div>
+        </div>`;
+      const article = card.querySelector('.crmo3045-tile');
+      if (first) article.appendChild(mediaEl(first, 'crmo3045-tile-media'));
+      card.querySelector('.crmo3045-pencil').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditor(idx);
+      });
+      article.addEventListener('click', () => openLightbox(idx, 0));
+      article.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(idx, 0);
+        }
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  function renderLightbox() {
+    const tile = tiles[activeTileIndex];
+    const view = byId('crmo3045LbView');
+    const strip = byId('crmo3045ThumbStrip');
+    const item = tile.media[activeMediaIndex] || null;
+    view.querySelectorAll('img,video,.crmo3045-fallback').forEach((n) => n.remove());
+    if (item) {
+      view.appendChild(mediaEl(item, 'crmo3045-lb-media'));
+    } else {
+      const fallback = document.createElement('div');
+      fallback.className = 'crmo3045-fallback';
+      fallback.innerHTML = 'No media in this tile';
+      view.appendChild(fallback);
+    }
+    byId('crmo3045LbMeta').textContent = `${activeTileIndex + 1}/${tiles.length} · ${tile.tileId}`;
+    byId('crmo3045LbTitle').textContent = tile.overlay.title || 'Untitled tile';
+    byId('crmo3045LbDesc').textContent = tile.overlay.desc || '';
+    const link = byId('crmo3045LbLink');
+    if (tile.overlay.link) {
+      link.hidden = false;
+      link.href = tile.overlay.link;
+      link.textContent = tile.overlay.link;
+      link.target = tile.display.openLinkInNewTab ? '_blank' : '_self';
+    } else {
+      link.hidden = true;
+      link.removeAttribute('href');
+      link.textContent = '';
+    }
+    strip.innerHTML = '';
+    tile.media.forEach((media, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
+      btn.appendChild(mediaEl(media));
+      btn.addEventListener('click', () => { activeMediaIndex = idx; renderLightbox(); });
+      strip.appendChild(btn);
+    });
+  }
+
+  function openLightbox(tileIndex, mediaIndex) {
+    activeTileIndex = tileIndex;
+    activeMediaIndex = Math.max(0, Math.min(mediaIndex || 0, Math.max((tiles[tileIndex].media.length || 1) - 1, 0)));
+    renderLightbox();
+    lb.showModal();
+  }
+  function shiftTile(delta) {
+    activeTileIndex = (activeTileIndex + delta + tiles.length) % tiles.length;
+    activeMediaIndex = 0;
+    renderLightbox();
+  }
+
+  function renderEditor() {
+    const tile = editorDraft;
+    byId('crmo3045Client').value = tile.meta.client || '';
+    byId('crmo3045Brand').value = tile.meta.brand || '';
+    byId('crmo3045Title').value = tile.overlay.title || '';
+    byId('crmo3045Desc').value = tile.overlay.desc || '';
+    byId('crmo3045Link').value = tile.overlay.link || '';
+    const stage = byId('crmo3045EditorStage');
+    const strip = byId('crmo3045EditorStrip');
+    const item = tile.media[activeMediaIndex] || null;
+    stage.innerHTML = '';
+    if (item) stage.appendChild(mediaEl(item)); else stage.innerHTML = '<div class="crmo3045-fallback">No draft media yet</div>';
+    strip.innerHTML = '';
+    tile.media.forEach((media, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
+      btn.appendChild(mediaEl(media));
+      btn.addEventListener('click', () => { activeMediaIndex = idx; renderEditor(); });
+      strip.appendChild(btn);
+    });
+  }
+
+  function syncDraftFromFields() {
+    if (!editorDraft) return;
+    editorDraft.meta.client = byId('crmo3045Client').value.trim();
+    editorDraft.meta.brand = byId('crmo3045Brand').value.trim();
+    editorDraft.overlay.title = byId('crmo3045Title').value.trim();
+    editorDraft.overlay.desc = byId('crmo3045Desc').value.trim();
+    editorDraft.overlay.link = byId('crmo3045Link').value.trim();
+  }
+
+  function openEditor(tileIndex) {
+    editorTileIndex = tileIndex;
+    activeMediaIndex = 0;
+    editorDraft = structuredClone(tiles[tileIndex]);
+    renderEditor();
+    ed.showModal();
+  }
+
+  async function filesToMedia(files) {
+    const results = [];
+    for (const file of Array.from(files || [])) {
+      const src = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result || ''));
+        r.onerror = () => reject(r.error || new Error('read failed'));
+        r.readAsDataURL(file);
+      });
+      results.push({ id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, type: file.type || 'image', src, title: '', desc: '' });
+    }
+    return results;
+  }
+
+  function closeEditor() {
+    try { if (ed.open) ed.close(); } catch (_) {}
+    editorDraft = null;
+    byId('crmo3045FileInput').value = '';
+  }
+
+  byId('crmo3045PrevTile').addEventListener('click', () => shiftTile(-1));
+  byId('crmo3045NextTile').addEventListener('click', () => shiftTile(1));
+  lb.querySelector('[data-close-lightbox]').addEventListener('click', () => { try { lb.close(); } catch (_) {} });
+  ed.querySelector('[data-close-editor]').addEventListener('click', closeEditor);
+  byId('crmo3045AddMedia').addEventListener('click', () => byId('crmo3045FileInput').click());
+  byId('crmo3045Dropzone').addEventListener('click', () => byId('crmo3045FileInput').click());
+  ['crmo3045Client','crmo3045Brand','crmo3045Title','crmo3045Desc','crmo3045Link'].forEach((id) => {
+    byId(id).addEventListener('input', () => {
+      syncDraftFromFields();
+      byId('crmo3045EditorNote').textContent = 'Draft updated. Save will commit and close the editor.';
+    });
+  });
+  byId('crmo3045FileInput').addEventListener('change', async (e) => {
+    if (!editorDraft) return;
+    const incoming = await filesToMedia(e.target.files);
+    editorDraft.media.push(...incoming);
+    activeMediaIndex = Math.max(0, editorDraft.media.length - incoming.length);
+    renderEditor();
+    byId('crmo3045EditorNote').textContent = `${incoming.length} media added to draft. Not committed until Save.`;
+  });
+  ['dragenter','dragover'].forEach((evt) => byId('crmo3045Dropzone').addEventListener(evt, (e) => { e.preventDefault(); }));
+  byId('crmo3045Dropzone').addEventListener('drop', async (e) => {
+    e.preventDefault();
+    if (!editorDraft) return;
+    const incoming = await filesToMedia(e.dataTransfer.files);
+    editorDraft.media.push(...incoming);
+    activeMediaIndex = Math.max(0, editorDraft.media.length - incoming.length);
+    renderEditor();
+    byId('crmo3045EditorNote').textContent = `${incoming.length} media added to draft. Not committed until Save.`;
+  });
+  byId('crmo3045ResetTile').addEventListener('click', () => {
+    editorDraft = makeTile(editorTileIndex);
+    activeMediaIndex = 0;
+    renderEditor();
+    byId('crmo3045EditorNote').textContent = 'Draft reset. Save to commit the empty tile.';
+  });
+  byId('crmo3045SaveTile').addEventListener('click', () => {
+    if (!editorDraft) return;
+    syncDraftFromFields();
+    tiles[editorTileIndex] = normalizeTile(editorDraft, editorTileIndex);
+    persist();
+    renderGrid();
+    closeEditor();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (lb.open && e.key === 'ArrowLeft') { e.preventDefault(); shiftTile(1); }
+    if (lb.open && e.key === 'ArrowRight') { e.preventDefault(); shiftTile(-1); }
+    if (e.key === 'Escape') {
+      try { if (lb.open) lb.close(); } catch (_) {}
+      if (ed.open) closeEditor();
+    }
+  });
+
+  syncVersionLabels();
+  renderGrid();
+})();
+</script>
+
+</body>
 </html>
