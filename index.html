@@ -606,6 +606,73 @@
     .dropzone-title { font-size: 16px; font-weight: 700; color: #161616; }
     .dropzone-subtitle { margin-top: 6px; font-size: 13px; line-height: 1.45; }
     .dropzone-meta { margin-top: 10px; font-size: 12px; line-height: 1.45; color: #666; }
+    .editor-preview-shell {
+      display: grid;
+      gap: 12px;
+      margin: 14px 0 10px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.04);
+    }
+    .editor-preview-stage {
+      min-height: 240px;
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .editor-preview-stage img,
+    .editor-preview-stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #f4f4f4;
+    }
+    .editor-preview-empty {
+      font-size: 14px;
+      color: #666;
+      padding: 24px;
+      text-align: center;
+    }
+    .editor-preview-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .editor-preview-thumb {
+      flex: 0 0 88px;
+      width: 88px;
+      height: 88px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .editor-preview-thumb.active {
+      outline: 2px solid #111;
+      outline-offset: 2px;
+    }
+    .editor-preview-thumb img,
+    .editor-preview-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .layer-card.active {
+      outline: 2px solid #111;
+      outline-offset: 2px;
+    }
 
     .editor-actions {
       display: flex;
@@ -1858,7 +1925,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3029 · Tile editor rebuild · cloud media + verified multi-layer</footer>
+<footer id="footerVersionLabel">CRMO_v3030 · Smart tile editor · stable import + drag + persistent editor preview</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -1888,7 +1955,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell">
 <div class="modal-head">
-<h2>עורך אריח — crmo-tile-001</h2>
+<h2>עורך אריח — CRMO_v3030</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="editor-body editor-shell">
@@ -1956,6 +2023,10 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   <div class="dropzone-subtitle">עד 18 קבצי תמונה / GIF / וידאו. העלאה מרובה תהפוך את האריח לרב־שכבתי.</div>
   <div class="dropzone-meta" id="dropzoneMeta">המדיה תועלה ל־Supabase Storage, וה־payload ישמור כתובות ענן מאומתות.</div>
 </div>
+<section class="editor-preview-shell" id="editorPreviewShell">
+  <div class="editor-preview-stage" id="editorPreviewStage"><div class="editor-preview-empty">עדיין לא נוספה מדיה</div></div>
+  <div class="editor-preview-strip" id="editorPreviewStrip"></div>
+</section>
 <div class="note">
           גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
         </div>
@@ -1974,7 +2045,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3029';
+      const VERSION = 'CRMO_v3030';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2144,6 +2215,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         resetTileBtn: $('resetTileBtn'),
         dropzone: $('dropzone'),
         dropzoneMeta: $('dropzoneMeta'),
+        editorPreviewShell: $('editorPreviewShell'),
+        editorPreviewStage: $('editorPreviewStage'),
+        editorPreviewStrip: $('editorPreviewStrip'),
         layersList: $('layersList')
       };
 
@@ -2155,9 +2229,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         while (diagEntries.length > 60) diagEntries.pop();
         if (els.diagLog) els.diagLog.textContent = diagEntries.join('\n');
         if (meta) {
-          try { console.debug('[CRMO_v3029]', message, meta); } catch (_) {}
+          try { console.debug('[CRMO_v3030]', message, meta); } catch (_) {}
         } else {
-          try { console.debug('[CRMO_v3029]', message); } catch (_) {}
+          try { console.debug('[CRMO_v3030]', message); } catch (_) {}
         }
       }
 
@@ -2457,7 +2531,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
             setSyncState('sync: local only');
           }
         } catch (err) {
-          console.error('[CRMO_v3029] initSupabase failed', err);
+          console.error('[CRMO_v3030] initSupabase failed', err);
           logDiag('initSupabase failed', { message: safeMessage(err) });
           setSyncState('sync: init error');
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
@@ -2549,14 +2623,11 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
           if (!inDialog) closeLightbox();
         });
-        els.editorDialog.addEventListener('click', (e) => {
-          const rect = els.editorDialog.getBoundingClientRect();
-          const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
-          if (!inDialog) closeEditor();
+        els.editorDialog.addEventListener('cancel', (e) => {
+          e.preventDefault();
         });
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
-            if (els.editorDialog.open) closeEditor();
             if (els.lightboxDialog.open) closeLightbox();
           }
           if (els.lightboxDialog.open && e.key === 'ArrowRight') shiftLightbox(1);
@@ -2566,23 +2637,51 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         ['dragenter','dragover'].forEach(type => {
           els.dropzone.addEventListener(type, (e) => {
             e.preventDefault();
+            e.stopPropagation();
             els.dropzone.classList.add('dragover');
           });
         });
         ['dragleave','drop'].forEach(type => {
           els.dropzone.addEventListener(type, (e) => {
             e.preventDefault();
+            e.stopPropagation();
             els.dropzone.classList.remove('dragover');
           });
         });
-        els.dropzone.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
-        els.dropzone.addEventListener('click', () => els.fileInput.click());
+        els.dropzone.addEventListener('drop', (e) => addFiles(e.dataTransfer?.files));
+        els.dropzone.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openImportPicker();
+        });
         els.dropzone.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            els.fileInput.click();
+            openImportPicker();
           }
         });
+      }
+
+      function openImportPicker() {
+        if (!els.editorDialog?.open) return;
+        try {
+          const picker = document.createElement('input');
+          picker.type = 'file';
+          picker.accept = 'image/*,video/*,.gif';
+          picker.multiple = true;
+          picker.style.position = 'fixed';
+          picker.style.left = '-9999px';
+          document.body.appendChild(picker);
+          picker.addEventListener('change', async () => {
+            const files = picker.files;
+            await addFiles(files);
+            picker.remove();
+          }, { once: true });
+          picker.click();
+        } catch (err) {
+          console.error('[CRMO_v3030] picker failed', err);
+          try { els.fileInput.click(); } catch (_) {}
+        }
       }
 
       function handleTileClick(e) {
@@ -2674,7 +2773,7 @@ async function loginWithPassword(email, password, remember = true) {
     return { ok: true, message: 'התחברות הצליחה.', session };
   } catch (err) {
     const message = safeMessage(err);
-    console.error('[CRMO_v3029] login failed', err);
+    console.error('[CRMO_v3030] login failed', err);
     logDiag('login failed', { message });
     setStatus('התחברות נכשלה: ' + message, 'error');
     setAuthFeedback('התחברות נכשלה: ' + message, 'error');
@@ -2783,7 +2882,7 @@ async function logout() {
           setAuthFeedback('התנתקת.', '');
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3029] logout failed', err);
+          console.error('[CRMO_v3030] logout failed', err);
           logDiag('logout failed', { message: safeMessage(err) });
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
@@ -2899,13 +2998,18 @@ function updateAuthUI(isLoggedIn) {
         }
         editorDraft = deepClone(state);
         fillEditor(editorDraft);
+        currentEditorLayerIndex = 0;
         renderLayersEditor();
+        renderEditorPreview();
         els.editorDialog.showModal();
       }
 
       function closeEditor() {
         if (els.editorDialog.open) els.editorDialog.close();
         editorDraft = null;
+        currentEditorLayerIndex = 0;
+        if (els.editorPreviewStage) els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
+        if (els.editorPreviewStrip) els.editorPreviewStrip.innerHTML = '';
       }
 
       function openLightbox(index = 0) {
@@ -2937,6 +3041,11 @@ function updateAuthUI(isLoggedIn) {
         els.tileLbLinkInput.value = data.lightbox?.link || '';
         els.showLinkInTileInput.checked = data.display?.showLinkInTile !== false;
         els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab !== false;
+        if (els.dropzoneMeta) {
+          const total = Array.isArray(data.layers) ? data.layers.length : 0;
+          const pending = (data.layers || []).filter((layer) => layer.pendingUpload).length;
+          els.dropzoneMeta.textContent = total ? `${total} מדיות בעורך · ${pending} ממתינות להעלאה ל־Storage` : 'המדיה תועלה ל־Supabase Storage, וה־payload ישמור כתובות ענן מאומתות.';
+        }
       }
 
       function collectEditorHeader() {
@@ -2991,12 +3100,48 @@ function updateAuthUI(isLoggedIn) {
         }
       };
 
+      function setEditorActiveLayer(index) {
+        if (!editorDraft?.layers?.length) {
+          currentEditorLayerIndex = 0;
+          renderEditorPreview();
+          return;
+        }
+        currentEditorLayerIndex = clamp(index, 0, editorDraft.layers.length - 1);
+        renderEditorPreview();
+        Array.from(els.layersList.querySelectorAll('.layer-card')).forEach((card, idx) => {
+          card.classList.toggle('active', idx === currentEditorLayerIndex);
+        });
+      }
+
+      function renderEditorPreview() {
+        if (!els.editorPreviewStage || !els.editorPreviewStrip) return;
+        els.editorPreviewStage.innerHTML = '';
+        els.editorPreviewStrip.innerHTML = '';
+        const layers = editorDraft?.layers || [];
+        if (!layers.length) {
+          els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
+          return;
+        }
+        currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, layers.length - 1);
+        const active = layers[currentEditorLayerIndex];
+        els.editorPreviewStage.appendChild(createMediaElement(active, '', true));
+        layers.forEach((layer, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'editor-preview-thumb' + (idx === currentEditorLayerIndex ? ' active' : '');
+          btn.title = layer.name || `layer ${idx+1}`;
+          btn.appendChild(createMediaElement(layer, '', true));
+          btn.addEventListener('click', () => setEditorActiveLayer(idx));
+          els.editorPreviewStrip.appendChild(btn);
+        });
+      }
+
       function renderLayersEditor() {
         els.layersList.innerHTML = '';
         editorDraft.layers.forEach((layer, idx) => {
           const card = document.createElement('section');
           const isVisible = layer.isVisible !== false;
-          card.className = 'layer-card' + (isVisible ? '' : ' is-hidden');
+          card.className = 'layer-card' + (isVisible ? '' : ' is-hidden') + (idx === currentEditorLayerIndex ? ' active' : '');
           card.draggable = true;
           card.dataset.index = String(idx);
           card.innerHTML = `
@@ -3041,6 +3186,7 @@ function updateAuthUI(isLoggedIn) {
             </div>
           `;
 
+          card.addEventListener('click', () => setEditorActiveLayer(idx));
           const fields = card.querySelectorAll('[data-field]');
           fields.forEach((field) => {
             field.addEventListener('input', () => {
@@ -3049,6 +3195,7 @@ function updateAuthUI(isLoggedIn) {
               if (key === 'isVisible') {
                 card.classList.toggle('is-hidden', !field.checked);
               }
+              renderEditorPreview();
             });
             if (field.type === 'checkbox') {
               field.addEventListener('change', () => {
@@ -3056,6 +3203,7 @@ function updateAuthUI(isLoggedIn) {
                 if (field.dataset.field === 'isVisible') {
                   card.classList.toggle('is-hidden', !field.checked);
                 }
+                renderEditorPreview();
               });
             }
           });
@@ -3063,7 +3211,11 @@ function updateAuthUI(isLoggedIn) {
           card.querySelector('[data-action="up"]').addEventListener('click', () => moveLayer(idx, idx - 1));
           card.querySelector('[data-action="down"]').addEventListener('click', () => moveLayer(idx, idx + 1));
           card.querySelector('[data-action="remove"]').addEventListener('click', () => {
-            if (layerOps.remove(idx)) renderLayersEditor();
+            if (layerOps.remove(idx)) {
+              currentEditorLayerIndex = Math.max(0, Math.min(currentEditorLayerIndex, editorDraft.layers.length - 1));
+              renderLayersEditor();
+              renderEditorPreview();
+            }
           });
 
           const dragHandle = card.querySelector('.layer-drag');
@@ -3082,7 +3234,11 @@ function updateAuthUI(isLoggedIn) {
             e.preventDefault();
             const from = Number(e.dataTransfer.getData('text/plain'));
             const to = idx;
-            if (layerOps.move(from, to)) renderLayersEditor();
+            if (layerOps.move(from, to)) {
+              currentEditorLayerIndex = to;
+              renderLayersEditor();
+              renderEditorPreview();
+            }
           });
 
           els.layersList.appendChild(card);
@@ -3090,7 +3246,11 @@ function updateAuthUI(isLoggedIn) {
       }
 
       function moveLayer(from, to) {
-        if (layerOps.move(from, to)) renderLayersEditor();
+        if (layerOps.move(from, to)) {
+          currentEditorLayerIndex = to;
+          renderLayersEditor();
+          renderEditorPreview();
+        }
       }
 
       function syncLayerOrder(layers) {
@@ -3112,10 +3272,13 @@ function updateAuthUI(isLoggedIn) {
         try {
           setStatus('מכין מדיה להעלאה לענן...', '');
           const layers = await Promise.all(picked.map(fileToLayer));
+          const startIndex = editorDraft.layers.length;
           editorDraft.layers.push(...layers);
           syncLayerOrder(editorDraft.layers);
           editorDraft.display = { ...(editorDraft.display || {}), multiItemMode: editorDraft.layers.length > 1 };
+          currentEditorLayerIndex = startIndex;
           renderLayersEditor();
+          renderEditorPreview();
           if (els.dropzoneMeta) {
             const total = editorDraft.layers.length;
             const pending = editorDraft.layers.filter((layer) => layer.pendingUpload).length;
@@ -3123,7 +3286,7 @@ function updateAuthUI(isLoggedIn) {
           }
           setStatus(`נוספו ${layers.length} מדיות. יועלו לענן בשמירה.`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3029] addFiles failed', err);
+          console.error('[CRMO_v3030] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3292,8 +3455,12 @@ function updateAuthUI(isLoggedIn) {
         markVerification('not verified', '');
         saveLocalTile(state);
         applyStateToUI(state);
-        closeEditor();
         await saveToCloud(state);
+        editorDraft = deepClone(state);
+        currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, Math.max(editorDraft.layers.length - 1, 0));
+        fillEditor(editorDraft);
+        renderLayersEditor();
+        renderEditorPreview();
       }
 
       async function saveToCloud(payload) {
@@ -3351,7 +3518,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
           if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
         } catch (err) {
-          console.error('[CRMO_v3029] saveToCloud failed', err);
+          console.error('[CRMO_v3030] saveToCloud failed', err);
           markVerification('verification failed', '');
           setSyncState('sync: local only');
           setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
@@ -3389,7 +3556,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נטען מהענן · payload פעיל', 'success');
           logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
         } catch (err) {
-          console.error('[CRMO_v3029] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3030] loadFromCloudAndMerge failed', err);
           setSyncState('sync: cloud error');
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
           logDiag('loadFromCloudAndMerge failed', { message: safeMessage(err) });
