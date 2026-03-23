@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3029</title>
+<title>CRMO_v3038</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -453,7 +453,8 @@
     .modal-shell {
       display: grid;
       grid-template-columns: 1fr;
-      max-height: min(90vh, 920px);
+      max-height: min(92vh, 940px);
+      overflow: hidden;
     }
 
     .modal-head {
@@ -1465,6 +1466,50 @@
 .auth-open-btn[hidden]{display:none!important}
 #tileTouchLikeWrap,#tileOverlayLikeWrap{display:none!important}
 
+
+
+  /* CRMO_v3038 tile editor rebuild */
+  #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
+  .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
+  .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
+  .tile-editor-head h2{font-size:17px;font-weight:700}
+  .tile-editor-layout{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0;background:#f3f3f3}
+  .tile-editor-top{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+  .tile-editor-top .editor-field{margin:0}
+  .tile-editor-top .editor-field-label{font-size:12px;color:rgba(0,0,0,.55);margin-bottom:4px}
+  .tile-editor-top input,.tile-editor-top select,.tile-editor-top textarea{height:40px;padding:8px 12px;background:#fff;border:1px solid rgba(0,0,0,.18);border-radius:0;font-size:15px}
+  .tile-editor-stage-wrap{display:flex;flex-direction:column;gap:8px}
+  .tile-editor-stage{aspect-ratio:16/9;background:#d2d2d2;border:1px solid rgba(0,0,0,.12);overflow:hidden;position:relative;border-radius:0}
+  .tile-editor-stage .tile-media,.tile-editor-stage .lightbox-media,.tile-editor-stage img,.tile-editor-stage video{width:100%;height:100%;object-fit:cover;display:block}
+  .tile-editor-copy{border-bottom:1px solid rgba(0,0,0,.14);padding:6px 0 10px;min-height:72px;display:flex;flex-direction:column;gap:4px;background:transparent}
+  .tile-editor-copy.is-compact{min-height:52px}
+  .tile-editor-copy-title{font-size:18px;font-weight:700;color:#111;text-align:right}
+  .tile-editor-copy-desc{font-size:14px;color:#333;line-height:1.35;text-align:right}
+  .tile-editor-copy-link{font-size:13px;color:#222;text-decoration:none;direction:ltr;text-align:right}
+  .tile-editor-copy-fields{display:grid;gap:8px;margin-top:4px}
+  .tile-editor-copy-fields input,.tile-editor-copy-fields textarea{width:100%;border:1px solid rgba(0,0,0,.16);background:#fff;padding:9px 12px;font:inherit;border-radius:0}
+  .tile-editor-copy-fields textarea{min-height:68px;resize:vertical}
+  .tile-editor-thumbs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .editor-preview-thumb{appearance:none;border:3px solid transparent;background:#d1d1d1;padding:0;position:relative;aspect-ratio:16/9;overflow:hidden;cursor:pointer;border-radius:0}
+  .editor-preview-thumb.active{border-color:#111}
+  .editor-preview-thumb.is-muted{opacity:.42}
+  .editor-preview-thumb.is-hidden{opacity:.5;filter:grayscale(1)}
+  .editor-preview-thumb img,.editor-preview-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb-toolbar{position:absolute;inset:auto 4px 4px 4px;display:flex;justify-content:space-between;align-items:center;gap:4px;pointer-events:none}
+  .thumb-index{background:rgba(255,255,255,.9);color:#111;font-size:13px;line-height:1;padding:5px 7px;pointer-events:auto}
+  .thumb-actions{display:flex;gap:4px;pointer-events:auto}
+  .thumb-mini-btn{appearance:none;border:1px solid rgba(0,0,0,.16);background:rgba(255,255,255,.96);width:26px;height:26px;display:grid;place-items:center;font-size:13px;cursor:pointer;border-radius:0}
+  .thumb-mini-btn.is-off{opacity:.55}
+  .tile-editor-dropzone{padding:16px;border-radius:22px;border:2px dashed rgba(0,0,0,.35);background:#f7f7f7}
+  .tile-editor-flags{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;align-items:center}
+  .tile-editor-flags .editor-toggle{min-height:34px}
+  .tile-editor-link-row{margin:0}
+  .tile-editor-link-row input{height:40px;border-radius:0}
+  .tile-editor-actions{display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;padding-top:2px;position:sticky;bottom:0;background:#f3f3f3;padding-bottom:2px}
+  .tile-editor-actions #editorLoadCloudBtn,.tile-editor-actions #editorAddMediaBtn{justify-self:start}
+  .editor-save-note{margin:0;min-width:0;font-size:12px;color:rgba(0,0,0,.55)}
+  .tile-editor-actions .primary-btn,.tile-editor-actions .danger-btn,.tile-editor-actions .ghost-btn{height:46px;border-radius:10px;padding:0 18px}
+  @media (max-width:700px){.tile-editor-top,.tile-editor-flags,.tile-editor-actions{grid-template-columns:1fr}.tile-editor-actions .editor-save-note{order:10}.tile-editor-shell{width:min(96vw,940px)}.tile-editor-thumbs{grid-template-columns:repeat(3,minmax(0,1fr))} }
 </style>
 <style id="crmo-auth-modal-inline-css">
 :root{
@@ -1814,7 +1859,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3029</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3038</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -1934,7 +1979,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3034 · Smart tile editor · editor-open hotfix</footer>
+<footer id="footerVersionLabel">CRMO_v3038 · Save-load verification build</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -1962,97 +2007,85 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </dialog>
 <dialog aria-label="עורך אריח" id="editorDialog">
-<div class="modal-shell">
-<div class="modal-head">
-<h2>עורך אריח — CRMO_v3034</h2>
+<div class="modal-shell tile-editor-shell">
+<div class="modal-head tile-editor-head">
+<h2>עורך אריח — CRMO_v3038</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
-<div class="editor-body editor-shell">
-<section class="editor-section editor-section-main">
-<div class="editor-section-head">
-<h3>הגדרות טקסט וקישור</h3>
-<p>עריכת אריח בודד בלבד: טקסט + תמונה/מדיה, עם בסיס יציב לריבוי שכבות בהמשך.</p>
-</div>
-<div class="editor-grid editor-grid-main">
-<label class="editor-field editor-field-compact">
-<span class="editor-field-label">Client</span>
-<input id="tileClientInput" placeholder="שם לקוח" type="text"/>
-</label>
-<label class="editor-field editor-field-compact">
-<span class="editor-field-label">Brand</span>
-<input id="tileBrandInput" placeholder="שם מותג" type="text"/>
-</label>
-<label class="editor-field editor-field-span-2">
-<span class="editor-field-label">Project title</span>
-<textarea id="tileTitleInput" placeholder="כותרת שיופיע במאוס אובר/לייטבוקס אם אין טקסט נפרד למדיה"></textarea>
-</label>
-<label class="editor-field editor-field-span-2">
-<span class="editor-field-label">Short description</span>
-<textarea id="tileDescInput" placeholder="תיאור ברירת מחדל"></textarea>
-</label>
-<label class="editor-field editor-field-link editor-field-span-2">
-<span class="editor-field-label">Project link</span>
-<input id="tileLinkInput" placeholder="https://example.com" type="text"/>
-</label>
-<label class="editor-field">
-<span class="editor-field-label">Lightbox title</span>
-<textarea id="tileLbTitleInput" placeholder="אם ריק — ישתמש בכותרת הראשית"></textarea>
-</label>
-<label class="editor-field">
-<span class="editor-field-label">Lightbox description</span>
-<textarea id="tileLbDescInput" placeholder="אם ריק — ישתמש בטקסט הראשי"></textarea>
-</label>
-<label class="editor-field editor-field-link editor-field-span-2">
-<span class="editor-field-label">Lightbox link</span>
-<input id="tileLbLinkInput" placeholder="אם ריק — ישתמש בקישור הראשי" type="text"/>
-</label>
-</div>
-<div class="editor-toggle-row">
-<input hidden="" id="showLikeInput" type="checkbox"/>
-<input hidden="" id="showLikeCountInput" type="checkbox"/>
-<input hidden="" id="likeCountInput" type="number" value="0"/>
-<label class="editor-toggle">
-<input id="showLinkInTileInput" type="checkbox"/>
-<span>Show link in tile</span>
-</label>
-<label class="editor-toggle">
-<input id="openLinkInNewTabInput" type="checkbox"/>
-<span>Open link in new tab</span>
-</label>
-</div>
-</section>
-<div class="editor-actions">
-<input accept="image/*,video/*,.gif" hidden="" id="fileInput" multiple="" type="file"/>
-<button class="small-btn" id="saveTileBtn" type="button">שמור לוקאלי + ענן</button>
-<button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
-<button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
-</div>
-<div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="העלאת מדיה לאריח">
-  <div class="dropzone-title">גרור לכאן או לחץ כדי להעלות מדיה</div>
-  <div class="dropzone-subtitle">עד 18 קבצי תמונה / GIF / וידאו. העלאה מרובה תהפוך את האריח לרב־שכבתי.</div>
-  <div class="dropzone-meta" id="dropzoneMeta">המדיה תועלה ל־Supabase Storage, וה־payload ישמור כתובות ענן מאומתות.</div>
-</div>
-<section class="editor-preview-shell" id="editorPreviewShell">
-  <div class="editor-preview-stage" id="editorPreviewStage"><div class="editor-preview-empty">עדיין לא נוספה מדיה</div></div>
-  <div class="editor-preview-strip" id="editorPreviewStrip"></div>
-</section>
-<div class="note">
-          גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
-        </div>
-<section class="editor-section editor-section-layers">
-<div class="editor-section-head">
-<h3>Sub-items</h3>
-<p>שורות מדיה מדויקות יותר: preview, drag, טקסט נפרד, סדר ותצוגה.</p>
-</div>
-<section class="layers-list" id="layersList"></section>
-</section>
-<div class="editor-sticky-actions">
-  <div class="editor-save-note" id="editorSaveNote">המדיה תופיע מיד באריח. שמירה תכתוב payload לענן ותאמת read-back.</div>
-  <button class="ghost-btn" id="editorAddMediaBtn" type="button">הוסף מדיה</button>
-  <button class="ghost-btn" id="editorLoadCloudBtn" type="button">טען מהענן</button>
-  <button class="ghost-btn" id="editorCloseBtnBottom" type="button">סגור</button>
-  <button class="primary-btn" id="editorSaveBtnBottom" type="button">שמור אריח</button>
-</div>
+<div class="tile-editor-layout">
+  <section class="tile-editor-top">
+    <label class="editor-field editor-field-compact">
+      <span class="editor-field-label">לקוח</span>
+      <input id="tileClientInput" list="clientOptions" placeholder="שם הלקוח" type="text"/>
+      <datalist id="clientOptions">
+        <option value="אסם"></option><option value="תנובה"></option><option value="שטראוס"></option><option value="כתר"></option>
+      </datalist>
+    </label>
+    <label class="editor-field editor-field-compact">
+      <span class="editor-field-label">מותג</span>
+      <input id="tileBrandInput" list="brandOptions" placeholder="שם המותג" type="text"/>
+      <datalist id="brandOptions">
+        <option value="CRMO"></option><option value="מנה חמה"></option><option value="Hisense"></option><option value="Braun"></option>
+      </datalist>
+    </label>
+    <label class="editor-field editor-field-compact">
+      <span class="editor-field-label">שם הפרויקט</span>
+      <input id="tileTitleInput" placeholder="שם הפרויקט" type="text"/>
+    </label>
+    <label class="editor-field editor-field-compact">
+      <span class="editor-field-label">תיאור</span>
+      <input id="tileDescInput" placeholder="תיאור קצר על הפרויקט" type="text"/>
+    </label>
+  </section>
+
+  <section class="tile-editor-stage-wrap">
+    <div class="tile-editor-stage" id="editorPreviewStage"><div class="editor-preview-empty">עדיין לא נוספה מדיה</div></div>
+    <div class="tile-editor-copy" id="editorMiniCopy">
+      <div class="tile-editor-copy-title" id="editorMiniTitle">שם הפרויקט</div>
+      <div class="tile-editor-copy-desc" id="editorMiniDesc">תיאור קצר על הפרויקט</div>
+      <a class="tile-editor-copy-link" id="editorMiniLink" hidden href="#" rel="noopener" target="_blank">www.crmo.co.il</a>
+      <div class="tile-editor-copy-fields" id="editorMiniCopyFields" hidden>
+        <input id="activeLayerTitleInput" placeholder="כותרת לתמונה הפעילה" type="text"/>
+        <textarea id="activeLayerDescInput" placeholder="תיאור לתמונה הפעילה"></textarea>
+      </div>
+    </div>
+    <div class="tile-editor-thumbs" id="editorPreviewStrip"></div>
+  </section>
+
+  <div class="dropzone tile-editor-dropzone" id="dropzone" role="button" tabindex="0" aria-label="העלאת מדיה לאריח">
+    <div class="dropzone-title">גרור תמונות לכאן או לחץ לבחירה <strong>+</strong></div>
+    <div class="dropzone-subtitle">העלאה מרובה תדליק אוטומטית פרויקט רב שכבתי.</div>
+    <div class="dropzone-meta" id="dropzoneMeta">המדיה תיטען מיד לעורך, לאריח, ולשמירה לענן.</div>
+  </div>
+
+  <section class="tile-editor-flags">
+    <label class="editor-toggle"><input id="multiItemModeInput" type="checkbox"/><span>פרויקט רב שכבתי</span></label>
+    <label class="editor-toggle"><input id="useOwnTextPerImageInput" type="checkbox"/><span>טקסט נפרד לכל תמונה</span></label>
+    <label class="editor-toggle"><input id="showLinkInTileInput" type="checkbox"/><span>הצג לינק באריח</span></label>
+    <label class="editor-toggle"><input id="openLinkInNewTabInput" type="checkbox"/><span>פתח בטאב חדש</span></label>
+    <input hidden="" id="showLikeInput" type="checkbox"/>
+    <input hidden="" id="showLikeCountInput" type="checkbox"/>
+    <input hidden="" id="likeCountInput" type="number" value="0"/>
+  </section>
+
+  <label class="editor-field editor-field-link tile-editor-link-row">
+    <span class="editor-field-label">לינק</span>
+    <input id="tileLinkInput" placeholder="https://example.com" type="text"/>
+  </label>
+  <input id="tileLbTitleInput" type="hidden"/>
+  <input id="tileLbDescInput" type="hidden"/>
+  <input id="tileLbLinkInput" type="hidden"/>
+  <input accept="image/*,video/*,.gif" hidden="" id="fileInput" multiple="" type="file"/>
+  <button class="small-btn" id="saveTileBtn" type="button" hidden>שמור</button>
+  <button class="small-btn" id="loadTileBtn" type="button" hidden>טען מהענן</button>
+
+  <div class="editor-sticky-actions tile-editor-actions">
+    <button class="ghost-btn" id="editorAddMediaBtn" type="button">הוסף מדיה</button>
+    <button class="ghost-btn" id="editorLoadCloudBtn" type="button">טען מהענן</button>
+    <button class="danger-btn" id="resetTileBtn" type="button">איפוס</button>
+    <div class="editor-save-note" id="editorSaveNote">העריכות הן טיוטה עד שלוחצים שמירה.</div>
+    <button class="primary-btn" id="editorSaveBtnBottom" type="button">שמירה</button>
+  </div>
 </div>
 </div>
 </dialog>
@@ -2061,7 +2094,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3034';
+      const VERSION = 'CRMO_v3038';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2131,6 +2164,8 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
       let lastCloudWriteAt = '';
       let lastServerVerifyAt = '';
       let lastServerVerifyResult = 'local draft';
+      let editorDirty = false;
+      let editorSaving = false;
       let saveInFlight = false;
       let loginInFlight = false;
       const diagEntries = [];
@@ -2240,7 +2275,16 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         editorPreviewShell: $('editorPreviewShell'),
         editorPreviewStage: $('editorPreviewStage'),
         editorPreviewStrip: $('editorPreviewStrip'),
-        layersList: $('layersList')
+        layersList: $('layersList'),
+        multiItemModeInput: $('multiItemModeInput'),
+        useOwnTextPerImageInput: $('useOwnTextPerImageInput'),
+        activeLayerTitleInput: $('activeLayerTitleInput'),
+        activeLayerDescInput: $('activeLayerDescInput'),
+        editorMiniTitle: $('editorMiniTitle'),
+        editorMiniDesc: $('editorMiniDesc'),
+        editorMiniLink: $('editorMiniLink'),
+        editorMiniCopy: $('editorMiniCopy'),
+        editorMiniCopyFields: $('editorMiniCopyFields')
       };
 
 
@@ -2589,8 +2633,8 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           if (!trigger) return;
           openEditor(e);
         }, true);
-        els.closeEditorBtn.addEventListener('click', closeEditor);
-        els.editorCloseBtnBottom?.addEventListener('click', closeEditor);
+        els.closeEditorBtn.addEventListener('click', requestCloseEditor);
+        els.editorCloseBtnBottom?.addEventListener('click', requestCloseEditor);
         els.editorAddMediaBtn?.addEventListener('click', openImportPicker);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
         els.tile.addEventListener('click', handleTileClick);
@@ -2660,9 +2704,14 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         });
         els.editorDialog.addEventListener('cancel', (e) => {
           e.preventDefault();
+          requestCloseEditor();
         });
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
+            if (els.editorDialog.open) {
+              requestCloseEditor();
+              return;
+            }
             if (els.lightboxDialog.open) closeLightbox();
           }
           if (els.lightboxDialog.open && e.key === 'ArrowRight') shiftLightbox(1);
@@ -2695,6 +2744,44 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
             openImportPicker();
           }
         });
+
+        els.multiItemModeInput?.addEventListener('change', () => {
+          if (!editorDraft) return;
+          applyDraftModeFlags();
+          markEditorDirty('שינוי מצב רב-שכבתי נשמר כטיוטה.');
+          renderEditorPreview();
+        });
+        els.useOwnTextPerImageInput?.addEventListener('change', () => {
+          if (!editorDraft) return;
+          applyDraftModeFlags();
+          markEditorDirty('שינוי טקסט לכל תמונה נשמר כטיוטה.');
+          renderEditorPreview();
+        });
+        [els.tileClientInput, els.tileBrandInput, els.tileTitleInput, els.tileDescInput, els.tileLinkInput, els.showLinkInTileInput, els.openLinkInNewTabInput].forEach((field) => {
+          field?.addEventListener(field.type === 'checkbox' ? 'change' : 'input', () => {
+            if (!editorDraft) return;
+            syncDraftHeaderFromForm();
+            markEditorDirty('עודכנו פרטי האריח בטיוטה.');
+            renderEditorPreview();
+          });
+        });
+        els.activeLayerTitleInput?.addEventListener('input', () => {
+          if (!editorDraft?.layers?.[currentEditorLayerIndex]) return;
+          const layer = editorDraft.layers[currentEditorLayerIndex];
+          layer.useOwnText = !!els.useOwnTextPerImageInput?.checked;
+          layer.title = els.activeLayerTitleInput.value;
+          markEditorDirty('עודכן טקסט נפרד לתמונה הפעילה.');
+          renderEditorPreview();
+        });
+        els.activeLayerDescInput?.addEventListener('input', () => {
+          if (!editorDraft?.layers?.[currentEditorLayerIndex]) return;
+          const layer = editorDraft.layers[currentEditorLayerIndex];
+          layer.useOwnText = !!els.useOwnTextPerImageInput?.checked;
+          layer.desc = els.activeLayerDescInput.value;
+          markEditorDirty('עודכן טקסט נפרד לתמונה הפעילה.');
+          renderEditorPreview();
+        });
+
       }
 
       function openImportPicker() {
@@ -3069,16 +3156,28 @@ function updateAuthUI(isLoggedIn) {
           editorDraft = deepClone(state);
           currentEditorLayerIndex = 0;
           fillEditor(editorDraft);
+          applyDraftModeFlags();
           renderLayersEditor();
           renderEditorPreview();
+          clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3034] openEditor failed', err);
+          console.error('[CRMO_v3038] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
       }
       window.CRMOOpenTileEditor = openEditor;
+
+      function clearEditorDirtyState() {
+        editorDirty = false;
+        updateEditorSaveNote('העריכות הן טיוטה עד שלוחצים שמירה.');
+      }
+
+      function markEditorDirty(message = '') {
+        editorDirty = true;
+        updateEditorSaveNote(message || 'יש שינויים שלא נשמרו. שמירה תכתוב לענן ותסגור את העורך.');
+      }
 
       function closeEditor() {
         try {
@@ -3090,8 +3189,27 @@ function updateAuthUI(isLoggedIn) {
         document.body.style.overflow = '';
         editorDraft = null;
         currentEditorLayerIndex = 0;
+        clearEditorDirtyState();
         if (els.editorPreviewStage) els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
         if (els.editorPreviewStrip) els.editorPreviewStrip.innerHTML = '';
+      }
+
+      async function requestCloseEditor() {
+        if (editorSaving) return;
+        if (!editorDirty) {
+          closeEditor();
+          return;
+        }
+        const choice = window.prompt('יש שינויים שלא נשמרו. כתוב 1 כדי לשמור ולסגור, 2 כדי לצאת בלי לשמור, או בטל כדי לחזור לעריכה.', '');
+        if (choice === '1') {
+          await saveEditorToStateAndPersist();
+          return;
+        }
+        if (choice === '2') {
+          closeEditor();
+          setStatus('יצאת מהעורך בלי לשמור', '');
+          return;
+        }
       }
 
       function openLightbox(index = 0) {
@@ -3118,9 +3236,8 @@ function updateAuthUI(isLoggedIn) {
         els.tileTitleInput.value = data.overlay?.title || '';
         els.tileDescInput.value = data.overlay?.desc || '';
         els.tileLinkInput.value = data.overlay?.link || '';
-        els.tileLbTitleInput.value = data.lightbox?.title || '';
-        els.tileLbDescInput.value = data.lightbox?.desc || '';
-        els.tileLbLinkInput.value = data.lightbox?.link || '';
+        if (els.multiItemModeInput) els.multiItemModeInput.checked = data.display?.multiItemMode !== false && (data.layers?.length || 0) > 1;
+        if (els.useOwnTextPerImageInput) els.useOwnTextPerImageInput.checked = data.display?.perImageText === true;
         els.showLinkInTileInput.checked = data.display?.showLinkInTile !== false;
         els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab !== false;
         updateDropzoneMeta(data);
@@ -3132,11 +3249,13 @@ function updateAuthUI(isLoggedIn) {
         const pending = (data?.layers || []).filter((layer) => layer.pendingUpload).length;
         const cloud = (data?.layers || []).filter((layer) => !layer.pendingUpload && /^https?:/i.test(String(layer?.src || ''))).length;
         els.dropzoneMeta.textContent = total
-          ? `${total} מדיות בעורך · ${cloud} בענן · ${pending} ממתינות לשמירת payload`
-          : 'המדיה תיטען לעורך, תוצג מיד באריח, ותעלה ל־Supabase Storage.';
+          ? `${total} תמונות בעורך · ${cloud} בענן · ${pending} ממתינות לשמירה`
+          : 'המדיה תיטען לעורך, תוצג מיד באריח, ותישמר לענן בלחיצה על שמירה.';
       }
 
       function collectEditorHeader() {
+        const perImageText = !!els.useOwnTextPerImageInput?.checked;
+        const multiItemMode = !!els.multiItemModeInput?.checked;
         return {
           meta: {
             client: els.tileClientInput.value.trim(),
@@ -3144,19 +3263,23 @@ function updateAuthUI(isLoggedIn) {
             tags: Array.isArray(editorDraft?.meta?.tags) ? editorDraft.meta.tags.slice() : []
           },
           overlay: {
-            title: els.tileTitleInput.value,
-            desc: els.tileDescInput.value,
+            title: els.tileTitleInput.value.trim(),
+            desc: els.tileDescInput.value.trim(),
             link: els.tileLinkInput.value.trim()
           },
           lightbox: {
-            title: els.tileLbTitleInput.value,
-            desc: els.tileLbDescInput.value,
-            link: els.tileLbLinkInput.value.trim()
+            title: '',
+            desc: '',
+            link: els.tileLinkInput.value.trim()
           },
           display: {
             showLinkInTile: !!els.showLinkInTileInput.checked,
             openLinkInNewTab: !!els.openLinkInNewTabInput.checked,
-            multiItemMode: editorDraft?.display?.multiItemMode !== false
+            multiItemMode,
+            perImageText,
+            showLike: editorDraft?.display?.showLike !== false,
+            showLikeCount: editorDraft?.display?.showLikeCount !== false,
+            likeCount: Number(editorDraft?.display?.likeCount || 0) || 0
           },
           hooks: {
             tileTags: Array.isArray(editorDraft?.hooks?.tileTags) ? editorDraft.hooks.tileTags.slice() : [],
@@ -3196,36 +3319,144 @@ function updateAuthUI(isLoggedIn) {
         }
         currentEditorLayerIndex = clamp(index, 0, editorDraft.layers.length - 1);
         renderEditorPreview();
-        Array.from(els.layersList.querySelectorAll('.layer-card')).forEach((card, idx) => {
-          card.classList.toggle('active', idx === currentEditorLayerIndex);
+      }
+
+      function syncDraftHeaderFromForm() {
+        if (!editorDraft) return;
+        editorDraft.meta = editorDraft.meta || {};
+        editorDraft.overlay = editorDraft.overlay || {};
+        editorDraft.display = editorDraft.display || {};
+        editorDraft.meta.client = els.tileClientInput?.value.trim() || '';
+        editorDraft.meta.brand = els.tileBrandInput?.value.trim() || '';
+        editorDraft.overlay.title = els.tileTitleInput?.value.trim() || '';
+        editorDraft.overlay.desc = els.tileDescInput?.value.trim() || '';
+        editorDraft.overlay.link = els.tileLinkInput?.value.trim() || '';
+        editorDraft.display.showLinkInTile = !!els.showLinkInTileInput?.checked;
+        editorDraft.display.openLinkInNewTab = !!els.openLinkInNewTabInput?.checked;
+        editorDraft.display.multiItemMode = !!els.multiItemModeInput?.checked;
+        editorDraft.display.perImageText = !!els.useOwnTextPerImageInput?.checked;
+      }
+
+      function applyDraftModeFlags() {
+        if (!editorDraft) return;
+        const multi = !!els.multiItemModeInput?.checked && (editorDraft.layers?.length || 0) > 1;
+        editorDraft.display = { ...(editorDraft.display || {}), multiItemMode: multi, perImageText: !!els.useOwnTextPerImageInput?.checked };
+        (editorDraft.layers || []).forEach((layer, idx) => {
+          layer.isEnabled = multi ? true : idx === 0;
+          if (!editorDraft.display.perImageText) {
+            layer.useOwnText = false;
+          }
         });
       }
 
+
       function renderEditorPreview() {
         if (!els.editorPreviewStage || !els.editorPreviewStrip) return;
+        syncDraftHeaderFromForm();
         els.editorPreviewStage.innerHTML = '';
         els.editorPreviewStrip.innerHTML = '';
         const layers = editorDraft?.layers || [];
         if (!layers.length) {
           els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
+          if (els.editorMiniTitle) els.editorMiniTitle.textContent = els.tileTitleInput?.value || 'שם הפרויקט';
+          if (els.editorMiniDesc) els.editorMiniDesc.textContent = els.tileDescInput?.value || 'תיאור קצר על הפרויקט';
+          if (els.editorMiniLink) els.editorMiniLink.hidden = true;
+          if (els.editorMiniCopy) els.editorMiniCopy.classList.add('is-compact');
+          if (els.editorMiniCopyFields) els.editorMiniCopyFields.hidden = true;
           return;
         }
         currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, layers.length - 1);
         const active = layers[currentEditorLayerIndex];
-        els.editorPreviewStage.appendChild(createMediaElement(active, '', true));
+        els.editorPreviewStage.appendChild(createMediaElement(active, 'lightbox-media', true));
+        const baseTitle = els.tileTitleInput?.value?.trim() || '';
+        const baseDesc = els.tileDescInput?.value?.trim() || '';
+        const baseLink = els.tileLinkInput?.value?.trim() || '';
+        const perImageText = !!els.useOwnTextPerImageInput?.checked;
+        const title = active.useOwnText ? (active.title || baseTitle) : baseTitle;
+        const desc = active.useOwnText ? (active.desc || baseDesc) : baseDesc;
+        if (els.editorMiniTitle) els.editorMiniTitle.textContent = title || 'שם הפרויקט';
+        if (els.editorMiniDesc) els.editorMiniDesc.textContent = desc || 'תיאור קצר על הפרויקט';
+        if (els.editorMiniLink) {
+          bindLink(els.editorMiniLink, baseLink, !!els.openLinkInNewTabInput?.checked);
+          els.editorMiniLink.hidden = !baseLink;
+        }
+        if (els.editorMiniCopy) els.editorMiniCopy.classList.toggle('is-compact', !baseLink);
+        if (els.editorMiniCopyFields) els.editorMiniCopyFields.hidden = !perImageText;
+        if (els.activeLayerTitleInput) {
+          els.activeLayerTitleInput.disabled = !perImageText;
+          els.activeLayerTitleInput.value = active.useOwnText ? (active.title || '') : '';
+        }
+        if (els.activeLayerDescInput) {
+          els.activeLayerDescInput.disabled = !perImageText;
+          els.activeLayerDescInput.value = active.useOwnText ? (active.desc || '') : '';
+        }
+
         layers.forEach((layer, idx) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'editor-preview-thumb' + (idx === currentEditorLayerIndex ? ' active' : '');
+          btn.className = 'editor-preview-thumb' + (idx === currentEditorLayerIndex ? ' active' : '') + (layer.isVisible === false ? ' is-hidden' : '') + (layer.isEnabled === false ? ' is-muted' : '');
           btn.title = layer.name || `layer ${idx+1}`;
-          btn.appendChild(createMediaElement(layer, '', true));
+          btn.dataset.index = String(idx);
+          btn.draggable = true;
+          const media = createMediaElement(layer, '', false, true);
+          btn.appendChild(media);
+          const toolbar = document.createElement('div');
+          toolbar.className = 'thumb-toolbar';
+          const indexBadge = document.createElement('div');
+          indexBadge.className = 'thumb-index';
+          indexBadge.textContent = String(idx + 1);
+          toolbar.appendChild(indexBadge);
+          const actions = document.createElement('div');
+          actions.className = 'thumb-actions';
+          const eye = document.createElement('button');
+          eye.type = 'button';
+          eye.className = 'thumb-mini-btn' + (layer.isVisible === false ? ' is-off' : '');
+          eye.textContent = layer.isVisible === false ? '◌' : '◉';
+          eye.title = 'הצג / הסתר';
+          eye.addEventListener('click', (e) => {
+            e.stopPropagation();
+            layer.isVisible = layer.isVisible === false ? true : false;
+            markEditorDirty('שינוי תצוגת שכבה נשמר כטיוטה.');
+            renderEditorPreview();
+          });
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'thumb-mini-btn';
+          del.textContent = '✕';
+          del.title = 'מחק תמונה';
+          del.addEventListener('click', (e) => {
+            e.stopPropagation();
+            layerOps.remove(idx);
+            currentEditorLayerIndex = Math.max(0, Math.min(currentEditorLayerIndex, (editorDraft?.layers?.length || 1) - 1));
+            applyDraftModeFlags();
+            markEditorDirty('המדיה תימחק רק אחרי שמירה.');
+            renderEditorPreview();
+            updateDropzoneMeta();
+          });
+          actions.appendChild(eye);
+          actions.appendChild(del);
+          toolbar.appendChild(actions);
+          btn.appendChild(toolbar);
           btn.addEventListener('click', () => setEditorActiveLayer(idx));
+          btn.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', String(idx));
+          });
+          btn.addEventListener('dragover', (e) => e.preventDefault());
+          btn.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const from = Number(e.dataTransfer.getData('text/plain'));
+            if (layerOps.move(from, idx)) {
+              currentEditorLayerIndex = idx;
+              applyDraftModeFlags();
+              renderEditorPreview();
+            }
+          });
           els.editorPreviewStrip.appendChild(btn);
         });
       }
 
       function updateEditorSaveNote(message = '') {
-        if (els.editorSaveNote) els.editorSaveNote.textContent = message || 'המדיה תופיע מיד באריח. שמירה תכתוב payload לענן ותאמת read-back.';
+        if (els.editorSaveNote) els.editorSaveNote.textContent = message || 'העריכות הן טיוטה עד שלוחצים שמירה.';
       }
 
       function syncDraftIntoLiveTile(markDirty = true) {
@@ -3241,112 +3472,7 @@ function updateAuthUI(isLoggedIn) {
       }
 
       function renderLayersEditor() {
-        els.layersList.innerHTML = '';
-        editorDraft.layers.forEach((layer, idx) => {
-          const card = document.createElement('section');
-          const isVisible = layer.isVisible !== false;
-          card.className = 'layer-card' + (isVisible ? '' : ' is-hidden') + (idx === currentEditorLayerIndex ? ' active' : '');
-          card.draggable = true;
-          card.dataset.index = String(idx);
-          card.innerHTML = `
-            <div class="layer-top">
-              <button class="layer-drag" type="button" aria-label="גרור לשינוי סדר" title="גרור לשינוי סדר"></button>
-              <div class="layer-preview">${renderPreviewHTML(layer)}</div>
-              <div class="layer-fields">
-                <div class="layer-row-head">
-                  <span class="layer-row-index">#${idx + 1}</span>
-                  <div class="layer-meta-note">${escapeHtml(layer.type)} · ${escapeHtml(layer.name || 'ללא שם')} ${layer.pendingUpload ? '· pending cloud' : (layer.storageBucket ? '· cloud' : '')}</div>
-                </div>
-                <label>Sub-item title
-                  <textarea data-field="title" dir="auto">${escapeHtml(layer.title || '')}</textarea>
-                </label>
-                <label>Sub-item description
-                  <textarea data-field="desc" dir="auto">${escapeHtml(layer.desc || '')}</textarea>
-                </label>
-                <label>Link
-                  <input data-field="link" type="text" dir="ltr" value="${escapeAttr(layer.link || '')}" />
-                </label>
-              </div>
-              <div class="layer-controls">
-                <button class="ghost-btn" type="button" data-action="up">↑</button>
-                <button class="ghost-btn" type="button" data-action="down">↓</button>
-                <button class="danger-btn" type="button" data-action="remove">מחק</button>
-              </div>
-            </div>
-            <div class="layer-bottom">
-              <div class="layer-bottom-right">
-                <label class="checkline">
-                  <input type="checkbox" data-field="useOwnText" ${layer.useOwnText ? 'checked' : ''} />
-                  <span>טקסט נפרד למדיה זו</span>
-                </label>
-                <label class="checkline">
-                  <input type="checkbox" data-field="isVisible" ${isVisible ? 'checked' : ''} />
-                  <span>הצג באריח</span>
-                </label>
-              </div>
-              <div class="layer-bottom-left">
-                <div class="layer-meta-note">order: ${idx + 1}</div>
-              </div>
-            </div>
-          `;
-
-          card.addEventListener('click', () => setEditorActiveLayer(idx));
-          const fields = card.querySelectorAll('[data-field]');
-          fields.forEach((field) => {
-            field.addEventListener('input', () => {
-              const key = field.dataset.field;
-              layerOps.patch(idx, key, field.type === 'checkbox' ? field.checked : field.value);
-              if (key === 'isVisible') {
-                card.classList.toggle('is-hidden', !field.checked);
-              }
-              renderEditorPreview();
-            });
-            if (field.type === 'checkbox') {
-              field.addEventListener('change', () => {
-                layerOps.patch(idx, field.dataset.field, field.checked);
-                if (field.dataset.field === 'isVisible') {
-                  card.classList.toggle('is-hidden', !field.checked);
-                }
-                renderEditorPreview();
-              });
-            }
-          });
-
-          card.querySelector('[data-action="up"]').addEventListener('click', () => moveLayer(idx, idx - 1));
-          card.querySelector('[data-action="down"]').addEventListener('click', () => moveLayer(idx, idx + 1));
-          card.querySelector('[data-action="remove"]').addEventListener('click', () => {
-            if (layerOps.remove(idx)) {
-              currentEditorLayerIndex = Math.max(0, Math.min(currentEditorLayerIndex, editorDraft.layers.length - 1));
-              renderLayersEditor();
-              renderEditorPreview();
-            }
-          });
-
-          const dragHandle = card.querySelector('.layer-drag');
-          dragHandle.addEventListener('mousedown', () => card.draggable = true);
-          dragHandle.addEventListener('touchstart', () => card.draggable = true, { passive: true });
-
-          card.addEventListener('dragstart', (e) => {
-            if (!e.target.closest('.layer-drag')) {
-              e.preventDefault();
-              return;
-            }
-            e.dataTransfer.setData('text/plain', String(idx));
-          });
-          card.addEventListener('dragover', (e) => e.preventDefault());
-          card.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const from = Number(e.dataTransfer.getData('text/plain'));
-            const to = idx;
-            if (layerOps.move(from, to)) {
-              currentEditorLayerIndex = to;
-              renderLayersEditor();
-              renderEditorPreview();
-            }
-          });
-
-          els.layersList.appendChild(card);
-        });
+        if (els.layersList) els.layersList.innerHTML = '';
       }
 
       function moveLayer(from, to) {
@@ -3379,26 +3505,25 @@ function updateAuthUI(isLoggedIn) {
           const startIndex = editorDraft.layers.length;
           editorDraft.layers.push(...layers);
           syncLayerOrder(editorDraft.layers);
-          editorDraft.display = { ...(editorDraft.display || {}), multiItemMode: editorDraft.layers.length > 1 };
+          if (els.multiItemModeInput && editorDraft.layers.length > 1) els.multiItemModeInput.checked = true;
+          applyDraftModeFlags();
           currentEditorLayerIndex = startIndex;
-          syncDraftIntoLiveTile(true);
-          renderLayersEditor();
+          currentTileIndex = 0;
+          syncDraftHeaderFromForm();
           renderEditorPreview();
           updateDropzoneMeta();
-          updateEditorSaveNote('המדיה נטענה לעורך ולאריח. שמירה תסנכרן payload לענן.');
+          markEditorDirty('המדיה נטענה לעורך. שמירה תסגור ותציג את התוצאה בלייטבוקס.');
           if (session && supabaseClient) {
             setStatus('מעלה מדיה חדשה ל־Storage...', '');
             await ensureDraftAssetsUploaded(editorDraft);
-            syncDraftIntoLiveTile(true);
-            renderLayersEditor();
             renderEditorPreview();
             updateDropzoneMeta();
-            setStatus(`נוספו ${layers.length} מדיות והועלו ל־Storage. נשאר לשמור payload.`, 'success');
+            setStatus(`נוספו ${layers.length} מדיות והועלו ל־Storage.`, 'success');
           } else {
             setStatus(`נוספו ${layers.length} מדיות מקומית. התחבר כדי להעלות אותן לענן.`, '');
           }
         } catch (err) {
-          console.error('[CRMO_v3032] addFiles failed', err);
+          console.error('[CRMO_v3038] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3420,6 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           link: '',
           useOwnText: false,
           isVisible: true,
+          isEnabled: true,
           sortOrder: (editorDraft?.layers?.length || 0) + 1,
           tags: [],
           pendingUpload: true,
@@ -3547,42 +3673,56 @@ function updateAuthUI(isLoggedIn) {
       }
 
       async function saveEditorToStateAndPersist() {
-        if (!editorDraft) return;
+        if (!editorDraft || editorSaving) return;
         if (!session) {
           setStatus('אפשר לשמור רק במצב מחובר', 'error');
           return;
         }
-        const header = collectEditorHeader();
-        updateEditorSaveNote('שומר אריח...');
-        await ensureDraftAssetsUploaded(editorDraft);
-        editorDraft.meta = header.meta;
-        editorDraft.overlay = header.overlay;
-        editorDraft.lightbox = header.lightbox;
-        editorDraft.display = { ...header.display, multiItemMode: editorDraft.layers.length > 1 };
-        editorDraft.hooks = header.hooks;
-        editorDraft.updatedAt = new Date().toISOString();
-        editorDraft.version = VERSION;
-        editorDraft.tileId = TILE_ID;
-        state = deepClone(editorDraft);
-        stampLocalDraft(state);
-        markVerification('not verified', '');
-        saveLocalTile(state);
-        applyStateToUI(state);
-        updateDropzoneMeta(editorDraft);
-        await saveToCloud(state);
-        editorDraft = deepClone(state);
-        currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, Math.max(editorDraft.layers.length - 1, 0));
-        fillEditor(editorDraft);
-        renderLayersEditor();
-        renderEditorPreview();
-        updateEditorSaveNote('גרור או בחר מדיה. היא תופיע מיד באריח ובעורך.');
-        updateEditorSaveNote('האריח נשמר. אפשר להמשיך לערוך בלי לסגור.');
+        editorSaving = true;
+        try {
+          syncDraftHeaderFromForm();
+          applyDraftModeFlags();
+          const header = collectEditorHeader();
+          updateEditorSaveNote('שומר לענן ומבצע read-back...');
+          await ensureDraftAssetsUploaded(editorDraft);
+          editorDraft.meta = header.meta;
+          editorDraft.overlay = header.overlay;
+          editorDraft.lightbox = header.lightbox;
+          editorDraft.display = header.display;
+          editorDraft.hooks = header.hooks;
+          editorDraft.updatedAt = new Date().toISOString();
+          editorDraft.version = VERSION;
+          editorDraft.tileId = TILE_ID;
+          const nextState = normalizeState(deepClone(editorDraft));
+          stampLocalDraft(nextState);
+          markVerification('not verified', '');
+          saveLocalTile(nextState);
+          const saveOk = await saveToCloud(nextState);
+          if (!saveOk) {
+            updateEditorSaveNote('שמירת payload לענן נכשלה. העורך נשאר פתוח.');
+            return;
+          }
+          const loaded = await loadFromCloudAndMerge(true);
+          if (!loaded) {
+            updateEditorSaveNote('השמירה הושלמה אבל טעינה חוזרת מהשרת נכשלה. העורך נשאר פתוח.');
+            return;
+          }
+          clearEditorDirtyState();
+          closeEditor();
+          openLightbox(0);
+        } catch (err) {
+          console.error('[CRMO_v3038] saveEditorToStateAndPersist failed', err);
+          updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
+          setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
+        } finally {
+          editorSaving = false;
+        }
       }
 
       async function saveToCloud(payload) {
         if (saveInFlight) {
           setStatus('שמירה כבר בתהליך. ממתין לסיום ה-write/read-back הקודם.', '');
-          return;
+          return false;
         }
         if (!session || !supabaseClient) {
           stampLocalDraft(payload);
@@ -3590,7 +3730,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('טיוטה נשמרה לוקאלית בלבד', '');
           setSyncState('sync: local only');
           logDiag('save skipped - no active session');
-          return;
+          return false;
         }
         const conn = getConnectionSettings();
         const rowKeyCol = conn.keyColumn || 'key';
@@ -3634,6 +3774,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
           updateEditorSaveNote('נשמר לענן ואומת בשרת.');
           if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
+          return true;
         } catch (err) {
           console.error('[CRMO_v3032] saveToCloud failed', err);
           markVerification('verification failed', '');
@@ -3641,6 +3782,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
           updateEditorSaveNote('שמירת payload לענן נכשלה. הטיוטה נשארה מקומית.');
           logDiag('saveToCloud or verify failed', { message: safeMessage(err), table: conn.table, rowKey: conn.rowKey });
+          return false;
         } finally {
           setSaveButtonBusy(false);
         }
@@ -3674,6 +3816,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נטען מהענן · payload פעיל', 'success');
           updateEditorSaveNote('נטען payload מהענן.');
           logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
+          return true;
         } catch (err) {
           console.error('[CRMO_v3032] loadFromCloudAndMerge failed', err);
           setSyncState('sync: cloud error');
@@ -3734,7 +3877,7 @@ function updateAuthUI(isLoggedIn) {
           els.adminVersionPill.textContent = VERSION;
         }
         if (els.footerVersionLabel) {
-          els.footerVersionLabel.textContent = `${VERSION} · Single editable tile · local + auth + cloud-ready`;
+          els.footerVersionLabel.textContent = `${VERSION} · Save-load verification build`;
         }
       }
 
@@ -3845,22 +3988,16 @@ function updateAuthUI(isLoggedIn) {
       function getDisplayTextForLayer(index, mode) {
         const visibleLayers = getVisibleLayers();
         const layer = visibleLayers[index] || state.layers[index] || null;
-        const base = mode === 'lightbox'
-          ? {
-              title: state.lightbox?.title || state.overlay?.title || '',
-              desc: state.lightbox?.desc || state.overlay?.desc || '',
-              link: state.lightbox?.link || state.overlay?.link || ''
-            }
-          : {
-              title: state.overlay?.title || '',
-              desc: state.overlay?.desc || '',
-              link: state.overlay?.link || ''
-            };
+        const base = {
+          title: state.overlay?.title || '',
+          desc: state.overlay?.desc || '',
+          link: state.overlay?.link || ''
+        };
         if (layer?.useOwnText) {
           return {
             title: layer.title || base.title,
             desc: layer.desc || base.desc,
-            link: layer.link || base.link
+            link: base.link
           };
         }
         return base;
@@ -3874,8 +4011,11 @@ function updateAuthUI(isLoggedIn) {
       }
 
       function getVisibleLayers() {
-        const visible = state.layers.filter((layer) => layer.isVisible !== false);
-        return visible.length ? visible : state.layers;
+        const source = Array.isArray(state.layers) ? state.layers : [];
+        const filtered = source.filter((layer) => layer.isVisible !== false && layer.isEnabled !== false);
+        if (filtered.length) return filtered;
+        const visibleOnly = source.filter((layer) => layer.isVisible !== false);
+        return visibleOnly.length ? visibleOnly : source;
       }
 
       function createMediaElement(layer, className = '', autoplay = false, muted = true) {
@@ -3968,6 +4108,7 @@ function updateAuthUI(isLoggedIn) {
           link: layer?.link || '',
           useOwnText: !!layer?.useOwnText,
           isVisible: layer?.isVisible !== false,
+          isEnabled: layer?.isEnabled !== false,
           sortOrder: Number(layer?.sortOrder || 0) || 0,
           tags: Array.isArray(layer?.tags) ? layer.tags.slice() : [],
           pendingUpload: !!layer?.pendingUpload,
