@@ -327,7 +327,7 @@
       position: absolute;
       top: 12px;
       left: 12px;
-      z-index: 30;
+      z-index: 9999;
       pointer-events: auto;
       touch-action: manipulation;
       width: 44px;
@@ -448,6 +448,7 @@
     }
 
     dialog::backdrop { background: rgba(0,0,0,.58); }
+    dialog.force-open { display: block; }
 
     .modal-shell {
       display: grid;
@@ -608,6 +609,10 @@
     .dropzone-title { font-size: 16px; font-weight: 700; color: #161616; }
     .dropzone-subtitle { margin-top: 6px; font-size: 13px; line-height: 1.45; }
     .dropzone-meta { margin-top: 10px; font-size: 12px; line-height: 1.45; color: #666; }
+    .editor-sticky-actions { position: sticky; bottom: 0; z-index: 8; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; padding:12px 14px; margin-top:16px; background:rgba(255,255,255,.96); border-top:1px solid #e7e7e7; backdrop-filter: blur(8px); }
+    .primary-btn { appearance:none; border:0; border-radius:12px; background:#111; color:#fff; padding:12px 16px; font-size:14px; font-weight:700; cursor:pointer; }
+    .ghost-btn { appearance:none; border:1px solid #cfcfcf; border-radius:12px; background:#fff; color:#111; padding:12px 16px; font-size:14px; font-weight:700; cursor:pointer; }
+    .editor-save-note { margin-inline-end:auto; align-self:center; font-size:12px; color:#666; }
     .editor-preview-shell {
       display: grid;
       gap: 12px;
@@ -1887,7 +1892,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </header>
 <main class="stage">
 <div class="tile-wrap" id="tileWrap">
-<button aria-label="עריכת אריח" class="tile-edit-btn" id="editBtn" type="button">✎</button>
+<button aria-label="עריכת אריח" class="tile-edit-btn" id="editBtn" type="button" onclick="window.CRMOOpenTileEditor&&window.CRMOOpenTileEditor(event)">✎</button>
 <article aria-label="CRMO Tile" class="tile" id="tile" tabindex="0">
 <div class="tile-media-stage" id="tileMediaStage">
 <div id="tileMediaHost"></div>
@@ -1929,7 +1934,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3031 · Smart tile editor · stable import + drag + persistent editor preview</footer>
+<footer id="footerVersionLabel">CRMO_v3034 · Smart tile editor · editor-open hotfix</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -1959,7 +1964,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell">
 <div class="modal-head">
-<h2>עורך אריח — CRMO_v3031</h2>
+<h2>עורך אריח — CRMO_v3034</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="editor-body editor-shell">
@@ -2041,6 +2046,13 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 <section class="layers-list" id="layersList"></section>
 </section>
+<div class="editor-sticky-actions">
+  <div class="editor-save-note" id="editorSaveNote">המדיה תופיע מיד באריח. שמירה תכתוב payload לענן ותאמת read-back.</div>
+  <button class="ghost-btn" id="editorAddMediaBtn" type="button">הוסף מדיה</button>
+  <button class="ghost-btn" id="editorLoadCloudBtn" type="button">טען מהענן</button>
+  <button class="ghost-btn" id="editorCloseBtnBottom" type="button">סגור</button>
+  <button class="primary-btn" id="editorSaveBtnBottom" type="button">שמור אריח</button>
+</div>
 </div>
 </div>
 </dialog>
@@ -2049,7 +2061,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3031';
+      const VERSION = 'CRMO_v3034';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2107,6 +2119,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
       let state = loadLocalTile() || structuredClone(DEFAULT_STATE);
       let currentLayerIndex = 0;
       let currentTileIndex = 0;
+      let currentEditorLayerIndex = 0;
       let editorDraft = null;
       let supabaseClient = null;
       let session = null;
@@ -2219,6 +2232,11 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         resetTileBtn: $('resetTileBtn'),
         dropzone: $('dropzone'),
         dropzoneMeta: $('dropzoneMeta'),
+        editorAddMediaBtn: $('editorAddMediaBtn'),
+        editorLoadCloudBtn: $('editorLoadCloudBtn'),
+        editorCloseBtnBottom: $('editorCloseBtnBottom'),
+        editorSaveBtnBottom: $('editorSaveBtnBottom'),
+        editorSaveNote: $('editorSaveNote'),
         editorPreviewShell: $('editorPreviewShell'),
         editorPreviewStage: $('editorPreviewStage'),
         editorPreviewStrip: $('editorPreviewStrip'),
@@ -2233,9 +2251,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         while (diagEntries.length > 60) diagEntries.pop();
         if (els.diagLog) els.diagLog.textContent = diagEntries.join('\n');
         if (meta) {
-          try { console.debug('[CRMO_v3031]', message, meta); } catch (_) {}
+          try { console.debug('[CRMO_v3032]', message, meta); } catch (_) {}
         } else {
-          try { console.debug('[CRMO_v3031]', message); } catch (_) {}
+          try { console.debug('[CRMO_v3032]', message); } catch (_) {}
         }
       }
 
@@ -2535,7 +2553,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
             setSyncState('sync: local only');
           }
         } catch (err) {
-          console.error('[CRMO_v3031] initSupabase failed', err);
+          console.error('[CRMO_v3032] initSupabase failed', err);
           logDiag('initSupabase failed', { message: safeMessage(err) });
           setSyncState('sync: init error');
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
@@ -2563,12 +2581,17 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         });
         ['click','pointerdown','touchstart','mousedown'].forEach((evtName) => {
           els.editBtn.addEventListener(evtName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            openEditor();
+            openEditor(e);
           }, { passive: false });
         });
+        document.addEventListener('click', (e) => {
+          const trigger = e.target?.closest?.('.tile-edit-btn');
+          if (!trigger) return;
+          openEditor(e);
+        }, true);
         els.closeEditorBtn.addEventListener('click', closeEditor);
+        els.editorCloseBtnBottom?.addEventListener('click', closeEditor);
+        els.editorAddMediaBtn?.addEventListener('click', openImportPicker);
         els.closeLightboxBtn.addEventListener('click', closeLightbox);
         els.tile.addEventListener('click', handleTileClick);
         els.tile.addEventListener('keydown', (e) => {
@@ -2624,7 +2647,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         });
         els.fileInput.addEventListener('change', (e) => addFiles(e.target.files));
         els.saveTileBtn.addEventListener('click', saveEditorToStateAndPersist);
+        els.editorSaveBtnBottom?.addEventListener('click', saveEditorToStateAndPersist);
         els.loadTileBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
+        els.editorLoadCloudBtn?.addEventListener('click', () => loadFromCloudAndMerge(true));
         els.resetTileBtn.addEventListener('click', resetTile);
         els.prevLayerBtn.addEventListener('click', () => shiftLightbox(-1));
         els.nextLayerBtn.addEventListener('click', () => shiftLightbox(1));
@@ -2689,7 +2714,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           }, { once: true });
           picker.click();
         } catch (err) {
-          console.error('[CRMO_v3031] picker failed', err);
+          console.error('[CRMO_v3032] picker failed', err);
           try { els.fileInput.click(); } catch (_) {}
         }
       }
@@ -2783,7 +2808,7 @@ async function loginWithPassword(email, password, remember = true) {
     return { ok: true, message: 'התחברות הצליחה.', session };
   } catch (err) {
     const message = safeMessage(err);
-    console.error('[CRMO_v3031] login failed', err);
+    console.error('[CRMO_v3032] login failed', err);
     logDiag('login failed', { message });
     setStatus('התחברות נכשלה: ' + message, 'error');
     setAuthFeedback('התחברות נכשלה: ' + message, 'error');
@@ -2892,7 +2917,7 @@ async function logout() {
           setAuthFeedback('התנתקת.', '');
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3031] logout failed', err);
+          console.error('[CRMO_v3032] logout failed', err);
           logDiag('logout failed', { message: safeMessage(err) });
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
@@ -3001,23 +3026,68 @@ function updateAuthUI(isLoggedIn) {
 }
 
 
-      function openEditor() {
-        if (!session) {
+      function showEditorDialogSafe() {
+        if (!els.editorDialog) return false;
+        try {
+          if (!els.editorDialog.open) els.editorDialog.showModal();
+          return !!els.editorDialog.open;
+        } catch (err) {
+          try {
+            els.editorDialog.setAttribute('open', 'open');
+            els.editorDialog.classList.add('force-open');
+            document.documentElement.classList.add('editor-force-open');
+            document.body.style.overflow = 'hidden';
+            return true;
+          } catch (_) {
+            console.error('[CRMO_v3032] editor dialog fallback failed', err);
+            return false;
+          }
+        }
+      }
+
+      function canOpenEditorRightNow() {
+        return !!session || els.tileWrap?.classList.contains('editable');
+      }
+
+      function openEditor(ev) {
+        if (ev) {
+          try { ev.preventDefault(); } catch (_) {}
+          try { ev.stopPropagation(); } catch (_) {}
+          try { ev.stopImmediatePropagation?.(); } catch (_) {}
+        }
+        if (!canOpenEditorRightNow()) {
           setStatus('אפשר לערוך רק במצב מחובר', 'error');
           try { window.CRMOAuthModal?.open('login'); } catch (_) {}
-          return;
+          return false;
         }
-        editorDraft = deepClone(state);
-        fillEditor(editorDraft);
-        currentEditorLayerIndex = 0;
-        renderLayersEditor();
-        renderEditorPreview();
-        if (!els.editorDialog.open) els.editorDialog.showModal();
+        const opened = showEditorDialogSafe();
+        if (!opened) {
+          setStatus('העורך לא נפתח. בדוק אם חלונות dialog חסומים בדפדפן.', 'error');
+          return false;
+        }
+        try {
+          editorDraft = deepClone(state);
+          currentEditorLayerIndex = 0;
+          fillEditor(editorDraft);
+          renderLayersEditor();
+          renderEditorPreview();
+          return true;
+        } catch (err) {
+          console.error('[CRMO_v3034] openEditor failed', err);
+          setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
+          return true;
+        }
       }
       window.CRMOOpenTileEditor = openEditor;
 
       function closeEditor() {
-        if (els.editorDialog.open) els.editorDialog.close();
+        try {
+          if (els.editorDialog.open) els.editorDialog.close();
+        } catch (_) {}
+        els.editorDialog?.classList.remove('force-open');
+        try { els.editorDialog?.removeAttribute('open'); } catch (_) {}
+        document.documentElement.classList.remove('editor-force-open');
+        document.body.style.overflow = '';
         editorDraft = null;
         currentEditorLayerIndex = 0;
         if (els.editorPreviewStage) els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
@@ -3053,11 +3123,17 @@ function updateAuthUI(isLoggedIn) {
         els.tileLbLinkInput.value = data.lightbox?.link || '';
         els.showLinkInTileInput.checked = data.display?.showLinkInTile !== false;
         els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab !== false;
-        if (els.dropzoneMeta) {
-          const total = Array.isArray(data.layers) ? data.layers.length : 0;
-          const pending = (data.layers || []).filter((layer) => layer.pendingUpload).length;
-          els.dropzoneMeta.textContent = total ? `${total} מדיות בעורך · ${pending} ממתינות להעלאה ל־Storage` : 'המדיה תועלה ל־Supabase Storage, וה־payload ישמור כתובות ענן מאומתות.';
-        }
+        updateDropzoneMeta(data);
+      }
+
+      function updateDropzoneMeta(data = editorDraft) {
+        if (!els.dropzoneMeta) return;
+        const total = Array.isArray(data?.layers) ? data.layers.length : 0;
+        const pending = (data?.layers || []).filter((layer) => layer.pendingUpload).length;
+        const cloud = (data?.layers || []).filter((layer) => !layer.pendingUpload && /^https?:/i.test(String(layer?.src || ''))).length;
+        els.dropzoneMeta.textContent = total
+          ? `${total} מדיות בעורך · ${cloud} בענן · ${pending} ממתינות לשמירת payload`
+          : 'המדיה תיטען לעורך, תוצג מיד באריח, ותעלה ל־Supabase Storage.';
       }
 
       function collectEditorHeader() {
@@ -3146,6 +3222,22 @@ function updateAuthUI(isLoggedIn) {
           btn.addEventListener('click', () => setEditorActiveLayer(idx));
           els.editorPreviewStrip.appendChild(btn);
         });
+      }
+
+      function updateEditorSaveNote(message = '') {
+        if (els.editorSaveNote) els.editorSaveNote.textContent = message || 'המדיה תופיע מיד באריח. שמירה תכתוב payload לענן ותאמת read-back.';
+      }
+
+      function syncDraftIntoLiveTile(markDirty = true) {
+        if (!editorDraft) return;
+        const snapshot = normalizeState(deepClone(editorDraft));
+        if (markDirty) {
+          snapshot.verifiedOnServer = false;
+          snapshot.serverVerifiedAt = '';
+        }
+        state = snapshot;
+        saveLocalTile(state);
+        applyStateToUI(state);
       }
 
       function renderLayersEditor() {
@@ -3282,23 +3374,31 @@ function updateAuthUI(isLoggedIn) {
         }
         const picked = files.slice(0, remaining);
         try {
-          setStatus('מכין מדיה להעלאה לענן...', '');
+          setStatus('מכין מדיה לעורך...', '');
           const layers = await Promise.all(picked.map(fileToLayer));
           const startIndex = editorDraft.layers.length;
           editorDraft.layers.push(...layers);
           syncLayerOrder(editorDraft.layers);
           editorDraft.display = { ...(editorDraft.display || {}), multiItemMode: editorDraft.layers.length > 1 };
           currentEditorLayerIndex = startIndex;
+          syncDraftIntoLiveTile(true);
           renderLayersEditor();
           renderEditorPreview();
-          if (els.dropzoneMeta) {
-            const total = editorDraft.layers.length;
-            const pending = editorDraft.layers.filter((layer) => layer.pendingUpload).length;
-            els.dropzoneMeta.textContent = `${total} מדיות בעורך · ${pending} ממתינות להעלאה ל־Storage`;
+          updateDropzoneMeta();
+          updateEditorSaveNote('המדיה נטענה לעורך ולאריח. שמירה תסנכרן payload לענן.');
+          if (session && supabaseClient) {
+            setStatus('מעלה מדיה חדשה ל־Storage...', '');
+            await ensureDraftAssetsUploaded(editorDraft);
+            syncDraftIntoLiveTile(true);
+            renderLayersEditor();
+            renderEditorPreview();
+            updateDropzoneMeta();
+            setStatus(`נוספו ${layers.length} מדיות והועלו ל־Storage. נשאר לשמור payload.`, 'success');
+          } else {
+            setStatus(`נוספו ${layers.length} מדיות מקומית. התחבר כדי להעלות אותן לענן.`, '');
           }
-          setStatus(`נוספו ${layers.length} מדיות. יועלו לענן בשמירה.`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3031] addFiles failed', err);
+          console.error('[CRMO_v3032] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3453,6 +3553,7 @@ function updateAuthUI(isLoggedIn) {
           return;
         }
         const header = collectEditorHeader();
+        updateEditorSaveNote('שומר אריח...');
         await ensureDraftAssetsUploaded(editorDraft);
         editorDraft.meta = header.meta;
         editorDraft.overlay = header.overlay;
@@ -3467,12 +3568,15 @@ function updateAuthUI(isLoggedIn) {
         markVerification('not verified', '');
         saveLocalTile(state);
         applyStateToUI(state);
+        updateDropzoneMeta(editorDraft);
         await saveToCloud(state);
         editorDraft = deepClone(state);
         currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, Math.max(editorDraft.layers.length - 1, 0));
         fillEditor(editorDraft);
         renderLayersEditor();
         renderEditorPreview();
+        updateEditorSaveNote('גרור או בחר מדיה. היא תופיע מיד באריח ובעורך.');
+        updateEditorSaveNote('האריח נשמר. אפשר להמשיך לערוך בלי לסגור.');
       }
 
       async function saveToCloud(payload) {
@@ -3528,12 +3632,14 @@ function updateAuthUI(isLoggedIn) {
           const verify = await verifyCloudPayload(payload);
           setSyncState('sync: verified on server');
           setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
+          updateEditorSaveNote('נשמר לענן ואומת בשרת.');
           if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
         } catch (err) {
-          console.error('[CRMO_v3031] saveToCloud failed', err);
+          console.error('[CRMO_v3032] saveToCloud failed', err);
           markVerification('verification failed', '');
           setSyncState('sync: local only');
           setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
+          updateEditorSaveNote('שמירת payload לענן נכשלה. הטיוטה נשארה מקומית.');
           logDiag('saveToCloud or verify failed', { message: safeMessage(err), table: conn.table, rowKey: conn.rowKey });
         } finally {
           setSaveButtonBusy(false);
@@ -3566,9 +3672,10 @@ function updateAuthUI(isLoggedIn) {
           }
           setSyncState('sync: cloud loaded');
           setStatus('נטען מהענן · payload פעיל', 'success');
+          updateEditorSaveNote('נטען payload מהענן.');
           logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
         } catch (err) {
-          console.error('[CRMO_v3031] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3032] loadFromCloudAndMerge failed', err);
           setSyncState('sync: cloud error');
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
           logDiag('loadFromCloudAndMerge failed', { message: safeMessage(err) });
