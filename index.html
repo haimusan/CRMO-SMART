@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3042</title>
+<title>CRMO_v3043</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3042 tile editor rebuild */
+  /* CRMO_v3043 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1853,13 +1853,25 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   .crmo-auth-modal__input,.crmo-auth-modal__password-input{height:52px; border-radius:13px}
   .crmo-auth-modal__submit{padding:14px 12px; font-size:16px}
 }
+
+  .stage .tile-nav{display:none!important}
+  .gallery-test-sections{margin-top:28px;display:grid;gap:26px}
+  .gallery-test-section{border:1px solid rgba(0,0,0,.08);background:#fafafa;padding:14px 14px 18px;border-radius:18px}
+  .gallery-test-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+  .gallery-test-title{font-size:18px;font-weight:700}
+  .gallery-test-meta{font-size:12px;color:rgba(0,0,0,.55)}
+  .gallery-test-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .gallery-test-card{aspect-ratio:16/9;border-radius:16px;border:1px solid rgba(0,0,0,.12);background:#f0f0f0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .gallery-test-card span{font-size:14px;color:rgba(0,0,0,.6)}
+  @media (max-width:900px){.gallery-test-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
 </style></head>
 <body>
 <div class="app">
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3042</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3043</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -1978,8 +1990,28 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <div class="server-badge is-local" id="tileVerifyBadge">LOCAL DRAFT</div>
 </div>
 </div>
+<section aria-label="בדיקת כוורת" class="gallery-test-sections" id="galleryTestSections">
+  <section class="gallery-test-section">
+    <div class="gallery-test-head"><div class="gallery-test-title">Section A</div><div class="gallery-test-meta">4 tiles · test scaffold</div></div>
+    <div class="gallery-test-grid">
+      <article class="gallery-test-card"><span>A1</span></article>
+      <article class="gallery-test-card"><span>A2</span></article>
+      <article class="gallery-test-card"><span>A3</span></article>
+      <article class="gallery-test-card"><span>A4</span></article>
+    </div>
+  </section>
+  <section class="gallery-test-section">
+    <div class="gallery-test-head"><div class="gallery-test-title">Section B</div><div class="gallery-test-meta">4 tiles · test scaffold</div></div>
+    <div class="gallery-test-grid">
+      <article class="gallery-test-card"><span>B1</span></article>
+      <article class="gallery-test-card"><span>B2</span></article>
+      <article class="gallery-test-card"><span>B3</span></article>
+      <article class="gallery-test-card"><span>B4</span></article>
+    </div>
+  </section>
+</section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3042 · version sync and media source binding fix</footer>
+<footer id="footerVersionLabel">CRMO_v3043 · version sync, media source binding, and gallery scaffold build</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2009,7 +2041,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3042</h2>
+<h2>עורך אריח — CRMO_v3043</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2094,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3042';
+      const VERSION = 'CRMO_v3043';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3162,7 +3194,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3042] openEditor failed', err);
+          console.error('[CRMO_v3043] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3513,7 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3042] addFiles failed', err);
+          console.error('[CRMO_v3043] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3530,6 +3562,8 @@ function updateAuthUI(isLoggedIn) {
           type,
           name: file.name,
           src: objectUrl,
+          mediaSrc: objectUrl,
+          url: objectUrl,
           title: '',
           desc: '',
           link: '',
@@ -3588,6 +3622,8 @@ function updateAuthUI(isLoggedIn) {
         clearPendingLayerResources(layer);
         return {
           src: publicUrl,
+          mediaSrc: publicUrl,
+          url: publicUrl,
           name: layer?.name || safeName,
           pendingUpload: false,
           pendingFileToken: '',
@@ -3709,7 +3745,7 @@ function updateAuthUI(isLoggedIn) {
           closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3042] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3043] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -3875,13 +3911,15 @@ function updateAuthUI(isLoggedIn) {
           els.adminVersionPill.textContent = VERSION;
         }
         if (els.footerVersionLabel) {
-          els.footerVersionLabel.textContent = `${VERSION} · version sync and media source binding fix`;
+          els.footerVersionLabel.textContent = `${VERSION} · version sync, media source binding, and gallery scaffold build`;
         }
       }
 
       function applyStateToUI(nextState) {
         state = normalizeState(nextState);
-        currentTileIndex = clamp(currentTileIndex, 0, Math.max(state.layers.length - 1, 0));
+        const visibleLayers = getVisibleLayers();
+        currentTileIndex = pickRenderableLayerIndex(visibleLayers, currentTileIndex);
+        currentLayerIndex = pickRenderableLayerIndex(visibleLayers, currentLayerIndex);
         document.documentElement.style.setProperty('--stroke-width', `${Number(state.strokeWidth || 1)}px`);
         document.documentElement.style.setProperty('--tile-ratio', ratioToCss(state.ratio || '16:9'));
         els.tileIdLabel.textContent = state.tileId;
@@ -3893,7 +3931,15 @@ function updateAuthUI(isLoggedIn) {
 
       function getLayerMediaSrc(layer) {
         if (!layer) return '';
-        return String(layer?.src || layer?.mediaSrc || layer?.url || layer?.localObjectUrl || '').trim();
+        const direct = String(layer?.src || layer?.mediaSrc || layer?.url || layer?.localObjectUrl || '').trim();
+        if (direct) return direct;
+        const bucket = String(layer?.storageBucket || '').trim();
+        const path = String(layer?.storagePath || '').trim().replace(/^\/+/, '');
+        if (bucket && path) {
+          const baseUrl = String(getConnectionSettings?.().url || '').trim().replace(/\/$/, '');
+          if (baseUrl) return `${baseUrl}/storage/v1/object/public/${bucket}/${path}`;
+        }
+        return '';
       }
 
       function hasRenderableMedia(layers) {
@@ -4120,6 +4166,8 @@ function updateAuthUI(isLoggedIn) {
           type: layer?.type || 'image',
           name: layer?.name || '',
           src: layer?.src || layer?.mediaSrc || layer?.url || '',
+          mediaSrc: layer?.mediaSrc || layer?.src || layer?.url || '',
+          url: layer?.url || layer?.src || layer?.mediaSrc || '',
           title: layer?.title || '',
           desc: layer?.desc || '',
           link: layer?.link || '',
