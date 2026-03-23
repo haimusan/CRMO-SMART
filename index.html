@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3028</title>
+<title>CRMO_v3029</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -578,18 +578,34 @@
 
     .dropzone {
       border: 2px dashed #b8b8b8;
-      border-radius: 14px;
-      background: #fafafa;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fcfcfc 0%, #f6f6f6 100%);
       padding: 18px;
       text-align: center;
       color: var(--muted);
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+    }
+
+    .dropzone:hover,
+    .dropzone:focus-visible {
+      border-color: #666;
+      color: #222;
+      transform: translateY(-1px);
+      outline: none;
     }
 
     .dropzone.dragover {
       background: #f1f1f1;
       border-color: #666;
       color: #222;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
     }
+
+    .dropzone-title { font-size: 16px; font-weight: 700; color: #161616; }
+    .dropzone-subtitle { margin-top: 6px; font-size: 13px; line-height: 1.45; }
+    .dropzone-meta { margin-top: 10px; font-size: 12px; line-height: 1.45; color: #666; }
 
     .editor-actions {
       display: flex;
@@ -1722,7 +1738,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3028</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3029</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -1842,7 +1858,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </div>
 </main>
-<footer id="footerVersionLabel">CRMO_v3028 · Popup system polish · local + auth + cloud-ready</footer>
+<footer id="footerVersionLabel">CRMO_v3029 · Tile editor rebuild · cloud media + verified multi-layer</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -1930,17 +1946,15 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </div>
 </section>
 <div class="editor-actions">
-<button class="small-btn" id="pickFilesBtn" type="button">בחר קבצים</button>
 <input accept="image/*,video/*,.gif" hidden="" id="fileInput" multiple="" type="file"/>
-<button class="small-btn" id="saveTileBtn" type="button">שמור מקומי + ענן</button>
+<button class="small-btn" id="saveTileBtn" type="button">שמור לוקאלי + ענן</button>
 <button class="small-btn" id="loadTileBtn" type="button">טען מהענן</button>
 <button class="danger-btn" id="resetTileBtn" type="button">נקה את האריח</button>
 </div>
-<div class="dropzone" id="dropzone">
-          גרור לכאן עד 18 קבצי תמונה / GIF / וידאו, או לחץ על "בחר קבצים".
-          <div class="note" style="margin-top:8px;">
-            לצורך יציבות ובדיקת workflow, המדיה נשמרת בתוך payload של האריח. זה מצוין להוכחת עבודה של האריח, העורך, הלוקאלי והענן.
-          </div>
+<div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="העלאת מדיה לאריח">
+  <div class="dropzone-title">גרור לכאן או לחץ כדי להעלות מדיה</div>
+  <div class="dropzone-subtitle">עד 18 קבצי תמונה / GIF / וידאו. העלאה מרובה תהפוך את האריח לרב־שכבתי.</div>
+  <div class="dropzone-meta" id="dropzoneMeta">המדיה תועלה ל־Supabase Storage, וה־payload ישמור כתובות ענן מאומתות.</div>
 </div>
 <div class="note">
           גרירה בין הפריטים משנה סדר תתי־האריחים. לכל מדיה אפשר להגדיר טקסט נפרד למאוס אובר / לייטבוקס, או להשתמש בטקסט ברירת המחדל של האריח.
@@ -1960,7 +1974,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3028';
+      const VERSION = 'CRMO_v3029';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2023,6 +2037,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
       let session = null;
       let overlayTouchTimer = null;
       let viewerLiked = false;
+      const pendingUploads = new Map();
       let authSubscription = null;
       let bootCycleId = 0;
       let lastCloudWriteAt = '';
@@ -2123,12 +2138,12 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         tileLbLinkInput: $('tileLbLinkInput'),
         showLinkInTileInput: $('showLinkInTileInput'),
         openLinkInNewTabInput: $('openLinkInNewTabInput'),
-        pickFilesBtn: $('pickFilesBtn'),
         fileInput: $('fileInput'),
         saveTileBtn: $('saveTileBtn'),
         loadTileBtn: $('loadTileBtn'),
         resetTileBtn: $('resetTileBtn'),
         dropzone: $('dropzone'),
+        dropzoneMeta: $('dropzoneMeta'),
         layersList: $('layersList')
       };
 
@@ -2140,9 +2155,9 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         while (diagEntries.length > 60) diagEntries.pop();
         if (els.diagLog) els.diagLog.textContent = diagEntries.join('\n');
         if (meta) {
-          try { console.debug('[CRMO_v3028]', message, meta); } catch (_) {}
+          try { console.debug('[CRMO_v3029]', message, meta); } catch (_) {}
         } else {
-          try { console.debug('[CRMO_v3028]', message); } catch (_) {}
+          try { console.debug('[CRMO_v3029]', message); } catch (_) {}
         }
       }
 
@@ -2442,7 +2457,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
             setSyncState('sync: local only');
           }
         } catch (err) {
-          console.error('[CRMO_v3028] initSupabase failed', err);
+          console.error('[CRMO_v3029] initSupabase failed', err);
           logDiag('initSupabase failed', { message: safeMessage(err) });
           setSyncState('sync: init error');
           setStatus('שגיאה באתחול Supabase: ' + safeMessage(err), 'error');
@@ -2523,7 +2538,6 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           persistLocalTile();
           setStatus('מונה הלייקים עודכן מקומית', '');
         });
-        els.pickFilesBtn.addEventListener('click', () => els.fileInput.click());
         els.fileInput.addEventListener('change', (e) => addFiles(e.target.files));
         els.saveTileBtn.addEventListener('click', saveEditorToStateAndPersist);
         els.loadTileBtn.addEventListener('click', () => loadFromCloudAndMerge(true));
@@ -2562,6 +2576,13 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           });
         });
         els.dropzone.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+        els.dropzone.addEventListener('click', () => els.fileInput.click());
+        els.dropzone.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            els.fileInput.click();
+          }
+        });
       }
 
       function handleTileClick(e) {
@@ -2653,7 +2674,7 @@ async function loginWithPassword(email, password, remember = true) {
     return { ok: true, message: 'התחברות הצליחה.', session };
   } catch (err) {
     const message = safeMessage(err);
-    console.error('[CRMO_v3028] login failed', err);
+    console.error('[CRMO_v3029] login failed', err);
     logDiag('login failed', { message });
     setStatus('התחברות נכשלה: ' + message, 'error');
     setAuthFeedback('התחברות נכשלה: ' + message, 'error');
@@ -2762,7 +2783,7 @@ async function logout() {
           setAuthFeedback('התנתקת.', '');
           setStatus('התנתקת', '');
         } catch (err) {
-          console.error('[CRMO_v3028] logout failed', err);
+          console.error('[CRMO_v3029] logout failed', err);
           logDiag('logout failed', { message: safeMessage(err) });
           setStatus('התנתקות נכשלה: ' + safeMessage(err), 'error');
         }
@@ -2985,7 +3006,7 @@ function updateAuthUI(isLoggedIn) {
               <div class="layer-fields">
                 <div class="layer-row-head">
                   <span class="layer-row-index">#${idx + 1}</span>
-                  <div class="layer-meta-note">${escapeHtml(layer.type)} · ${escapeHtml(layer.name || 'ללא שם')}</div>
+                  <div class="layer-meta-note">${escapeHtml(layer.type)} · ${escapeHtml(layer.name || 'ללא שם')} ${layer.pendingUpload ? '· pending cloud' : (layer.storageBucket ? '· cloud' : '')}</div>
                 </div>
                 <label>Sub-item title
                   <textarea data-field="title" dir="auto">${escapeHtml(layer.title || '')}</textarea>
@@ -3089,13 +3110,20 @@ function updateAuthUI(isLoggedIn) {
         }
         const picked = files.slice(0, remaining);
         try {
-          setStatus('ממיר קבצים ל-payload...', '');
+          setStatus('מכין מדיה להעלאה לענן...', '');
           const layers = await Promise.all(picked.map(fileToLayer));
           editorDraft.layers.push(...layers);
+          syncLayerOrder(editorDraft.layers);
+          editorDraft.display = { ...(editorDraft.display || {}), multiItemMode: editorDraft.layers.length > 1 };
           renderLayersEditor();
-          setStatus(`נוספו ${layers.length} מדיות`, 'success');
+          if (els.dropzoneMeta) {
+            const total = editorDraft.layers.length;
+            const pending = editorDraft.layers.filter((layer) => layer.pendingUpload).length;
+            els.dropzoneMeta.textContent = `${total} מדיות בעורך · ${pending} ממתינות להעלאה ל־Storage`;
+          }
+          setStatus(`נוספו ${layers.length} מדיות. יועלו לענן בשמירה.`, 'success');
         } catch (err) {
-          console.error('[CRMO_v3028] addFiles failed', err);
+          console.error('[CRMO_v3029] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3103,13 +3131,15 @@ function updateAuthUI(isLoggedIn) {
       }
 
       async function fileToLayer(file) {
-        const dataUrl = await readAsDataURL(file);
+        const token = crypto.randomUUID();
+        const objectUrl = URL.createObjectURL(file);
+        pendingUploads.set(token, { file, objectUrl, createdAt: Date.now() });
         const type = file.type.startsWith('video/') ? 'video' : (file.type === 'image/gif' ? 'gif' : 'image');
         return {
           id: crypto.randomUUID(),
           type,
           name: file.name,
-          src: dataUrl,
+          src: objectUrl,
           title: '',
           desc: '',
           link: '',
@@ -3117,11 +3147,128 @@ function updateAuthUI(isLoggedIn) {
           isVisible: true,
           sortOrder: (editorDraft?.layers?.length || 0) + 1,
           tags: [],
+          pendingUpload: true,
+          localObjectUrl: objectUrl,
+          pendingFileToken: token,
+          storageBucket: 'assets',
+          storagePath: '',
           hooks: {
             subLink: '',
             subTags: []
           }
         };
+      }
+
+      async function ensureDraftAssetsUploaded(draft) {
+        if (!draft?.layers?.length) return draft;
+        if (!session || !supabaseClient) throw new Error('צריך session פעיל כדי להעלות מדיה לענן');
+        const layers = draft.layers || [];
+        const pendingCount = layers.filter((layer) => needsCloudUpload(layer)).length;
+        if (!pendingCount) return draft;
+        let done = 0;
+        for (const layer of layers) {
+          if (!needsCloudUpload(layer)) continue;
+          done += 1;
+          setStatus(`מעלה מדיה לענן ${done}/${pendingCount}...`, '');
+          const uploaded = await uploadLayerAsset(layer);
+          Object.assign(layer, uploaded);
+        }
+        return draft;
+      }
+
+      function needsCloudUpload(layer) {
+        const src = String(layer?.src || '');
+        return !!(layer?.pendingUpload || layer?.pendingFileToken || src.startsWith('blob:') || src.startsWith('data:'));
+      }
+
+      async function uploadLayerAsset(layer) {
+        const source = await resolveLayerUploadSource(layer);
+        const bucket = 'assets';
+        const safeName = sanitizeStorageName(layer?.name || source.fileName || 'media');
+        const path = `multi/${new Date().toISOString().replace(/[:.]/g,'-')}_${safeName}`;
+        const uploadResult = await supabaseClient.storage.from(bucket).upload(path, source.blob, {
+          contentType: source.contentType || guessContentType(safeName, layer?.type),
+          cacheControl: '3600',
+          upsert: false
+        });
+        if (uploadResult?.error) throw uploadResult.error;
+        const publicRes = supabaseClient.storage.from(bucket).getPublicUrl(path);
+        const publicUrl = publicRes?.data?.publicUrl || ((getConnectionSettings().url || '').replace(/\/$/, '') + `/storage/v1/object/public/${bucket}/${path}`);
+        clearPendingLayerResources(layer);
+        return {
+          src: publicUrl,
+          name: layer?.name || safeName,
+          pendingUpload: false,
+          pendingFileToken: '',
+          localObjectUrl: '',
+          storageBucket: bucket,
+          storagePath: path
+        };
+      }
+
+      async function resolveLayerUploadSource(layer) {
+        const token = String(layer?.pendingFileToken || '');
+        const src = String(layer?.src || '');
+        if (token && pendingUploads.has(token)) {
+          const entry = pendingUploads.get(token);
+          return {
+            blob: entry.file,
+            fileName: entry.file?.name || layer?.name || 'media',
+            contentType: entry.file?.type || guessContentType(layer?.name || 'media', layer?.type)
+          };
+        }
+        if (src.startsWith('data:')) {
+          const res = await fetch(src);
+          const blob = await res.blob();
+          return {
+            blob,
+            fileName: layer?.name || 'media',
+            contentType: blob.type || guessContentType(layer?.name || 'media', layer?.type)
+          };
+        }
+        if (src.startsWith('blob:')) {
+          const res = await fetch(src);
+          const blob = await res.blob();
+          return {
+            blob,
+            fileName: layer?.name || 'media',
+            contentType: blob.type || guessContentType(layer?.name || 'media', layer?.type)
+          };
+        }
+        throw new Error('לא נמצא מקור קובץ להעלאה');
+      }
+
+      function clearPendingLayerResources(layer) {
+        const token = String(layer?.pendingFileToken || '');
+        if (token && pendingUploads.has(token)) {
+          const entry = pendingUploads.get(token);
+          try { if (entry?.objectUrl) URL.revokeObjectURL(entry.objectUrl); } catch (_) {}
+          pendingUploads.delete(token);
+        }
+        if (layer?.localObjectUrl) {
+          try { URL.revokeObjectURL(layer.localObjectUrl); } catch (_) {}
+        }
+      }
+
+      function sanitizeStorageName(name) {
+        return String(name || 'media')
+          .trim()
+          .replace(/[^a-zA-Z0-9._-]+/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^[_\.]+|[_\.]+$/g, '') || 'media';
+      }
+
+      function guessContentType(name, type) {
+        const lower = String(name || '').toLowerCase();
+        if (lower.endsWith('.png')) return 'image/png';
+        if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+        if (lower.endsWith('.webp')) return 'image/webp';
+        if (lower.endsWith('.gif')) return 'image/gif';
+        if (lower.endsWith('.mp4')) return 'video/mp4';
+        if (lower.endsWith('.mov')) return 'video/quicktime';
+        if (lower.endsWith('.webm')) return 'video/webm';
+        if (type === 'video') return 'video/mp4';
+        return 'application/octet-stream';
       }
 
       async function saveEditorToStateAndPersist() {
@@ -3131,10 +3278,11 @@ function updateAuthUI(isLoggedIn) {
           return;
         }
         const header = collectEditorHeader();
+        await ensureDraftAssetsUploaded(editorDraft);
         editorDraft.meta = header.meta;
         editorDraft.overlay = header.overlay;
         editorDraft.lightbox = header.lightbox;
-        editorDraft.display = header.display;
+        editorDraft.display = { ...header.display, multiItemMode: editorDraft.layers.length > 1 };
         editorDraft.hooks = header.hooks;
         editorDraft.updatedAt = new Date().toISOString();
         editorDraft.version = VERSION;
@@ -3203,7 +3351,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נשמר לוקאלית · נכתב לענן · אומת בשרת', 'success');
           if (els.diagSummary) els.diagSummary.textContent = `Cloud verified at ${verify.verifiedAt}`;
         } catch (err) {
-          console.error('[CRMO_v3028] saveToCloud failed', err);
+          console.error('[CRMO_v3029] saveToCloud failed', err);
           markVerification('verification failed', '');
           setSyncState('sync: local only');
           setStatus('כתיבה/אימות ענן נכשלו. הטיוטה נשמרה לוקאלית: ' + safeMessage(err), 'error');
@@ -3241,7 +3389,7 @@ function updateAuthUI(isLoggedIn) {
           setStatus('נטען מהענן · payload פעיל', 'success');
           logDiag('cloud payload loaded', { layers: Array.isArray(state.layers) ? state.layers.length : 0 });
         } catch (err) {
-          console.error('[CRMO_v3028] loadFromCloudAndMerge failed', err);
+          console.error('[CRMO_v3029] loadFromCloudAndMerge failed', err);
           setSyncState('sync: cloud error');
           setStatus('טעינת ענן נכשלה: ' + safeMessage(err), 'error');
           logDiag('loadFromCloudAndMerge failed', { message: safeMessage(err) });
@@ -3536,6 +3684,11 @@ function updateAuthUI(isLoggedIn) {
           isVisible: layer?.isVisible !== false,
           sortOrder: Number(layer?.sortOrder || 0) || 0,
           tags: Array.isArray(layer?.tags) ? layer.tags.slice() : [],
+          pendingUpload: !!layer?.pendingUpload,
+          pendingFileToken: layer?.pendingFileToken || '',
+          localObjectUrl: layer?.localObjectUrl || '',
+          storageBucket: layer?.storageBucket || '',
+          storagePath: layer?.storagePath || '',
           hooks: {
             subLink: layer?.hooks?.subLink || '',
             subTags: Array.isArray(layer?.hooks?.subTags) ? layer.hooks.subTags.slice() : []
