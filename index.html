@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3048 tile editor rebuild */
+  /* CRMO_v3049 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -2126,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3048';
+      const VERSION = 'CRMO_v3049';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3194,7 +3194,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3048] openEditor failed', err);
+          console.error('[CRMO_v3049] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3545,7 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3048] addFiles failed', err);
+          console.error('[CRMO_v3049] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3746,7 +3746,7 @@ function updateAuthUI(isLoggedIn) {
           closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3048] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3049] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -4738,8 +4738,8 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3048';
-  const STORAGE_KEY = 'CRMO_v3048_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3049';
+  const STORAGE_KEY = 'CRMO_v3049_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -5098,7 +5098,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await saveGalleriesToCloud(); } catch (err) {
-          console.error('[CRMO_v3048] gallery mode save failed', err);
+          console.error('[CRMO_v3049] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -5427,7 +5427,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await saveGalleriesToCloud(); }
     catch (err) {
-      console.error('[CRMO_v3048] gallery save failed', err);
+      console.error('[CRMO_v3049] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5442,7 +5442,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await saveGalleriesToCloud(); }
     catch (err) {
-      console.error('[CRMO_v3048] tile save failed', err);
+      console.error('[CRMO_v3049] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5517,7 +5517,7 @@ window.CRMOForceOpenAuthModal = function(event){
   byId('crmo3047ReloadCloud').addEventListener('click', async () => {
     try { await loadFromCloudAndApply(); }
     catch (err) {
-      console.error('[CRMO_v3048] cloud load failed', err);
+      console.error('[CRMO_v3049] cloud load failed', err);
       setStatus(`Cloud: load failed · ${err.message || err}`);
     }
   });
@@ -5534,33 +5534,54 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function installAuthRefreshBridge() {
     const bridge = getBridge();
-    if (!bridge || bridge.__crmo3048Wrapped) return;
+    if (!bridge || bridge.__crmo3049Wrapped) return;
     ['loginWithPassword','signUpWithPassword','loginWithProvider','logout'].forEach((name) => {
       const original = bridge[name];
       if (typeof original !== 'function') return;
       bridge[name] = async function(...args) {
         const result = await original.apply(this, args);
-        setTimeout(() => {
-          refreshAuthBoundUi({ preserveStatus: true });
-          if (canEdit()) {
-            loadFromCloudAndApply().catch((err) => {
-              console.error('[CRMO_v3048] post-auth cloud load failed', err);
-              setStatus(`Cloud: post-auth load failed · ${err.message || err}`);
-            });
-          } else {
-            setStatus('Cloud: view mode only. Login to enable gallery and tile editing.');
-          }
-        }, 0);
+        setTimeout(() => { syncGalleryUiWithAuth({ preserveStatus: true }); }, 0);
+        setTimeout(() => { syncGalleryUiWithAuth({ preserveStatus: true }); }, 250);
+        setTimeout(() => { syncGalleryUiWithAuth({ preserveStatus: true }); }, 800);
         return result;
       };
     });
-    bridge.__crmo3048Wrapped = true;
+    bridge.__crmo3049Wrapped = true;
+  }
+
+  let lastAuthEditable = canEdit();
+
+  async function syncGalleryUiWithAuth(opts = {}) {
+    const { preserveStatus = false } = opts || {};
+    const editable = canEdit();
+    refreshAuthBoundUi({ preserveStatus });
+    if (editable && !lastAuthEditable) {
+      try {
+        await loadFromCloudAndApply();
+      } catch (err) {
+        console.error('[CRMO_v3049] post-auth cloud load failed', err);
+        setStatus(`Cloud: post-auth load failed · ${err.message || err}`);
+      }
+    } else if (!editable && lastAuthEditable && !preserveStatus) {
+      setStatus('Cloud: view mode only. Login to enable gallery and tile editing.');
+    }
+    lastAuthEditable = editable;
+  }
+
+  function installLiveAuthWatcher() {
+    window.setInterval(() => {
+      const editable = canEdit();
+      if (editable !== lastAuthEditable) {
+        syncGalleryUiWithAuth({ preserveStatus: true });
+      }
+    }, 300);
   }
 
   installAuthRefreshBridge();
-  window.addEventListener('focus', () => refreshAuthBoundUi({ preserveStatus: true }));
+  installLiveAuthWatcher();
+  window.addEventListener('focus', () => syncGalleryUiWithAuth({ preserveStatus: true }));
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') refreshAuthBoundUi({ preserveStatus: true });
+    if (document.visibilityState === 'visible') syncGalleryUiWithAuth({ preserveStatus: true });
   });
 
   syncVersionLabels();
@@ -5568,7 +5589,7 @@ window.CRMOForceOpenAuthModal = function(event){
   persistLocal(makePayload(galleries));
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3048] initial cloud load failed', err);
+      console.error('[CRMO_v3049] initial cloud load failed', err);
       setStatus(`Cloud: initial load failed · ${err.message || err}`);
     });
   } else {
