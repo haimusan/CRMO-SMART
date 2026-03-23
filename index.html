@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3045</title>
+<title>CRMO_v3046</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3045 tile editor rebuild */
+  /* CRMO_v3046 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1871,7 +1871,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3045</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3046</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2011,7 +2011,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3045 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel">CRMO_v3046 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2041,7 +2041,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3045</h2>
+<h2>עורך אריח — CRMO_v3046</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2126,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3045';
+      const VERSION = 'CRMO_v3046';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3194,7 +3194,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3045] openEditor failed', err);
+          console.error('[CRMO_v3046] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3545,7 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3045] addFiles failed', err);
+          console.error('[CRMO_v3046] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3746,7 +3746,7 @@ function updateAuthUI(isLoggedIn) {
           closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3045] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3046] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -4723,13 +4723,17 @@ window.CRMOForceOpenAuthModal = function(event){
   @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 
-<script id="crmo3045-multitile-script">
+<script id="crmo3046-multitile-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3045';
-  const STORAGE_KEY = 'CRMO_v3045_MULTI_TILE_DEMO';
+  const VERSION = 'CRMO_v3046';
+  const STORAGE_KEY = 'CRMO_v3046_MULTI_TILE_DEMO';
+  const CLOUD_SCHEMA = 'crmo-multi-tile-demo';
+  const CLOUD_ROW_SUFFIX = '__multi_tile_demo';
+  const CLOUD_BUCKET = 'assets';
   const stage = document.querySelector('main.stage');
   if (!stage) return;
+
   const legacy = {
     wrap: document.getElementById('tileWrap'),
     sections: document.getElementById('galleryTestSections'),
@@ -4751,8 +4755,12 @@ window.CRMOForceOpenAuthModal = function(event){
         <div class="crmo3045-title">Tile Component Test Area</div>
         <div class="crmo3045-sub">4 independent tiles · editor per tile · lightbox arrows between tiles only</div>
       </div>
-      <div class="crmo3045-version">${VERSION}</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start">
+        <div class="crmo3045-version">${VERSION}</div>
+        <button class="crmo3045-btn-ghost" id="crmo3046ReloadCloud" type="button" style="height:38px;padding:0 12px">Load cloud</button>
+      </div>
     </div>
+    <div id="crmo3046Status" class="crmo3045-note" style="margin:-2px 0 12px">Cloud: initializing…</div>
     <div class="crmo3045-grid" id="crmo3045Grid"></div>
   `;
   stage.appendChild(shell);
@@ -4815,6 +4823,47 @@ window.CRMOForceOpenAuthModal = function(event){
     </div>`;
   document.body.appendChild(ed);
 
+  const statusEl = shell.querySelector('#crmo3046Status');
+  const grid = shell.querySelector('#crmo3045Grid');
+  const byId = (id) => document.getElementById(id);
+  const escape = (s) => String(s || '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let supabaseClient = null;
+
+  function setStatus(msg) {
+    if (statusEl) statusEl.textContent = msg;
+  }
+
+  function getBridge() {
+    return window.CRMOAuthBridge || null;
+  }
+
+  function getConnection() {
+    return getBridge()?.getConnection?.() || window.CRMO_V3000?.getConnectionSettings?.() || null;
+  }
+
+  function getSession() {
+    return window.CRMO_V3000?.getSession?.() || null;
+  }
+
+  function isLoggedIn() {
+    return !!getSession();
+  }
+
+  function getCloudRowKey() {
+    const conn = getConnection();
+    return `${String(conn?.rowKey || 'crmo-tile-001')}${CLOUD_ROW_SUFFIX}`;
+  }
+
+  function getSupabaseClient() {
+    const conn = getConnection();
+    if (!conn?.url || !conn?.anonKey || !window.supabase?.createClient) return null;
+    if (supabaseClient) return supabaseClient;
+    supabaseClient = window.supabase.createClient(conn.url, conn.anonKey, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+    return supabaseClient;
+  }
+
   const makeTile = (index) => ({
     tileId: `crmo-tile-${String(index + 1).padStart(3,'0')}`,
     meta: { client: '', brand: '' },
@@ -4822,6 +4871,18 @@ window.CRMOForceOpenAuthModal = function(event){
     display: { openLinkInNewTab: true },
     media: []
   });
+
+  const normalizeMedia = (m, tileIndex, mediaIndex) => ({
+    id: String(m?.id || `${Date.now()}-${tileIndex}-${mediaIndex}`),
+    type: String(m?.type || 'image'),
+    src: String(m?.src || ''),
+    title: String(m?.title || ''),
+    desc: String(m?.desc || ''),
+    fileName: String(m?.fileName || m?.name || ''),
+    storageBucket: String(m?.storageBucket || ''),
+    storagePath: String(m?.storagePath || '')
+  });
+
   const normalizeTile = (tile, index) => ({
     tileId: tile?.tileId || `crmo-tile-${String(index + 1).padStart(3,'0')}`,
     meta: { client: String(tile?.meta?.client || ''), brand: String(tile?.meta?.brand || '') },
@@ -4831,31 +4892,58 @@ window.CRMOForceOpenAuthModal = function(event){
       link: String(tile?.overlay?.link || '')
     },
     display: { openLinkInNewTab: tile?.display?.openLinkInNewTab !== false },
-    media: Array.isArray(tile?.media) ? tile.media.map((m, i) => ({
-      id: String(m?.id || `${Date.now()}-${index}-${i}`),
-      type: String(m?.type || 'image'),
-      src: String(m?.src || ''),
-      title: String(m?.title || ''),
-      desc: String(m?.desc || '')
-    })).filter((m) => m.src) : []
+    media: Array.isArray(tile?.media) ? tile.media.map((m, i) => normalizeMedia(m, index, i)).filter((m) => m.src) : []
   });
-  const load = () => {
+
+  const emptyTiles = () => [0,1,2,3].map((i) => makeTile(i));
+
+  function loadLocalWrapper() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      if (raw && Array.isArray(raw.tiles) && raw.tiles.length >= 4) return raw.tiles.slice(0, 4).map(normalizeTile);
-    } catch (_) {}
-    return [0,1,2,3].map((i) => makeTile(i));
-  };
-  let tiles = load();
+      if (!raw || !Array.isArray(raw.tiles)) return null;
+      return {
+        schema: raw.schema || CLOUD_SCHEMA,
+        version: raw.version || VERSION,
+        updatedAt: raw.updatedAt || '',
+        tiles: raw.tiles.slice(0, 4).map(normalizeTile)
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  let localWrapper = loadLocalWrapper();
+  let tiles = localWrapper?.tiles?.length ? localWrapper.tiles : emptyTiles();
   let activeTileIndex = 0;
   let activeMediaIndex = 0;
   let editorTileIndex = 0;
   let editorDraft = null;
 
-  const persist = () => localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, tiles }));
-  const grid = shell.querySelector('#crmo3045Grid');
-  const byId = (id) => document.getElementById(id);
-  const mediaEl = (item, cls = '') => {
+  function makePayload(currentTiles) {
+    return {
+      schema: CLOUD_SCHEMA,
+      version: VERSION,
+      updatedAt: new Date().toISOString(),
+      tiles: currentTiles.map((tile, index) => normalizeTile(tile, index))
+    };
+  }
+
+  function persistLocal(payload = makePayload(tiles)) {
+    localWrapper = payload;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }
+
+  function syncVersionLabels() {
+    document.title = VERSION;
+    const footer = document.getElementById('footerVersionLabel');
+    if (footer) footer.textContent = `${VERSION} · tile component cloud-connected test area`;
+    const admin = document.getElementById('adminVersionPill');
+    if (admin) admin.textContent = VERSION;
+    const title = document.querySelector('.app-shell header h1');
+    if (title && /CRMO_v/i.test(title.textContent || '')) title.textContent = VERSION;
+  }
+
+  function mediaEl(item, cls = '') {
     if (!item?.src) return null;
     const isVideo = (item.type || '').startsWith('video') || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.src) || item.src.startsWith('data:video');
     const el = document.createElement(isVideo ? 'video' : 'img');
@@ -4870,17 +4958,6 @@ window.CRMOForceOpenAuthModal = function(event){
     }
     if (cls) el.className = cls;
     return el;
-  };
-  const escape = (s) => String(s || '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-  function syncVersionLabels() {
-    document.title = VERSION;
-    const footer = document.getElementById('footerVersionLabel');
-    if (footer) footer.textContent = `${VERSION} · tile component rebuild test area`;
-    const admin = document.getElementById('adminVersionPill');
-    if (admin) admin.textContent = VERSION;
-    const title = document.querySelector('.app-shell header h1');
-    if (title && /CRMO_v/i.test(title.textContent || '')) title.textContent = VERSION;
   }
 
   function renderGrid() {
@@ -4951,7 +5028,8 @@ window.CRMOForceOpenAuthModal = function(event){
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
-      btn.appendChild(mediaEl(media));
+      const thumb = mediaEl(media);
+      if (thumb) btn.appendChild(thumb);
       btn.addEventListener('click', () => { activeMediaIndex = idx; renderLightbox(); });
       strip.appendChild(btn);
     });
@@ -4963,6 +5041,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderLightbox();
     lb.showModal();
   }
+
   function shiftTile(delta) {
     activeTileIndex = (activeTileIndex + delta + tiles.length) % tiles.length;
     activeMediaIndex = 0;
@@ -4980,13 +5059,18 @@ window.CRMOForceOpenAuthModal = function(event){
     const strip = byId('crmo3045EditorStrip');
     const item = tile.media[activeMediaIndex] || null;
     stage.innerHTML = '';
-    if (item) stage.appendChild(mediaEl(item)); else stage.innerHTML = '<div class="crmo3045-fallback">No draft media yet</div>';
+    if (item) {
+      stage.appendChild(mediaEl(item));
+    } else {
+      stage.innerHTML = '<div class="crmo3045-fallback">No draft media yet</div>';
+    }
     strip.innerHTML = '';
     tile.media.forEach((media, idx) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
-      btn.appendChild(mediaEl(media));
+      const thumb = mediaEl(media);
+      if (thumb) btn.appendChild(thumb);
       btn.addEventListener('click', () => { activeMediaIndex = idx; renderEditor(); });
       strip.appendChild(btn);
     });
@@ -5006,6 +5090,7 @@ window.CRMOForceOpenAuthModal = function(event){
     activeMediaIndex = 0;
     editorDraft = structuredClone(tiles[tileIndex]);
     renderEditor();
+    byId('crmo3045EditorNote').textContent = 'Draft changes stay inside the popup until Save.';
     ed.showModal();
   }
 
@@ -5018,7 +5103,16 @@ window.CRMOForceOpenAuthModal = function(event){
         r.onerror = () => reject(r.error || new Error('read failed'));
         r.readAsDataURL(file);
       });
-      results.push({ id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, type: file.type || 'image', src, title: '', desc: '' });
+      results.push({
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        type: file.type || 'image',
+        src,
+        title: '',
+        desc: '',
+        fileName: file.name || '',
+        storageBucket: '',
+        storagePath: ''
+      });
     }
     return results;
   }
@@ -5027,6 +5121,174 @@ window.CRMOForceOpenAuthModal = function(event){
     try { if (ed.open) ed.close(); } catch (_) {}
     editorDraft = null;
     byId('crmo3045FileInput').value = '';
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const match = String(dataUrl || '').match(/^data:([^;,]+)?(?:;base64)?,(.*)$/);
+    if (!match) return null;
+    const mime = match[1] || 'application/octet-stream';
+    const data = match[2] || '';
+    const bytes = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
+    return new Blob([bytes], { type: mime });
+  }
+
+  function guessExtension(type, fallbackName) {
+    const lower = String(fallbackName || '').toLowerCase();
+    const byName = lower.split('.').pop();
+    if (byName && byName !== lower) return byName;
+    if (/png/.test(type)) return 'png';
+    if (/jpeg|jpg/.test(type)) return 'jpg';
+    if (/webp/.test(type)) return 'webp';
+    if (/gif/.test(type)) return 'gif';
+    if (/mp4/.test(type)) return 'mp4';
+    if (/webm/.test(type)) return 'webm';
+    if (/ogg/.test(type)) return 'ogg';
+    return 'bin';
+  }
+
+  function sanitizeName(name) {
+    return String(name || 'media').replace(/[^\w.\-]+/g, '_');
+  }
+
+  function needsUpload(media) {
+    const src = String(media?.src || '');
+    return !!src && (src.startsWith('data:') || src.startsWith('blob:')) && !(media.storageBucket && media.storagePath);
+  }
+
+  async function uploadMediaItem(media, tileIndex, mediaIndex) {
+    const client = getSupabaseClient();
+    const conn = getConnection();
+    if (!client || !conn?.url || !isLoggedIn()) throw new Error('Cloud upload requires active login');
+    const blob = media.src.startsWith('data:') ? dataUrlToBlob(media.src) : null;
+    if (!blob) throw new Error('Only newly added media can be uploaded from this editor state');
+    const ext = guessExtension(blob.type, media.fileName || media.id);
+    const fileBase = sanitizeName((media.fileName || `tile_${tileIndex + 1}_${mediaIndex + 1}`).replace(/\.[^.]+$/, ''));
+    const path = `multi-tile/${VERSION}/${new Date().toISOString().replace(/[:.]/g, '-')}_${fileBase}.${ext}`;
+    const upload = await client.storage.from(CLOUD_BUCKET).upload(path, blob, {
+      contentType: blob.type || 'application/octet-stream',
+      cacheControl: '3600',
+      upsert: false
+    });
+    if (upload?.error) throw upload.error;
+    const pub = client.storage.from(CLOUD_BUCKET).getPublicUrl(path);
+    const publicUrl = pub?.data?.publicUrl || `${String(conn.url).replace(/\/$/, '')}/storage/v1/object/public/${CLOUD_BUCKET}/${path}`;
+    return {
+      ...media,
+      src: publicUrl,
+      storageBucket: CLOUD_BUCKET,
+      storagePath: path
+    };
+  }
+
+  async function ensureTileMediaUploaded(tile, tileIndex) {
+    const next = normalizeTile(tile, tileIndex);
+    for (let i = 0; i < next.media.length; i += 1) {
+      if (!needsUpload(next.media[i])) continue;
+      setStatus(`Cloud: uploading media ${i + 1}/${next.media.length} for tile ${tileIndex + 1}...`);
+      next.media[i] = await uploadMediaItem(next.media[i], tileIndex, i);
+    }
+    return next;
+  }
+
+  async function readCloudPayload() {
+    const client = getSupabaseClient();
+    const conn = getConnection();
+    if (!client || !conn) throw new Error('Supabase connection is not available');
+    const rowKeyCol = conn.keyColumn || 'key';
+    const payloadCol = conn.payloadColumn || 'payload';
+    let result = await client.from(conn.table).select(`${rowKeyCol}, ${payloadCol}, updated_at`).eq(rowKeyCol, getCloudRowKey()).maybeSingle();
+    if (result?.error && /updated_at/i.test(String(result.error?.message || result.error?.details || ''))) {
+      result = await client.from(conn.table).select(`${rowKeyCol}, ${payloadCol}`).eq(rowKeyCol, getCloudRowKey()).maybeSingle();
+    }
+    if (result?.error) throw result.error;
+    const data = result?.data;
+    const payload = data ? data[payloadCol] : null;
+    if (!payload || !Array.isArray(payload.tiles)) return null;
+    return {
+      schema: payload.schema || CLOUD_SCHEMA,
+      version: payload.version || VERSION,
+      updatedAt: payload.updatedAt || data?.updated_at || '',
+      tiles: payload.tiles.slice(0, 4).map(normalizeTile)
+    };
+  }
+
+  function chooseLatestPayload(localPayload, cloudPayload) {
+    if (!cloudPayload) return localPayload;
+    if (!localPayload) return cloudPayload;
+    const localAt = Date.parse(localPayload.updatedAt || '') || 0;
+    const cloudAt = Date.parse(cloudPayload.updatedAt || '') || 0;
+    return cloudAt >= localAt ? cloudPayload : localPayload;
+  }
+
+  async function saveTilesToCloud() {
+    const client = getSupabaseClient();
+    const conn = getConnection();
+    if (!client || !conn || !isLoggedIn()) {
+      setStatus('Cloud: no active login. Saved locally only.');
+      return false;
+    }
+    const rowKeyCol = conn.keyColumn || 'key';
+    const payloadCol = conn.payloadColumn || 'payload';
+    const payload = makePayload(tiles);
+    persistLocal(payload);
+    setStatus('Cloud: writing payload...');
+    const row = {
+      [rowKeyCol]: getCloudRowKey(),
+      [payloadCol]: payload,
+      updated_at: payload.updatedAt
+    };
+    let result = await client.from(conn.table).upsert(row, { onConflict: rowKeyCol });
+    if (result?.error && /updated_at/i.test(String(result.error?.message || result.error?.details || ''))) {
+      result = await client.from(conn.table).upsert({
+        [rowKeyCol]: getCloudRowKey(),
+        [payloadCol]: payload
+      }, { onConflict: rowKeyCol });
+    }
+    if (result?.error) throw result.error;
+    const verify = await readCloudPayload();
+    persistLocal(verify || payload);
+    setStatus(`Cloud: saved and verified on server · row ${getCloudRowKey()}`);
+    return true;
+  }
+
+  async function loadFromCloudAndApply() {
+    if (!isLoggedIn()) {
+      setStatus('Cloud: not logged in. Using local state only.');
+      return false;
+    }
+    setStatus('Cloud: loading payload...');
+    const cloud = await readCloudPayload();
+    if (!cloud) {
+      setStatus(`Cloud: no payload yet for row ${getCloudRowKey()}`);
+      return false;
+    }
+    const winner = chooseLatestPayload(loadLocalWrapper(), cloud);
+    tiles = (winner?.tiles?.length ? winner.tiles : emptyTiles()).map(normalizeTile);
+    persistLocal(winner || makePayload(tiles));
+    renderGrid();
+    if (lb.open) renderLightbox();
+    if (ed.open && editorDraft) {
+      editorDraft = structuredClone(tiles[editorTileIndex]);
+      renderEditor();
+    }
+    setStatus(`Cloud: loaded row ${getCloudRowKey()} · updated ${winner.updatedAt || 'unknown'}`);
+    return true;
+  }
+
+  async function commitEditorAndSave() {
+    if (!editorDraft) return;
+    syncDraftFromFields();
+    const workingDraft = await ensureTileMediaUploaded(editorDraft, editorTileIndex);
+    tiles[editorTileIndex] = normalizeTile(workingDraft, editorTileIndex);
+    persistLocal(makePayload(tiles));
+    renderGrid();
+    closeEditor();
+    try {
+      await saveTilesToCloud();
+    } catch (err) {
+      console.error('[CRMO_v3046] cloud save failed', err);
+      setStatus(`Cloud: save failed, local commit kept · ${err.message || err}`);
+    }
   }
 
   byId('crmo3045PrevTile').addEventListener('click', () => shiftTile(-1));
@@ -5038,7 +5300,7 @@ window.CRMOForceOpenAuthModal = function(event){
   ['crmo3045Client','crmo3045Brand','crmo3045Title','crmo3045Desc','crmo3045Link'].forEach((id) => {
     byId(id).addEventListener('input', () => {
       syncDraftFromFields();
-      byId('crmo3045EditorNote').textContent = 'Draft updated. Save will commit and close the editor.';
+      byId('crmo3045EditorNote').textContent = 'Draft updated. Save will commit, upload media if needed, and close the editor.';
     });
   });
   byId('crmo3045FileInput').addEventListener('change', async (e) => {
@@ -5065,17 +5327,26 @@ window.CRMOForceOpenAuthModal = function(event){
     renderEditor();
     byId('crmo3045EditorNote').textContent = 'Draft reset. Save to commit the empty tile.';
   });
-  byId('crmo3045SaveTile').addEventListener('click', () => {
-    if (!editorDraft) return;
-    syncDraftFromFields();
-    tiles[editorTileIndex] = normalizeTile(editorDraft, editorTileIndex);
-    persist();
-    renderGrid();
-    closeEditor();
+  byId('crmo3045SaveTile').addEventListener('click', async () => {
+    try {
+      byId('crmo3045SaveTile').disabled = true;
+      await commitEditorAndSave();
+    } finally {
+      byId('crmo3045SaveTile').disabled = false;
+    }
   });
+  byId('crmo3046ReloadCloud').addEventListener('click', async () => {
+    try {
+      await loadFromCloudAndApply();
+    } catch (err) {
+      console.error('[CRMO_v3046] cloud load failed', err);
+      setStatus(`Cloud: load failed · ${err.message || err}`);
+    }
+  });
+
   window.addEventListener('keydown', (e) => {
-    if (lb.open && e.key === 'ArrowLeft') { e.preventDefault(); shiftTile(1); }
-    if (lb.open && e.key === 'ArrowRight') { e.preventDefault(); shiftTile(-1); }
+    if (lb.open && e.key === 'ArrowLeft') { e.preventDefault(); shiftTile(-1); }
+    if (lb.open && e.key === 'ArrowRight') { e.preventDefault(); shiftTile(1); }
     if (e.key === 'Escape') {
       try { if (lb.open) lb.close(); } catch (_) {}
       if (ed.open) closeEditor();
@@ -5084,8 +5355,18 @@ window.CRMOForceOpenAuthModal = function(event){
 
   syncVersionLabels();
   renderGrid();
+  persistLocal(makePayload(tiles));
+  if (isLoggedIn()) {
+    loadFromCloudAndApply().catch((err) => {
+      console.error('[CRMO_v3046] initial cloud load failed', err);
+      setStatus(`Cloud: initial load failed · ${err.message || err}`);
+    });
+  } else {
+    setStatus('Cloud: not logged in. Working from local state only.');
+  }
 })();
 </script>
+
 
 </body>
 </html>
