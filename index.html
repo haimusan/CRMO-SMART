@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3047</title>
+<title>CRMO_v3048</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1468,7 +1468,7 @@
 
 
 
-  /* CRMO_v3047 tile editor rebuild */
+  /* CRMO_v3048 tile editor rebuild */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1871,7 +1871,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3047</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3048</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2011,7 +2011,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3047 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel">CRMO_v3048 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2041,7 +2041,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3047</h2>
+<h2>עורך אריח — CRMO_v3048</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2126,7 +2126,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3047';
+      const VERSION = 'CRMO_v3048';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -3194,7 +3194,7 @@ function updateAuthUI(isLoggedIn) {
           clearEditorDirtyState();
           return true;
         } catch (err) {
-          console.error('[CRMO_v3047] openEditor failed', err);
+          console.error('[CRMO_v3048] openEditor failed', err);
           setStatus('פתיחת העורך נכשלה. בוצע hotfix ל־editor open.', 'error');
           return true;
         }
@@ -3545,7 +3545,7 @@ function updateAuthUI(isLoggedIn) {
           markEditorDirty('המדיה נטענה לעורך. היא תישמר לענן רק בלחיצה על שמירה.');
           setStatus(`נוספו ${layers.length} מדיות לטיוטה.`, '');
         } catch (err) {
-          console.error('[CRMO_v3047] addFiles failed', err);
+          console.error('[CRMO_v3048] addFiles failed', err);
           setStatus('שגיאה בקריאת הקבצים: ' + safeMessage(err), 'error');
         } finally {
           els.fileInput.value = '';
@@ -3746,7 +3746,7 @@ function updateAuthUI(isLoggedIn) {
           closeLightbox();
           setStatus('נשמר לענן וחזר לתצוגה הרגילה', 'success');
         } catch (err) {
-          console.error('[CRMO_v3047] saveEditorToStateAndPersist failed', err);
+          console.error('[CRMO_v3048] saveEditorToStateAndPersist failed', err);
           updateEditorSaveNote('השמירה נכשלה. העורך נשאר פתוח.');
           setStatus('שגיאה בשמירת העורך: ' + safeMessage(err), 'error');
         } finally {
@@ -4738,8 +4738,8 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3047';
-  const STORAGE_KEY = 'CRMO_v3047_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3048';
+  const STORAGE_KEY = 'CRMO_v3048_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -4874,6 +4874,25 @@ window.CRMOForceOpenAuthModal = function(event){
   function getConnection() { return getBridge()?.getConnection?.() || window.CRMO_V3000?.getConnectionSettings?.() || null; }
   function getSession() { return window.CRMO_V3000?.getSession?.() || null; }
   function isLoggedIn() { return !!getSession(); }
+  function canEdit() {
+    const bridge = getBridge();
+    if (bridge?.isLoggedIn) return !!bridge.isLoggedIn();
+    return isLoggedIn();
+  }
+  function closeEditorsIfUnauthorized() {
+    if (canEdit()) return;
+    try { if (tileDialog.open) closeTileEditor(); } catch (_) {}
+    try { if (galleryDialog.open) closeGalleryEditor(); } catch (_) {}
+  }
+  function refreshAuthBoundUi(opts = {}) {
+    const { preserveStatus = false } = opts || {};
+    closeEditorsIfUnauthorized();
+    renderGalleryStack();
+    if (lb.open) renderLightbox();
+    if (!preserveStatus) {
+      setStatus(canEdit() ? `Cloud: editing enabled · row ${getCloudRowKey()}` : 'Cloud: view mode only. Login to enable gallery and tile editing.');
+    }
+  }
   function getCloudRowKey() {
     const conn = getConnection();
     return `${String(conn?.rowKey || 'crmo-tile-001')}${CLOUD_ROW_SUFFIX}`;
@@ -5012,8 +5031,9 @@ window.CRMOForceOpenAuthModal = function(event){
   function renderGalleryStack() {
     galleryStack.innerHTML = '';
     galleries.forEach((gallery, galleryIndex) => {
+      const editEnabled = canEdit();
       const section = document.createElement('section');
-      section.className = `crmo3047-gallery${gallery.ui.editMode ? ' is-editing' : ''}`;
+      section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}`;
       section.dataset.galleryIndex = String(galleryIndex);
       section.innerHTML = `
         <div class="crmo3047-gallery-head">
@@ -5023,9 +5043,11 @@ window.CRMOForceOpenAuthModal = function(event){
             <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
           </div>
           <div class="crmo3047-gallery-tools">
-            <span class="crmo3047-badge ${gallery.ui.editMode ? 'live' : ''}">${gallery.ui.editMode ? 'Gallery edit mode ON' : 'Gallery edit mode OFF'}</span>
-            <button class="crmo3045-btn-ghost" type="button" data-gallery-toggle>${gallery.ui.editMode ? 'Exit gallery edit' : 'Enter gallery edit'}</button>
-            <button class="crmo3045-btn" type="button" data-gallery-editor>Edit gallery</button>
+            <span class="crmo3047-badge ${gallery.ui.editMode && editEnabled ? 'live' : ''}">${gallery.ui.editMode && editEnabled ? 'Gallery edit mode ON' : 'Gallery edit mode OFF'}</span>
+            ${editEnabled
+              ? `<button class="crmo3045-btn-ghost" type="button" data-gallery-toggle>${gallery.ui.editMode ? 'Exit gallery edit' : 'Enter gallery edit'}</button>
+            <button class="crmo3045-btn" type="button" data-gallery-editor>Edit gallery</button>`
+              : `<span class="crmo3045-note">Viewer mode</span>`}
           </div>
         </div>
         <div class="crmo3045-grid" data-gallery-grid></div>
@@ -5037,7 +5059,7 @@ window.CRMOForceOpenAuthModal = function(event){
         const first = tile.media[0] || null;
         const meta = [gallery.meta.label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
         card.innerHTML = `
-          <button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery ${galleryIndex + 1}">✎</button>
+          ${editEnabled ? `<button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery ${galleryIndex + 1}">✎</button>` : ''}
           <article class="crmo3045-tile" tabindex="0" aria-label="Gallery ${galleryIndex + 1} tile ${tileIndex + 1}">
             ${first ? '' : '<div class="crmo3045-fallback">CRMO TILE<br>16:9</div>'}
           </article>
@@ -5050,7 +5072,8 @@ window.CRMOForceOpenAuthModal = function(event){
         `;
         const article = card.querySelector('.crmo3045-tile');
         if (first) article.appendChild(mediaEl(first, 'crmo3045-tile-media'));
-        card.querySelector('.crmo3045-pencil').addEventListener('click', (e) => {
+        const pencilBtn = card.querySelector('.crmo3045-pencil');
+        pencilBtn?.addEventListener('click', (e) => {
           e.stopPropagation();
           openTileEditor(galleryIndex, tileIndex);
         });
@@ -5064,17 +5087,24 @@ window.CRMOForceOpenAuthModal = function(event){
         grid.appendChild(card);
       });
 
-      section.querySelector('[data-gallery-toggle]').addEventListener('click', async () => {
+      const toggleBtn = section.querySelector('[data-gallery-toggle]');
+      toggleBtn?.addEventListener('click', async () => {
+        if (!canEdit()) {
+          setStatus('Viewer mode only. Login to enable gallery editing.');
+          try { window.CRMOAuthModal?.open('login'); } catch (_) {}
+          return;
+        }
         galleries[galleryIndex].ui.editMode = !galleries[galleryIndex].ui.editMode;
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await saveGalleriesToCloud(); } catch (err) {
-          console.error('[CRMO_v3047] gallery mode save failed', err);
+          console.error('[CRMO_v3048] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
 
-      section.querySelector('[data-gallery-editor]').addEventListener('click', () => openGalleryEditor(galleryIndex));
+      const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
+      galleryEditorBtn?.addEventListener('click', () => openGalleryEditor(galleryIndex));
       galleryStack.appendChild(section);
     });
   }
@@ -5150,6 +5180,11 @@ window.CRMOForceOpenAuthModal = function(event){
   }
 
   function openGalleryEditor(galleryIndex) {
+    if (!canEdit()) {
+      setStatus('Viewer mode only. Login to enable gallery editing.');
+      try { window.CRMOAuthModal?.open('login'); } catch (_) {}
+      return;
+    }
     galleryEditorIndex = galleryIndex;
     galleryEditorDraft = structuredClone(galleries[galleryIndex]);
     renderGalleryEditor();
@@ -5198,6 +5233,11 @@ window.CRMOForceOpenAuthModal = function(event){
   }
 
   function openTileEditor(galleryIndex, tileIndex) {
+    if (!canEdit()) {
+      setStatus('Viewer mode only. Login to enable tile editing.');
+      try { window.CRMOAuthModal?.open('login'); } catch (_) {}
+      return;
+    }
     editorContext = { galleryIndex, tileIndex };
     activeMediaIndex = 0;
     tileEditorDraft = structuredClone(galleries[galleryIndex].tiles[tileIndex]);
@@ -5387,7 +5427,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await saveGalleriesToCloud(); }
     catch (err) {
-      console.error('[CRMO_v3047] gallery save failed', err);
+      console.error('[CRMO_v3048] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5402,7 +5442,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await saveGalleriesToCloud(); }
     catch (err) {
-      console.error('[CRMO_v3047] tile save failed', err);
+      console.error('[CRMO_v3048] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5477,7 +5517,7 @@ window.CRMOForceOpenAuthModal = function(event){
   byId('crmo3047ReloadCloud').addEventListener('click', async () => {
     try { await loadFromCloudAndApply(); }
     catch (err) {
-      console.error('[CRMO_v3047] cloud load failed', err);
+      console.error('[CRMO_v3048] cloud load failed', err);
       setStatus(`Cloud: load failed · ${err.message || err}`);
     }
   });
@@ -5492,12 +5532,43 @@ window.CRMOForceOpenAuthModal = function(event){
     }
   });
 
+  function installAuthRefreshBridge() {
+    const bridge = getBridge();
+    if (!bridge || bridge.__crmo3048Wrapped) return;
+    ['loginWithPassword','signUpWithPassword','loginWithProvider','logout'].forEach((name) => {
+      const original = bridge[name];
+      if (typeof original !== 'function') return;
+      bridge[name] = async function(...args) {
+        const result = await original.apply(this, args);
+        setTimeout(() => {
+          refreshAuthBoundUi({ preserveStatus: true });
+          if (canEdit()) {
+            loadFromCloudAndApply().catch((err) => {
+              console.error('[CRMO_v3048] post-auth cloud load failed', err);
+              setStatus(`Cloud: post-auth load failed · ${err.message || err}`);
+            });
+          } else {
+            setStatus('Cloud: view mode only. Login to enable gallery and tile editing.');
+          }
+        }, 0);
+        return result;
+      };
+    });
+    bridge.__crmo3048Wrapped = true;
+  }
+
+  installAuthRefreshBridge();
+  window.addEventListener('focus', () => refreshAuthBoundUi({ preserveStatus: true }));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshAuthBoundUi({ preserveStatus: true });
+  });
+
   syncVersionLabels();
   renderGalleryStack();
   persistLocal(makePayload(galleries));
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3047] initial cloud load failed', err);
+      console.error('[CRMO_v3048] initial cloud load failed', err);
       setStatus(`Cloud: initial load failed · ${err.message || err}`);
     });
   } else {
