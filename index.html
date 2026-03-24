@@ -25,7 +25,7 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: Assistant, Arial, Helvetica, sans-serif; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'Rubik', Arial, Helvetica, sans-serif; }
     body { min-height: 100vh; }
     button, input, textarea, select { font: inherit; }
 
@@ -1868,7 +1868,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&display=swap" rel="stylesheet"/>
 </head>
 <body>
 <div class="app">
@@ -2130,7 +2130,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3054';
+      const VERSION = 'CRMO_v3055';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -4749,8 +4749,8 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3054';
-  const STORAGE_KEY = 'CRMO_v3054_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3055';
+  const STORAGE_KEY = 'CRMO_v3055_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -4782,14 +4782,14 @@ window.CRMOForceOpenAuthModal = function(event){
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start">
         <div class="crmo3045-version">${VERSION}</div>
-        <button class="crmo3045-btn-ghost" id="crmo3054ReloadCloud" type="button" style="height:38px;padding:0 12px">Load cloud</button>
-        <button class="crmo3045-btn-ghost" id="crmo3054LoadLocal" type="button" style="height:38px;padding:0 12px">Load local</button>
-        <button class="crmo3045-btn" id="crmo3054SaveNow" type="button" style="height:38px;padding:0 14px">Save now</button>
+        <button class="crmo3045-btn-ghost" id="crmo3055ReloadCloud" type="button" style="height:38px;padding:0 12px">Load cloud</button>
+        <button class="crmo3045-btn-ghost" id="crmo3055LoadLocal" type="button" style="height:38px;padding:0 12px">Load local</button>
+        <button class="crmo3045-btn" id="crmo3055SaveNow" type="button" style="height:38px;padding:0 14px">Save now</button>
       </div>
     </div>
     <div id="crmo3047Status" class="crmo3045-note" style="margin:-2px 0 6px">Sync: initializing…</div>
-    <div id="crmo3054Source" class="crmo3045-note" style="margin:0 0 4px">Source of truth: pending</div>
-    <div id="crmo3054Mode" class="crmo3045-note" style="margin:0 0 12px">Sync mode: pending</div>
+    <div id="crmo3055Source" class="crmo3045-note" style="margin:0 0 4px">Source of truth: pending</div>
+    <div id="crmo3055Mode" class="crmo3045-note" style="margin:0 0 12px">Sync mode: pending</div>
     <div class="crmo3047-stack" id="crmo3047GalleryStack"></div>
   `;
   stage.appendChild(shell);
@@ -4879,8 +4879,8 @@ window.CRMOForceOpenAuthModal = function(event){
   document.body.appendChild(tileDialog);
 
   const statusEl = document.getElementById('crmo3047Status');
-  const sourceEl = document.getElementById('crmo3054Source');
-  const modeEl = document.getElementById('crmo3054Mode');
+  const sourceEl = document.getElementById('crmo3055Source');
+  const modeEl = document.getElementById('crmo3055Mode');
   const galleryStack = document.getElementById('crmo3047GalleryStack');
   const byId = (id) => document.getElementById(id);
   const escape = (s) => String(s || '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -4962,8 +4962,8 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function setSyncBusyState(busy, label = '') {
     syncBusy = !!busy;
-    document.body.classList.toggle('crmo3054-sync-busy', syncBusy);
-    ['crmo3054ReloadCloud','crmo3054LoadLocal','crmo3054SaveNow','crmo3047SaveGallery','crmo3047SaveTile','crmo3047AddMedia','crmo3047ResetGallery','crmo3047ResetTile'].forEach((id) => {
+    document.body.classList.toggle('crmo3055-sync-busy', syncBusy);
+    ['crmo3055ReloadCloud','crmo3055LoadLocal','crmo3055SaveNow','crmo3047SaveGallery','crmo3047SaveTile','crmo3047AddMedia','crmo3047ResetGallery','crmo3047ResetTile'].forEach((id) => {
       const el = byId(id);
       if (el) el.disabled = syncBusy;
     });
@@ -5206,7 +5206,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3054] gallery mode save failed', err);
+          console.error('[CRMO_v3055] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -5582,7 +5582,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3054] gallery save failed', err);
+      console.error('[CRMO_v3055] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5597,7 +5597,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3054] tile save failed', err);
+      console.error('[CRMO_v3055] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5669,28 +5669,28 @@ window.CRMOForceOpenAuthModal = function(event){
     }
   });
 
-  byId('crmo3054ReloadCloud').addEventListener('click', async () => {
+  byId('crmo3055ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3054] cloud load failed', err);
+      console.error('[CRMO_v3055] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
 
 
-  byId('crmo3054LoadLocal').addEventListener('click', async () => {
+  byId('crmo3055LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3054] local load failed', err);
+      console.error('[CRMO_v3055] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
 
-  byId('crmo3054SaveNow').addEventListener('click', async () => {
+  byId('crmo3055SaveNow').addEventListener('click', async () => {
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3054] save now failed', err);
+      console.error('[CRMO_v3055] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
@@ -5707,7 +5707,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function installAuthRefreshBridge() {
     const bridge = getBridge();
-    if (!bridge || bridge.__crmo3054Wrapped) return;
+    if (!bridge || bridge.__crmo3055Wrapped) return;
     ['loginWithPassword','signUpWithPassword','loginWithProvider','logout'].forEach((name) => {
       const original = bridge[name];
       if (typeof original !== 'function') return;
@@ -5719,7 +5719,7 @@ window.CRMOForceOpenAuthModal = function(event){
         return result;
       };
     });
-    bridge.__crmo3054Wrapped = true;
+    bridge.__crmo3055Wrapped = true;
   }
 
   let lastAuthEditable = canEdit();
@@ -5732,7 +5732,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3054] post-auth cloud load failed', err);
+        console.error('[CRMO_v3055] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -5766,7 +5766,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3054] initial cloud load failed', err);
+      console.error('[CRMO_v3055] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
