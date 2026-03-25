@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3061</title>
+<title>CRMO_v3071</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -22,6 +22,8 @@
       --accent: #111111;
       --danger: #8d1111;
       --success: #0f6f2f;
+      --layout-max: 1200px;
+      --layout-gutter: 16px;
     }
 
     * { box-sizing: border-box; }
@@ -30,9 +32,18 @@
     button, input, textarea, select { font: inherit; }
 
     .app {
-      max-width: 1200px;
+      width: min(var(--layout-max), calc(100vw - (var(--layout-gutter) * 2)));
       margin: 0 auto;
-      padding: 22px 16px 80px;
+      padding: 22px 0 80px;
+    }
+
+    .site-header,
+    .admin-dashboard,
+    .gallery-test-sections,
+    .crmo3045-shell,
+    footer {
+      width: 100%;
+      margin-inline: auto;
     }
 
     .admin-dashboard {
@@ -445,10 +456,21 @@
       overflow: hidden;
       box-shadow: 0 20px 80px rgba(0,0,0,.3);
       background: #fff;
+      margin: 24px auto;
     }
 
     dialog::backdrop { background: rgba(0,0,0,.58); }
     dialog.force-open { display: block; }
+
+    #lightboxDialog {
+      position: fixed;
+      inset: 0;
+      margin: auto;
+    }
+
+    #lightboxDialog .modal-shell {
+      width: 100%;
+    }
 
     .modal-shell {
       display: grid;
@@ -485,6 +507,11 @@
       font-weight: 700;
     }
 
+    .lightbox-side .small-btn {
+      font-size: 18.2px;
+      min-height: 46px;
+    }
+
     .danger-btn {
       border-color: rgba(141,17,17,.25);
       color: var(--danger);
@@ -513,8 +540,8 @@
     }
 
     .lb-title {
-      font-size: 28px;
-      line-height: 1.03;
+      font-size: 47.3px;
+      line-height: 1.08;
       font-weight: 800;
       margin: 0;
       white-space: pre-line;
@@ -524,14 +551,17 @@
     .lb-desc {
       margin: 0;
       white-space: pre-line;
-      line-height: 1.45;
+      line-height: 1.5;
       text-align: right;
+      font-size: 27px;
     }
 
     .lb-link {
       direction: ltr;
       text-align: left;
       word-break: break-word;
+      font-size: 22px;
+      line-height: 1.45;
     }
 
     .lb-controls {
@@ -1877,7 +1907,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3061</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3071</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2017,7 +2047,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3061 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel">CRMO_v3071 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="modal-shell">
@@ -2047,7 +2077,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3061</h2>
+<h2>עורך אריח — CRMO_v3071</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2132,7 +2162,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3061';
+      const VERSION = 'CRMO_v3070';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -4068,8 +4098,8 @@ function updateAuthUI(isLoggedIn) {
         const metaLabel = getMetaLabel();
         els.lbKicker.hidden = !metaLabel;
         els.lbKicker.textContent = metaLabel;
-        els.lbTitle.textContent = lbText.title || '';
-        els.lbDesc.textContent = lbText.desc || '';
+        els.lbTitle.textContent = lbText.title || 'שם הפרויקט';
+        els.lbDesc.textContent = lbText.desc || 'תיאור קצר של הפרויקט';
         bindLink(els.lbLink, lbText.link, state.display?.openLinkInNewTab !== false);
         renderThumbs();
       }
@@ -4094,8 +4124,8 @@ function updateAuthUI(isLoggedIn) {
         const visibleLayers = getVisibleLayers();
         const layer = visibleLayers[index] || state.layers[index] || null;
         const base = {
-          title: state.overlay?.title || '',
-          desc: state.overlay?.desc || '',
+          title: state.overlay?.title || 'שם הפרויקט',
+          desc: state.overlay?.desc || 'תיאור קצר של הפרויקט',
           link: state.overlay?.link || ''
         };
         if (layer?.useOwnText) {
@@ -4685,7 +4715,7 @@ window.CRMOForceOpenAuthModal = function(event){
 </script>
 <style id="crmo3047-multigallery-css">
   #tileWrap,#galleryTestSections,#lightboxDialog,#editorDialog{display:none!important}
-  .crmo3045-shell{width:min(1280px,92vw);margin:18px auto 28px;display:grid;gap:16px}
+  .crmo3045-shell{width:100%;margin:18px auto 28px;display:grid;gap:16px}
   .crmo3045-shell[hidden]{display:none!important}
   .crmo3045-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   .crmo3045-title{font-size:18px;font-weight:700}
@@ -4712,7 +4742,7 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-copy,.crmo3047-gallery-copy{display:none !important}
   .crmo3045-meta{font-size:11px;color:#777}
   .crmo3045-name{font-size:16px;font-weight:700;color:#111;min-height:20px}
-  .crmo3045-desc{font-size:13px;color:#444;min-height:18px}
+  .crmo3045-desc{font-size:13px;color:#444;min-height:18px;white-space:pre-line;line-height:1.25}
   .crmo3045-count{font-size:11px;color:#666}
   .crmo3045-hover{position:absolute;left:0;right:0;bottom:0;transform:translateY(100%);transition:transform 220ms ease-out;background:rgba(255,255,255,.75);color:#000;padding:10px 14px 8px;z-index:2;pointer-events:none;box-sizing:border-box;font-family:'Rubik',Arial,Helvetica,sans-serif}
   .crmo3045-tile:hover .crmo3045-hover,.crmo3045-tile:focus-within .crmo3045-hover{transform:translateY(0)}
@@ -4721,26 +4751,29 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-hover-desc{font-size:14px;line-height:1.25;opacity:.95;font-weight:300;white-space:pre-line}
   .crmo3045-hover-link{display:none;pointer-events:auto;min-height:24px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,.25);font-size:14px;line-height:1.25;direction:ltr;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0b63ff;text-decoration:underline;font-weight:300}
   .crmo3045-hover-link.is-visible{display:block}
-  .crmo3045-dialog{border:none;padding:0;max-width:min(1180px,calc(100vw - 16px));width:min(1180px,calc(100vw - 16px));max-height:calc(100vh - 16px);background:transparent}
-  .crmo3045-dialog::backdrop{background:rgba(0,0,0,.52)}
-  .crmo3045-modal{display:grid;background:#efefef;border-radius:18px;overflow:hidden}
+  body.lightbox-open{overflow:hidden!important;touch-action:none}
+  .crmo3045-dialog{position:fixed;top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;inset:auto!important;transform:translate(-50%,-50%)!important;margin:0!important;border:none;padding:0;width:min(1080px,calc(100vw - 64px));max-width:min(1080px,calc(100vw - 64px));max-height:calc(100vh - 48px);background:transparent}
+  .crmo3045-dialog::backdrop{background:rgba(0,0,0,.84);backdrop-filter:blur(4px)}
+  #crmo3047Lightbox.crmo3045-dialog{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;inset:0!important;transform:none!important;margin:auto!important;padding:0!important;}
+  #crmo3047Lightbox.crmo3045-dialog[open]{display:block!important;}
+  .crmo3045-modal{display:grid;background:#efefef;border-radius:18px;overflow:hidden;max-height:calc(100vh - 48px)}
   .crmo3045-modal-head{display:none}
   .crmo3045-modal-head h2{font-size:17px;font-weight:700}
   .crmo3045-x{position:absolute;top:14px;left:14px;z-index:6;border:1px solid rgba(0,0,0,.28);background:rgba(255,255,255,.96);width:42px;height:42px;border-radius:999px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.16);font-size:24px;line-height:1;display:grid;place-items:center;padding:0}
   .crmo3045-lb-body{display:grid;grid-template-columns:1fr;gap:0;padding:0}
-  .crmo3045-lb-view{position:relative;min-height:min(74vh,840px);max-height:calc(100vh - 16px);background:#d8d8d8;overflow:hidden}
-  .crmo3045-lb-view.has-strip{min-height:min(63vh,760px)}
+  .crmo3045-lb-view{position:relative;height:min(64vh,720px);min-height:min(64vh,720px);max-height:min(64vh,720px);background:#d8d8d8;overflow:hidden}
+  .crmo3045-lb-view.has-strip{height:min(64vh,720px);min-height:min(64vh,720px);max-height:min(64vh,720px)}
   .crmo3045-lb-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.96);cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
   .crmo3045-lb-arrow svg,.crmo3045-x svg{width:20px;height:20px;display:block;stroke:#111;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .crmo3045-lb-prev{left:12px}.crmo3045-lb-next{right:12px}
   .crmo3045-lb-side{display:grid;gap:0;background:#efefef}
   .crmo3045-lb-kicker{display:none!important}
-  .crmo3045-lb-copy{display:grid;gap:2px;padding:10px 14px 12px;border-top:1px solid rgba(0,0,0,.12);background:#efefef}
-  .crmo3045-lb-title{display:block!important;margin:0;text-align:right;font-size:14px;line-height:1.25;font-weight:400;color:#111;min-height:1em}
-  .crmo3045-lb-desc{display:block!important;margin:0;text-align:right;font-size:14px;line-height:1.25;font-weight:300;color:#111;min-height:1.25em;white-space:normal}
-  .crmo3045-lb-link{display:block!important;margin:4px 0 0;text-align:left;direction:ltr;font-size:14px;line-height:1.25;font-weight:300;color:#0b63ff;text-decoration:underline;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crmo3045-lb-copy{display:grid;gap:4px;padding:14px 18px 16px;border-top:1px solid rgba(0,0,0,.12);background:#efefef}
+  .crmo3045-lb-title{display:block!important;margin:0;text-align:right;font-size:26px!important;line-height:1.14;font-weight:400;color:#111;min-height:1em}
+  .crmo3045-lb-desc{display:block!important;margin:0;text-align:right;font-size:20px!important;line-height:1.22;font-weight:300;color:#111;min-height:1.25em;white-space:pre-line}
+  .crmo3045-lb-link{display:block!important;margin:6px 0 0;text-align:left;direction:ltr;font-size:18px!important;line-height:1.22;font-weight:300;color:#0b63ff;text-decoration:underline;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .crmo3045-lb-link[hidden]{display:none!important}
-  .crmo3045-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 14px 14px;background:#efefef}
+  .crmo3045-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 18px 18px;background:#efefef}
   .crmo3045-strip[hidden]{display:none!important}
   .crmo3045-thumb{border:2px solid transparent;background:#d8d8d8;padding:0;aspect-ratio:16/9;overflow:hidden;cursor:pointer;border-radius:10px}
   .crmo3045-thumb.active{border:4px solid #111}
@@ -4759,14 +4792,14 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-note{font-size:12px;color:#666}
   .crmo3045-hidden-input{display:none}
   @media (max-width: 1080px){.crmo3045-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.crmo3045-lb-view{min-height:48vh}.crmo3045-lb-view.has-strip{min-height:42vh}}
+  @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.crmo3045-lb-view{height:46vh;min-height:46vh;max-height:46vh}.crmo3045-lb-view.has-strip{height:46vh;min-height:46vh;max-height:46vh}.crmo3045-lb-copy{padding:12px 14px 14px}.crmo3045-lb-title{font-size:22px!important}.crmo3045-lb-desc{font-size:17px!important}.crmo3045-lb-link{font-size:16px!important}}
 </style>
 
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3061';
-  const STORAGE_KEY = 'CRMO_v3061_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3070';
+  const STORAGE_KEY = 'CRMO_v3070_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -4866,7 +4899,7 @@ window.CRMOForceOpenAuthModal = function(event){
           <label class="crmo3045-field"><span>Client</span><input id="crmo3047Client" type="text"></label>
           <label class="crmo3045-field"><span>Brand</span><input id="crmo3047Brand" type="text"></label>
           <label class="crmo3045-field"><span>Project title</span><input id="crmo3047Title" type="text"></label>
-          <label class="crmo3045-field"><span>Project description</span><input id="crmo3047Desc" type="text"></label>
+          <label class="crmo3045-field"><span>Project description</span><textarea id="crmo3047Desc" placeholder="תיאור קצר של הפרויקט"></textarea></label>
         </div>
         <div class="crmo3045-stage" id="crmo3047EditorStage"></div>
         <div class="crmo3045-strip" id="crmo3047EditorStrip"></div>
@@ -4999,7 +5032,7 @@ window.CRMOForceOpenAuthModal = function(event){
   const makeTile = (galleryIndex, tileIndex) => ({
     tileId: `gallery-${galleryIndex + 1}-tile-${String(tileIndex + 1).padStart(2,'0')}`,
     meta: { client: '', brand: '' },
-    overlay: { title: '', desc: '', link: '' },
+    overlay: { title: 'שם הפרויקט', desc: 'תיאור קצר של הפרויקט', link: '' },
     display: { openLinkInNewTab: true },
     media: []
   });
@@ -5032,8 +5065,8 @@ window.CRMOForceOpenAuthModal = function(event){
     tileId: tile?.tileId || `gallery-${galleryIndex + 1}-tile-${String(tileIndex + 1).padStart(2,'0')}`,
     meta: { client: String(tile?.meta?.client || ''), brand: String(tile?.meta?.brand || '') },
     overlay: {
-      title: String(tile?.overlay?.title || ''),
-      desc: String(tile?.overlay?.desc || ''),
+      title: String(tile?.overlay?.title || 'שם הפרויקט'),
+      desc: String(tile?.overlay?.desc || 'תיאור קצר של הפרויקט'),
       link: String(tile?.overlay?.link || '')
     },
     display: { openLinkInNewTab: tile?.display?.openLinkInNewTab !== false },
@@ -5220,7 +5253,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3061] gallery mode save failed', err);
+          console.error('[CRMO_v3071] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -5257,8 +5290,8 @@ window.CRMOForceOpenAuthModal = function(event){
       view.appendChild(fallback);
     }
     byId('crmo3047LbMeta').textContent = '';
-    byId('crmo3047LbTitle').textContent = tile.overlay.title || '';
-    byId('crmo3047LbDesc').textContent = tile.overlay.desc || '';
+    byId('crmo3047LbTitle').textContent = tile.overlay.title || 'שם הפרויקט';
+    byId('crmo3047LbDesc').textContent = tile.overlay.desc || 'תיאור קצר של הפרויקט';
     const link = byId('crmo3047LbLink');
     const prettyLink = prettifyHoverUrl(tile.overlay.link || '');
     if (prettyLink) {
@@ -5293,6 +5326,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const activeMedia = getLightboxMedia(galleries[galleryIndex].tiles[tileIndex]);
     activeMediaIndex = Math.max(0, Math.min(mediaIndex || 0, Math.max((activeMedia.length || 1) - 1, 0)));
     renderLightbox();
+    document.body.classList.add('lightbox-open');
     lb.showModal();
   }
 
@@ -5403,8 +5437,8 @@ window.CRMOForceOpenAuthModal = function(event){
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         type: file.type || 'image',
         src,
-        title: '',
-        desc: '',
+        title: 'שם הפרויקט',
+        desc: 'תיאור קצר של הפרויקט',
         fileName: file.name || '',
         storageBucket: '',
         storagePath: ''
@@ -5612,7 +5646,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3061] gallery save failed', err);
+      console.error('[CRMO_v3071] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5627,7 +5661,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3061] tile save failed', err);
+      console.error('[CRMO_v3071] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5635,6 +5669,7 @@ window.CRMOForceOpenAuthModal = function(event){
   byId('crmo3047PrevTile').addEventListener('click', () => shiftTile(-1));
   byId('crmo3047NextTile').addEventListener('click', () => shiftTile(1));
   lb.querySelector('[data-close-lightbox]').addEventListener('click', () => { try { lb.close(); } catch (_) {} });
+  lb.addEventListener('close', () => document.body.classList.remove('lightbox-open'));
 
   galleryDialog.querySelector('[data-close-gallery-editor]').addEventListener('click', closeGalleryEditor);
   ['crmo3047GalleryTitle','crmo3047GalleryLabel','crmo3047GalleryDesc'].forEach((id) => {
@@ -5702,7 +5737,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3061] cloud load failed', err);
+      console.error('[CRMO_v3071] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -5711,7 +5746,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3061] local load failed', err);
+      console.error('[CRMO_v3071] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -5720,7 +5755,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3061] save now failed', err);
+      console.error('[CRMO_v3071] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
@@ -5762,7 +5797,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3061] post-auth cloud load failed', err);
+        console.error('[CRMO_v3071] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -5797,7 +5832,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3061] initial cloud load failed', err);
+      console.error('[CRMO_v3071] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
