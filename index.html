@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3071</title>
+<title>CRMO_v3093</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -465,10 +465,47 @@
     #lightboxDialog {
       position: fixed;
       inset: 0;
-      margin: auto;
+      width: 100vw;
+      max-width: none;
+      height: 100vh;
+      max-height: none;
+      margin: 0;
+      padding: 5vh 5vw;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    #lightboxDialog .lightbox-safe-area {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     #lightboxDialog .modal-shell {
+      width: min(1000px, 100%);
+      max-width: 100%;
+      max-height: 100%;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.3);
+      transform-origin: center center;
+      will-change: transform;
+      flex: 0 0 auto;
+    }
+
+    #editorDialog {
+      position: fixed;
+      inset: 0;
+      margin: auto;
+    }
+
+    #editorDialog .modal-shell {
       width: 100%;
     }
 
@@ -477,6 +514,10 @@
       grid-template-columns: 1fr;
       max-height: min(92vh, 940px);
       overflow: hidden;
+    }
+
+    #lightboxDialog .modal-shell {
+      max-height: 100%;
     }
 
     .modal-head {
@@ -521,18 +562,22 @@
     .lightbox-body {
       display: grid;
       grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-      min-height: 560px;
+      min-height: 0;
+      align-items: stretch;
     }
 
     .lightbox-view {
       position: relative;
-      min-height: 420px;
+      min-height: 0;
+      aspect-ratio: 16 / 9;
       background: #111;
+      overflow: hidden;
     }
 
     .lightbox-side {
       padding: 18px;
       overflow: auto;
+      min-height: 0;
       background: #fff;
       display: grid;
       align-content: start;
@@ -1907,7 +1952,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3071</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3093</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2047,10 +2092,11 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3071 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel">CRMO_v3093 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
-<div class="modal-shell">
+<div class="lightbox-safe-area" id="lightboxSafeArea">
+<div class="modal-shell" id="lightboxModalShell">
 <div class="modal-head">
 <h2>Lightbox</h2>
 <button aria-label="סגור" class="x-btn" id="closeLightboxBtn" type="button">✕</button>
@@ -2073,11 +2119,12 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 </aside>
 </div>
 </div>
+</div>
 </dialog>
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3071</h2>
+<h2>עורך אריח — CRMO_v3093</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2162,7 +2209,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3070';
+      const VERSION = 'CRMO_v3093';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2307,6 +2354,8 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         tileVerifyBadge: $('tileVerifyBadge'),
         footerVersionLabel: $('footerVersionLabel'),
         lightboxDialog: $('lightboxDialog'),
+        lightboxSafeArea: $('lightboxSafeArea'),
+        lightboxModalShell: $('lightboxModalShell'),
         closeLightboxBtn: $('closeLightboxBtn'),
         lightboxMediaHost: $('lightboxMediaHost'),
         lightboxFallback: $('lightboxFallback'),
@@ -2766,9 +2815,10 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         els.prevLayerBtn.addEventListener('click', () => shiftLightbox(-1));
         els.nextLayerBtn.addEventListener('click', () => shiftLightbox(1));
         els.lightboxDialog.addEventListener('click', (e) => {
-          const rect = els.lightboxDialog.getBoundingClientRect();
-          const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
-          if (!inDialog) closeLightbox();
+          if (!e.target.closest('#lightboxModalShell')) closeLightbox();
+        });
+        window.addEventListener('resize', () => {
+          if (els.lightboxDialog?.open) applyLightboxScale();
         });
         els.editorDialog.addEventListener('cancel', (e) => {
           e.preventDefault();
@@ -3283,9 +3333,26 @@ function updateAuthUI(isLoggedIn) {
         currentLayerIndex = pickRenderableLayerIndex(visibleLayers, safeStart);
         renderLightbox();
         els.lightboxDialog.showModal();
+        requestAnimationFrame(() => applyLightboxScale());
+      }
+
+      function applyLightboxScale() {
+        const safeArea = els.lightboxSafeArea;
+        const shell = els.lightboxModalShell;
+        if (!safeArea || !shell) return;
+        shell.style.transform = 'scale(1)';
+        shell.style.setProperty('--lightbox-scale', '1');
+        const safeRect = safeArea.getBoundingClientRect();
+        const shellRect = shell.getBoundingClientRect();
+        if (!safeRect.width || !safeRect.height || !shellRect.width || !shellRect.height) return;
+        const scale = Math.min(1, safeRect.width / shellRect.width, safeRect.height / shellRect.height);
+        const finalScale = Math.max(0.72, scale);
+        shell.style.transform = `scale(${finalScale})`;
+        shell.style.setProperty('--lightbox-scale', String(finalScale));
       }
 
       function closeLightbox() {
+        if (els.lightboxModalShell) els.lightboxModalShell.style.transform = 'scale(1)';
         if (els.lightboxDialog.open) els.lightboxDialog.close();
       }
 
@@ -4102,6 +4169,7 @@ function updateAuthUI(isLoggedIn) {
         els.lbDesc.textContent = lbText.desc || 'תיאור קצר של הפרויקט';
         bindLink(els.lbLink, lbText.link, state.display?.openLinkInNewTab !== false);
         renderThumbs();
+        requestAnimationFrame(() => applyLightboxScale());
       }
 
       function renderThumbs() {
@@ -4714,6 +4782,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
 </script>
 <style id="crmo3047-multigallery-css">
+  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
   #tileWrap,#galleryTestSections,#lightboxDialog,#editorDialog{display:none!important}
   .crmo3045-shell{width:100%;margin:18px auto 28px;display:grid;gap:16px}
   .crmo3045-shell[hidden]{display:none!important}
@@ -4754,15 +4823,76 @@ window.CRMOForceOpenAuthModal = function(event){
   body.lightbox-open{overflow:hidden!important;touch-action:none}
   .crmo3045-dialog{position:fixed;top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;inset:auto!important;transform:translate(-50%,-50%)!important;margin:0!important;border:none;padding:0;width:min(1080px,calc(100vw - 64px));max-width:min(1080px,calc(100vw - 64px));max-height:calc(100vh - 48px);background:transparent}
   .crmo3045-dialog::backdrop{background:rgba(0,0,0,.84);backdrop-filter:blur(4px)}
-  #crmo3047Lightbox.crmo3045-dialog{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;inset:0!important;transform:none!important;margin:auto!important;padding:0!important;}
+  #crmo3047Lightbox.crmo3045-dialog{position:fixed!important;top:88px!important;right:0!important;bottom:auto!important;left:0!important;inset:auto 0 auto 0!important;transform:none!important;margin:0 auto!important;padding:0!important;width:min(920px,calc(100vw - 112px))!important;max-width:min(920px,calc(100vw - 112px))!important;max-height:calc(100vh - 176px)!important;overflow:visible!important;background:transparent!important;}
   #crmo3047Lightbox.crmo3045-dialog[open]{display:block!important;}
+  #crmo3047Lightbox .crmo3045-modal{width:100%!important;max-width:100%!important;transform:none!important;transform-origin:top center;max-height:calc(100vh - 176px)!important;}
+
+  #crmo3047TileEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0!important;padding:32px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;place-items:center;align-items:center;justify-items:center;overflow:hidden!important;box-sizing:border-box;z-index:2147483647!important}
+  #crmo3047TileEditor.crmo3045-dialog[open]{display:grid!important}
+  #crmo3047TileEditor::backdrop{background:rgba(0,0,0,.32)!important;backdrop-filter:blur(2px)!important}
+  #crmo3047TileEditor .crmo3045-modal{position:relative;width:min(760px,calc(100vw - 96px));max-width:min(760px,calc(100vw - 96px));height:auto;max-height:min(calc(100vh - 96px),920px);margin:0 auto!important;overflow:hidden;box-sizing:border-box;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+  #crmo3047TileEditor .crmo3045-modal-head{display:flex;position:sticky;top:0;z-index:4;align-items:center;justify-content:space-between;min-height:72px;padding:18px 20px 10px;background:#efefef;border-bottom:1px solid rgba(0,0,0,.08)}
+  #crmo3047TileEditor .crmo3045-modal-head h2{margin:0;padding-inline-start:56px;font-size:16px;font-weight:700}
+  #crmo3047TileEditor .crmo3045-editor-body{display:grid;gap:12px;padding:14px 18px 18px;overflow:auto;overscroll-behavior:contain;max-height:calc(min(100vh - 96px, 920px) - 72px)}
+  #crmo3047TileEditor .crmo3045-x{top:14px;left:14px;position:absolute}
+  #crmo3047TileEditor .crmo3045-stage{max-height:42vh}
+  #crmo3047TileEditor .crmo3045-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #crmo3047GalleryEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0 auto!important;padding:24px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;place-items:center;overflow:auto}
+  #crmo3047GalleryEditor.crmo3045-dialog[open]{display:grid!important}
+  #crmo3047GalleryEditor .crmo3045-modal{width:min(820px,calc(100vw - 64px));max-width:min(820px,calc(100vw - 64px));max-height:calc(100vh - 48px);margin:auto}
+  #crmo3047GalleryEditor .crmo3045-modal{width:min(1040px,calc(100vw - 64px));max-width:min(1040px,calc(100vw - 64px))}
+  #crmo3047GalleryEditor .crmo3045-editor-top.crmo3047-gallery-form{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #crmo3047GalleryEditor .crmo3047-gallery-tools-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0 4px}
+  #crmo3047GalleryEditor .crmo3047-gallery-tools-row .crmo3045-field{margin:0;flex:1 1 180px}
+  #crmo3047GalleryEditor .crmo3047-inline-check{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(0,0,0,.08);border-radius:12px;background:#fff;min-height:48px}
+  #crmo3047GalleryEditor .crmo3047-inline-check input{margin:0}
+  #crmo3047GalleryEditor .crmo3047-grid-drop{border:1px dashed rgba(0,0,0,.16);border-radius:16px;padding:14px;background:#fafafa}
+  #crmo3047GalleryEditor .crmo3047-grid-drop.is-drag{background:#f0f0f0;border-color:#111}
+  #crmo3047GalleryEditor .crmo3047-gallery-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+  #crmo3047GalleryEditor .crmo3047-gallery-topbar .crmo3045-field{margin:0;min-width:260px}
+  #crmo3047GalleryEditor select,#crmo3047GalleryEditor input[type="text"],#crmo3047GalleryEditor textarea{width:100%}
+  #crmo3047GalleryEditor .crmo3047-count-badge{font-weight:600;color:#111}
+  #crmo3047GalleryEditor,#crmo3047GalleryEditor *{font-family:'Assistant','Rubik','Heebo',Arial,sans-serif}
+  #crmo3047GalleryEditor::backdrop{background:rgba(0,0,0,.32)!important;backdrop-filter:blur(2px)!important}
+  #crmo3047GalleryEditor .crmo3045-modal{position:relative;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.22);overflow:hidden}
+  #crmo3047GalleryEditor .crmo3045-modal-head{display:flex;position:sticky;top:0;z-index:4;align-items:center;justify-content:space-between;min-height:72px;padding:18px 24px 12px;background:#efefef;border-bottom:1px solid rgba(0,0,0,.08)}
+  #crmo3047GalleryEditor .crmo3045-modal-head h2{margin:0;font-size:18px;font-weight:600;letter-spacing:0}
+  #crmo3047GalleryEditor .crmo3045-x{position:absolute;top:18px;left:22px;width:auto;height:auto;border:none;background:transparent;box-shadow:none;border-radius:0;padding:0;font-size:26px;line-height:1;color:#111}
+  #crmo3047GalleryEditor .crmo3045-editor-body{display:grid;gap:16px;padding:18px 24px 22px;overflow:auto;overscroll-behavior:contain;max-height:calc(100vh - 132px);direction:rtl}
+  #crmo3047GalleryEditor .crmo3047-gallery-topbar{display:grid;grid-template-columns:minmax(0,1fr) 280px;align-items:end;gap:16px;margin-bottom:0}
+  #crmo3047GalleryEditor .crmo3047-gallery-topcopy{display:grid;gap:4px;text-align:right}
+  #crmo3047GalleryEditor .crmo3047-gallery-topcopy .crmo3045-title-sm{font-size:15px;font-weight:600;color:#111}
+  #crmo3047GalleryEditor .crmo3045-note{text-align:right}
+  #crmo3047GalleryEditor .crmo3045-field>span{display:block;margin-bottom:7px;font-size:13px;font-weight:600;color:#222}
+  #crmo3047GalleryEditor input[type="text"],#crmo3047GalleryEditor textarea,#crmo3047GalleryEditor select{font-size:14px;direction:rtl;text-align:right}
+  #crmo3047GalleryEditor #crmo3047GalleryLabel{direction:ltr;text-align:left}
+  #crmo3047GalleryEditor .crmo3045-editor-top.crmo3047-gallery-form{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  #crmo3047GalleryEditor textarea{min-height:92px}
+  #crmo3047GalleryEditor .crmo3047-gallery-tools-row{display:grid;grid-template-columns:1.2fr 1fr auto;gap:12px;align-items:end;margin:0}
+  #crmo3047GalleryEditor .crmo3047-inline-check{justify-content:flex-start;min-height:46px;padding:10px 14px}
+  #crmo3047GalleryEditor .crmo3045-gallery-editor-preview-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  #crmo3047GalleryEditor .crmo3045-editor-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #crmo3047GalleryEditor .crmo3045-editor-actions .crmo3045-btns{display:flex;gap:10px;flex-wrap:wrap}
+  #crmo3047GalleryEditor .crmo3045-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media (max-width: 900px){
+    #crmo3047GalleryEditor .crmo3045-modal{width:min(96vw,1040px)!important;max-width:min(96vw,1040px)!important}
+    #crmo3047GalleryEditor .crmo3047-gallery-topbar{grid-template-columns:1fr}
+    #crmo3047GalleryEditor .crmo3045-editor-top.crmo3047-gallery-form{grid-template-columns:1fr}
+    #crmo3047GalleryEditor .crmo3047-gallery-tools-row{grid-template-columns:1fr}
+    #crmo3047GalleryEditor .crmo3045-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    #crmo3047GalleryEditor .crmo3045-editor-actions{flex-direction:column;align-items:stretch}
+  }
+  @media (max-width: 640px){
+    #crmo3047GalleryEditor .crmo3045-grid{grid-template-columns:1fr}
+  }
+
   .crmo3045-modal{display:grid;background:#efefef;border-radius:18px;overflow:hidden;max-height:calc(100vh - 48px)}
   .crmo3045-modal-head{display:none}
   .crmo3045-modal-head h2{font-size:17px;font-weight:700}
   .crmo3045-x{position:absolute;top:14px;left:14px;z-index:6;border:1px solid rgba(0,0,0,.28);background:rgba(255,255,255,.96);width:42px;height:42px;border-radius:999px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.16);font-size:24px;line-height:1;display:grid;place-items:center;padding:0}
   .crmo3045-lb-body{display:grid;grid-template-columns:1fr;gap:0;padding:0}
-  .crmo3045-lb-view{position:relative;height:min(64vh,720px);min-height:min(64vh,720px);max-height:min(64vh,720px);background:#d8d8d8;overflow:hidden}
-  .crmo3045-lb-view.has-strip{height:min(64vh,720px);min-height:min(64vh,720px);max-height:min(64vh,720px)}
+  .crmo3045-lb-view{position:relative;aspect-ratio:16/9;height:auto;min-height:0;max-height:none;background:#d8d8d8;overflow:hidden}
+  .crmo3045-lb-view.has-strip{aspect-ratio:16/9;height:auto;min-height:0;max-height:none}
   .crmo3045-lb-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.96);cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
   .crmo3045-lb-arrow svg,.crmo3045-x svg{width:20px;height:20px;display:block;stroke:#111;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .crmo3045-lb-prev{left:12px}.crmo3045-lb-next{right:12px}
@@ -4792,19 +4922,22 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-note{font-size:12px;color:#666}
   .crmo3045-hidden-input{display:none}
   @media (max-width: 1080px){.crmo3045-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.crmo3045-lb-view{height:46vh;min-height:46vh;max-height:46vh}.crmo3045-lb-view.has-strip{height:46vh;min-height:46vh;max-height:46vh}.crmo3045-lb-copy{padding:12px 14px 14px}.crmo3045-lb-title{font-size:22px!important}.crmo3045-lb-desc{font-size:17px!important}.crmo3045-lb-link{font-size:16px!important}}
+  @media (max-width: 860px){.crmo3045-grid,.crmo3045-editor-top,.crmo3045-lb-body{grid-template-columns:1fr}.crmo3045-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.crmo3045-lb-view{aspect-ratio:16/9;height:auto;min-height:0;max-height:none}.crmo3045-lb-view.has-strip{aspect-ratio:16/9;height:auto;min-height:0;max-height:none}.crmo3045-lb-copy{padding:12px 14px 14px}.crmo3045-lb-title{font-size:22px!important}.crmo3045-lb-desc{font-size:17px!important}.crmo3045-lb-link{font-size:16px!important}}
 </style>
 
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3070';
-  const STORAGE_KEY = 'CRMO_v3070_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3093';
+  const STORAGE_KEY = 'CRMO_v3093_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
   const GALLERY_COUNT = 2;
   const TILES_PER_GALLERY = 6;
+  const MAX_TILES_PER_GALLERY = 24;
+  const STACK_TILE_LIMIT = 6;
+  const EXPANDED_TILE_OPTIONS = [9,12,15,18,21,24];
   const stage = document.querySelector('main.stage');
   if (!stage) return;
 
@@ -4827,7 +4960,7 @@ window.CRMOForceOpenAuthModal = function(event){
     <div class="crmo3045-head">
       <div>
         <div class="crmo3045-title">Gallery Context Test Area</div>
-        <div class="crmo3045-sub">2 galleries · 6 tiles each · gallery edit mode + tile edit inside correct gallery context</div>
+        <div class="crmo3045-sub">2 galleries · gallery editor rebuild · first 6 tiles shown in stack</div>
       </div>
     </div>
     <div id="crmo3047Status" class="crmo3045-note" style="margin:-2px 0 6px" hidden></div>
@@ -4863,22 +4996,51 @@ window.CRMOForceOpenAuthModal = function(event){
   galleryDialog.className = 'crmo3045-dialog';
   galleryDialog.id = 'crmo3047GalleryEditor';
   galleryDialog.innerHTML = `
-    <div class="crmo3045-modal">
+    <div class="crmo3045-modal" dir="rtl">
       <div class="crmo3045-modal-head">
-        <h2>${VERSION} · Gallery Editor</h2>
-        <button class="crmo3045-x" type="button" data-close-gallery-editor>✕</button>
+        <h2>ניהול גלריה</h2>
+        <button class="crmo3045-x" type="button" data-close-gallery-editor aria-label="סגירה">✕</button>
       </div>
       <div class="crmo3045-editor-body">
-        <div class="crmo3045-editor-top">
-          <label class="crmo3045-field"><span>Gallery title</span><input id="crmo3047GalleryTitle" type="text"></label>
-          <label class="crmo3045-field"><span>Gallery label</span><input id="crmo3047GalleryLabel" type="text"></label>
+        <div class="crmo3047-gallery-topbar">
+          <label class="crmo3045-field"><span>עריכת גלריה</span><select id="crmo3047GallerySelect"></select></label>
+          <div class="crmo3047-gallery-topcopy">
+            <div class="crmo3045-title-sm">עורך גלריה</div>
+            <div class="crmo3045-note">שדות גלריה, כוורת אריחים ופתיחת עורך אריח מעל עורך הגלריה.</div>
+          </div>
         </div>
-        <label class="crmo3045-field"><span>Gallery description</span><textarea id="crmo3047GalleryDesc"></textarea></label>
+        <div class="crmo3045-editor-top crmo3047-gallery-form">
+          <label class="crmo3045-field"><span>כותרת · מובייל</span><input id="crmo3047GalleryTitleMobile" type="text" placeholder="כותרת מובייל"></label>
+          <label class="crmo3045-field"><span>כותרת · דסקטופ</span><input id="crmo3047GalleryTitleDesktop" type="text" placeholder="כותרת דסקטופ"></label>
+          <label class="crmo3045-field"><span>כותרת · מורחב</span><input id="crmo3047GalleryTitleExpanded" type="text" placeholder="כותרת מצב מורחב"></label>
+          <label class="crmo3045-field"><span>תיאור · מובייל</span><textarea id="crmo3047GalleryDescMobile" placeholder="תיאור מובייל"></textarea></label>
+          <label class="crmo3045-field"><span>תיאור · דסקטופ</span><textarea id="crmo3047GalleryDescDesktop" placeholder="תיאור דסקטופ"></textarea></label>
+          <label class="crmo3045-field"><span>תיאור · מורחב</span><textarea id="crmo3047GalleryDescExpanded" placeholder="תיאור מצב מורחב"></textarea></label>
+        </div>
+        <div class="crmo3047-gallery-tools-row">
+          <label class="crmo3045-field"><span>Label אנגלי</span><input id="crmo3047GalleryLabel" type="text" placeholder="exhibitions"></label>
+          <label class="crmo3045-field"><span>כמות אריחים למצב מורחב</span><select id="crmo3047ExpandedCount"></select></label>
+          <label class="crmo3047-inline-check"><input id="crmo3047ExpandedEnabled" type="checkbox"><span>מצב מורחב</span></label>
+        </div>
+        <div class="crmo3045-gallery-editor-preview crmo3047-grid-drop" id="crmo3047GalleryDropzone">
+          <div class="crmo3045-gallery-editor-preview-head">
+            <div>
+              <div class="crmo3045-title-sm">אריחי הגלריה</div>
+              <div class="crmo3045-note" id="crmo3047GalleryTilesNote">אפשר לפתוח עורך אריח מעל עורך הגלריה. אפשר גם לגרור לכאן קבצים כדי להוסיף אריחים חדשים.</div>
+            </div>
+            <div class="crmo3045-btns">
+              <span class="crmo3047-count-badge" id="crmo3047TileCountBadge">6 / 24</span>
+              <button class="crmo3045-btn-ghost" id="crmo3047AddTile" type="button">הוסף אריח</button>
+            </div>
+          </div>
+          <div class="crmo3045-grid crmo3045-gallery-editor-grid" id="crmo3047GalleryTiles"></div>
+          <input class="crmo3045-hidden-input" id="crmo3047GalleryFileInput" type="file" accept="image/*,video/*,.gif" multiple>
+        </div>
         <div class="crmo3045-editor-actions">
-          <div class="crmo3045-note" id="crmo3047GalleryNote">Draft changes stay inside the gallery popup until Save.</div>
+          <div class="crmo3045-note" id="crmo3047GalleryNote">שינויי הטיוטה נשארים בתוך עורך הגלריה עד לשמירה.</div>
           <div class="crmo3045-btns">
-            <button class="crmo3045-btn-danger" id="crmo3047ResetGallery" type="button">Reset gallery draft</button>
-            <button class="crmo3045-btn" id="crmo3047SaveGallery" type="button">Save gallery</button>
+            <button class="crmo3045-btn-danger" id="crmo3047ResetGallery" type="button">איפוס טיוטת גלריה</button>
+            <button class="crmo3045-btn" id="crmo3047SaveGallery" type="button">שמירת גלריה</button>
           </div>
         </div>
       </div>
@@ -4944,6 +5106,129 @@ window.CRMOForceOpenAuthModal = function(event){
     if (bridge?.isLoggedIn) return !!bridge.isLoggedIn();
     return isLoggedIn();
   }
+  function ensureGalleryMeta(meta = {}) {
+    const title = String(meta.title || '');
+    const desc = String(meta.desc || '');
+    const expandedCount = EXPANDED_TILE_OPTIONS.includes(Number(meta.expandedCount)) ? Number(meta.expandedCount) : 9;
+    return {
+      title,
+      desc,
+      label: String(meta.label || ''),
+      titleMobile: String(meta.titleMobile || title),
+      titleDesktop: String(meta.titleDesktop || title),
+      titleExpanded: String(meta.titleExpanded || title),
+      descMobile: String(meta.descMobile || desc),
+      descDesktop: String(meta.descDesktop || desc),
+      descExpanded: String(meta.descExpanded || desc),
+      expandedEnabled: meta.expandedEnabled === true,
+      expandedCount
+    };
+  }
+  function tileHasMeaningfulContent(tile) {
+    if (!tile) return false;
+    if (Array.isArray(tile.media) && tile.media.some((m) => m && m.src)) return true;
+    const textParts = [tile?.meta?.client, tile?.meta?.brand, tile?.overlay?.title, tile?.overlay?.desc, tile?.overlay?.link]
+      .map((v) => String(v || '').trim())
+      .filter(Boolean);
+    const nonDefault = textParts.filter((v) => v !== 'שם הפרויקט' && v !== 'תיאור קצר של הפרויקט');
+    return nonDefault.length > 0;
+  }
+  function canAddTileToGalleryDraft() {
+    if (!galleryEditorDraft) return false;
+    if ((galleryEditorDraft.tiles || []).length >= MAX_TILES_PER_GALLERY) return false;
+    const firstSix = (galleryEditorDraft.tiles || []).slice(0, TILES_PER_GALLERY);
+    return firstSix.length === TILES_PER_GALLERY && firstSix.every(tileHasMeaningfulContent);
+  }
+  function ensureGalleryTileCapacity(gallery) {
+    const tiles = Array.isArray(gallery?.tiles) ? gallery.tiles.slice(0, MAX_TILES_PER_GALLERY) : [];
+    while (tiles.length < TILES_PER_GALLERY) tiles.push(makeTile(galleryEditorIndex, tiles.length));
+    gallery.tiles = tiles;
+    return gallery;
+  }
+  function populateGallerySelect() {
+    const select = byId('crmo3047GallerySelect');
+    if (!select) return;
+    select.innerHTML = galleries.map((gallery, idx) => `<option value="${idx}">${escape(gallery.meta?.title || `Gallery ${idx + 1}`)}</option>`).join('');
+    select.value = String(galleryEditorIndex);
+  }
+  function updateExpandedControls() {
+    const enabled = byId('crmo3047ExpandedEnabled');
+    const select = byId('crmo3047ExpandedCount');
+    if (!enabled || !select || !galleryEditorDraft) return;
+    const count = galleryEditorDraft.tiles.length;
+    const allowed = EXPANDED_TILE_OPTIONS.filter((n) => n <= count);
+    select.innerHTML = allowed.map((n) => `<option value="${n}">${n}</option>`).join('');
+    select.disabled = !enabled.checked || allowed.length === 0;
+    if (!allowed.length) {
+      select.innerHTML = '<option value="">Need 9+ tiles</option>';
+      select.disabled = true;
+    } else if (!allowed.includes(Number(galleryEditorDraft.meta.expandedCount))) {
+      galleryEditorDraft.meta.expandedCount = allowed[0];
+      select.value = String(allowed[0]);
+    } else {
+      select.value = String(galleryEditorDraft.meta.expandedCount);
+    }
+  }
+  function updateGalleryEditorUiState() {
+    const badge = byId('crmo3047TileCountBadge');
+    const addBtn = byId('crmo3047AddTile');
+    if (badge && galleryEditorDraft) badge.textContent = `${galleryEditorDraft.tiles.length} / ${MAX_TILES_PER_GALLERY}`;
+    if (addBtn) addBtn.disabled = !canAddTileToGalleryDraft();
+    updateExpandedControls();
+  }
+  async function filesToTileDrafts(fileList, galleryIndex) {
+    const files = Array.from(fileList || []).slice(0, MAX_TILES_PER_GALLERY);
+    const tiles = [];
+    for (const file of files) {
+      const dataUrl = await readFileAsDataUrl(file);
+      const idx = tiles.length;
+      const tile = makeTile(galleryIndex, idx);
+      const base = String(file.name || '').replace(/\.[^.]+$/, '');
+      tile.overlay.title = base || tile.overlay.title;
+      tile.media = [normalizeMedia({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+        type: file.type || 'image',
+        src: dataUrl,
+        title: base,
+        fileName: file.name || ''
+      }, galleryIndex, idx, 0)];
+      tiles.push(tile);
+    }
+    return tiles;
+  }
+
+  async function insertFilesIntoGalleryDraft(fileList) {
+    if (!galleryEditorDraft) return { placed: 0, filled: 0, appended: 0 };
+    const files = Array.from(fileList || []).filter((file) => file && String(file.type || '').startsWith('image/'));
+    if (!files.length) return { placed: 0, filled: 0, appended: 0 };
+    ensureGalleryTileCapacity(galleryEditorDraft);
+    const room = Math.max(0, MAX_TILES_PER_GALLERY - galleryEditorDraft.tiles.length);
+    const emptyBaseIndexes = (galleryEditorDraft.tiles || [])
+      .slice(0, TILES_PER_GALLERY)
+      .map((tile, idx) => tileHasMeaningfulContent(tile) ? -1 : idx)
+      .filter((idx) => idx >= 0);
+    const maxPlacements = Math.min(files.length, emptyBaseIndexes.length + room);
+    if (!maxPlacements) return { placed: 0, filled: 0, appended: 0 };
+    const tileDrafts = await filesToTileDrafts(files.slice(0, maxPlacements), galleryEditorIndex);
+    let cursor = 0;
+    let filled = 0;
+    let appended = 0;
+    emptyBaseIndexes.forEach((slotIndex) => {
+      const draft = tileDrafts[cursor];
+      if (!draft) return;
+      galleryEditorDraft.tiles[slotIndex] = normalizeTile(draft, galleryEditorIndex, slotIndex);
+      cursor += 1;
+      filled += 1;
+    });
+    while (cursor < tileDrafts.length && galleryEditorDraft.tiles.length < MAX_TILES_PER_GALLERY) {
+      const slotIndex = galleryEditorDraft.tiles.length;
+      galleryEditorDraft.tiles.push(normalizeTile(tileDrafts[cursor], galleryEditorIndex, slotIndex));
+      cursor += 1;
+      appended += 1;
+    }
+    renderGalleryEditor();
+    return { placed: cursor, filled, appended };
+  }
   function closeEditorsIfUnauthorized() {
     if (canEdit()) return;
     try { if (tileDialog.open) closeTileEditor(); } catch (_) {}
@@ -5008,7 +5293,7 @@ window.CRMOForceOpenAuthModal = function(event){
   function setSyncBusyState(busy, label = '') {
     syncBusy = !!busy;
     document.body.classList.toggle('crmo3058-sync-busy', syncBusy);
-    ['crmo3047SaveGallery','crmo3047SaveTile','crmo3047AddMedia','crmo3047ResetGallery','crmo3047ResetTile'].forEach((id) => {
+    ['crmo3047SaveGallery','crmo3047SaveTile','crmo3047AddMedia','crmo3047ResetGallery','crmo3047ResetTile','crmo3047AddTile'].forEach((id) => {
       const el = byId(id);
       if (el) el.disabled = syncBusy;
     });
@@ -5039,11 +5324,13 @@ window.CRMOForceOpenAuthModal = function(event){
 
   const makeGallery = (galleryIndex) => ({
     galleryId: `gallery-${galleryIndex + 1}`,
-    meta: {
+    meta: ensureGalleryMeta({
       title: `Gallery ${galleryIndex + 1}`,
       desc: `Test gallery ${galleryIndex + 1} for gallery context + tile context`,
-      label: `G${galleryIndex + 1}`
-    },
+      label: `gallery-${galleryIndex + 1}`,
+      expandedEnabled: false,
+      expandedCount: 9
+    }),
     ui: { editMode: galleryIndex === 0 },
     tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => makeTile(galleryIndex, tileIndex))
   });
@@ -5073,16 +5360,29 @@ window.CRMOForceOpenAuthModal = function(event){
     media: Array.isArray(tile?.media) ? tile.media.map((m, i) => normalizeMedia(m, galleryIndex, tileIndex, i)).filter((m) => m.src) : []
   });
 
-  const normalizeGallery = (gallery, galleryIndex) => ({
-    galleryId: gallery?.galleryId || `gallery-${galleryIndex + 1}`,
-    meta: {
+  const normalizeGallery = (gallery, galleryIndex) => {
+    const meta = ensureGalleryMeta({
       title: String(gallery?.meta?.title || `Gallery ${galleryIndex + 1}`),
       desc: String(gallery?.meta?.desc || ''),
-      label: String(gallery?.meta?.label || `G${galleryIndex + 1}`)
-    },
-    ui: { editMode: !!gallery?.ui?.editMode },
-    tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => normalizeTile(gallery?.tiles?.[tileIndex], galleryIndex, tileIndex))
-  });
+      label: String(gallery?.meta?.label || `gallery-${galleryIndex + 1}`),
+      titleMobile: gallery?.meta?.titleMobile,
+      titleDesktop: gallery?.meta?.titleDesktop,
+      titleExpanded: gallery?.meta?.titleExpanded,
+      descMobile: gallery?.meta?.descMobile,
+      descDesktop: gallery?.meta?.descDesktop,
+      descExpanded: gallery?.meta?.descExpanded,
+      expandedEnabled: gallery?.meta?.expandedEnabled,
+      expandedCount: gallery?.meta?.expandedCount
+    });
+    const rawTiles = Array.isArray(gallery?.tiles) ? gallery.tiles.slice(0, MAX_TILES_PER_GALLERY) : [];
+    const targetCount = Math.max(TILES_PER_GALLERY, rawTiles.length || TILES_PER_GALLERY);
+    return {
+      galleryId: gallery?.galleryId || `gallery-${galleryIndex + 1}`,
+      meta,
+      ui: { editMode: !!gallery?.ui?.editMode },
+      tiles: Array.from({length:targetCount}, (_, tileIndex) => normalizeTile(rawTiles[tileIndex], galleryIndex, tileIndex))
+    };
+  };
 
   const emptyGalleries = () => Array.from({length:GALLERY_COUNT}, (_, galleryIndex) => makeGallery(galleryIndex));
 
@@ -5183,7 +5483,7 @@ window.CRMOForceOpenAuthModal = function(event){
       section.innerHTML = `
         <div class="crmo3047-gallery-head">
           <div class="crmo3047-gallery-copy">
-            <div class="crmo3047-gallery-kicker">${escape(gallery.galleryId)} · 6 tiles</div>
+            <div class="crmo3047-gallery-kicker">${escape(gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
             <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
             <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
           </div>
@@ -5198,7 +5498,7 @@ window.CRMOForceOpenAuthModal = function(event){
         <div class="crmo3045-grid" data-gallery-grid></div>
       `;
       const grid = section.querySelector('[data-gallery-grid]');
-      gallery.tiles.forEach((tile, tileIndex) => {
+      gallery.tiles.slice(0, STACK_TILE_LIMIT).forEach((tile, tileIndex) => {
         const card = document.createElement('div');
         card.className = 'crmo3045-tile-wrap';
         const first = tile.media[0] || null;
@@ -5253,7 +5553,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3071] gallery mode save failed', err);
+          console.error('[CRMO_v3093] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -5339,16 +5639,93 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function renderGalleryEditor() {
     if (!galleryEditorDraft) return;
-    byId('crmo3047GalleryTitle').value = galleryEditorDraft.meta.title || '';
-    byId('crmo3047GalleryLabel').value = galleryEditorDraft.meta.label || '';
-    byId('crmo3047GalleryDesc').value = galleryEditorDraft.meta.desc || '';
+    ensureGalleryTileCapacity(galleryEditorDraft);
+    populateGallerySelect();
+    const meta = ensureGalleryMeta(galleryEditorDraft.meta || {});
+    galleryEditorDraft.meta = meta;
+    byId('crmo3047GalleryTitleMobile').value = meta.titleMobile || '';
+    byId('crmo3047GalleryTitleDesktop').value = meta.titleDesktop || '';
+    byId('crmo3047GalleryTitleExpanded').value = meta.titleExpanded || '';
+    byId('crmo3047GalleryDescMobile').value = meta.descMobile || '';
+    byId('crmo3047GalleryDescDesktop').value = meta.descDesktop || '';
+    byId('crmo3047GalleryDescExpanded').value = meta.descExpanded || '';
+    byId('crmo3047GalleryLabel').value = meta.label || '';
+    byId('crmo3047ExpandedEnabled').checked = meta.expandedEnabled === true;
+    renderGalleryEditorTiles();
+    updateGalleryEditorUiState();
   }
 
   function syncGalleryDraftFromFields() {
     if (!galleryEditorDraft) return;
-    galleryEditorDraft.meta.title = byId('crmo3047GalleryTitle').value.trim();
-    galleryEditorDraft.meta.label = byId('crmo3047GalleryLabel').value.trim();
-    galleryEditorDraft.meta.desc = byId('crmo3047GalleryDesc').value.trim();
+    const meta = ensureGalleryMeta(galleryEditorDraft.meta || {});
+    meta.titleMobile = byId('crmo3047GalleryTitleMobile').value.trim();
+    meta.titleDesktop = byId('crmo3047GalleryTitleDesktop').value.trim();
+    meta.titleExpanded = byId('crmo3047GalleryTitleExpanded').value.trim();
+    meta.descMobile = byId('crmo3047GalleryDescMobile').value.trim();
+    meta.descDesktop = byId('crmo3047GalleryDescDesktop').value.trim();
+    meta.descExpanded = byId('crmo3047GalleryDescExpanded').value.trim();
+    meta.label = byId('crmo3047GalleryLabel').value.trim();
+    meta.expandedEnabled = byId('crmo3047ExpandedEnabled').checked;
+    meta.expandedCount = Number(byId('crmo3047ExpandedCount').value || meta.expandedCount || 9);
+    meta.title = meta.titleDesktop || meta.titleMobile || meta.titleExpanded || meta.title || `Gallery ${galleryEditorIndex + 1}`;
+    meta.desc = meta.descDesktop || meta.descMobile || meta.descExpanded || meta.desc || '';
+    galleryEditorDraft.meta = meta;
+    updateGalleryEditorUiState();
+  }
+
+  function getTileSourceCollection(galleryIndex) {
+    if (galleryEditorDraft && galleryDialog.open && galleryEditorIndex === galleryIndex) return galleryEditorDraft.tiles;
+    return galleries[galleryIndex]?.tiles || [];
+  }
+
+  function getWorkingTiles(galleryIndex) {
+    return getTileSourceCollection(galleryIndex);
+  }
+
+  function renderGalleryEditorTiles() {
+    const grid = byId('crmo3047GalleryTiles');
+    const tilesNote = byId('crmo3047GalleryTilesNote');
+    grid.innerHTML = '';
+    if (!galleryEditorDraft) return;
+    const label = galleryEditorDraft.meta.label || `G${galleryEditorIndex + 1}`;
+    galleryEditorDraft.tiles.forEach((tile, tileIndex) => {
+      const card = document.createElement('div');
+      card.className = 'crmo3045-tile-wrap';
+      const first = tile.media[0] || null;
+      const meta = [label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
+      card.innerHTML = `
+        <button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery editor">✎</button>
+        <article class="crmo3045-tile" tabindex="0" aria-label="Gallery editor tile ${tileIndex + 1}">
+          ${first ? '' : '<div class="crmo3045-fallback">CRMO TILE<br>16:9</div>'}
+          <div class="crmo3045-hover">
+            <div class="crmo3045-hover-title">${escape(tile.overlay.title || 'שם הפרויקט')}</div>
+            <div class="crmo3045-hover-desc">${escape(tile.overlay.desc || 'תיאור קצר של הפרויקט')}</div>
+            <a class="crmo3045-hover-link${tile.overlay.link ? ' is-visible' : ''}">${escape(prettifyHoverUrl(tile.overlay.link || ''))}</a>
+          </div>
+        </article>
+        <div class="crmo3045-copy">
+          <div class="crmo3045-meta">${escape(meta || tile.tileId)}</div>
+          <div class="crmo3045-name">${escape(tile.overlay.title || 'שם הפרויקט')}</div>
+          <div class="crmo3045-desc">${escape(tile.overlay.desc || 'תיאור קצר של הפרויקט')}</div>
+          <div class="crmo3045-count">${tile.media.length} media · draft tile ${tileIndex + 1}</div>
+        </div>
+      `;
+      const article = card.querySelector('.crmo3045-tile');
+      if (first) article.appendChild(mediaEl(first, 'crmo3045-tile-media'));
+      card.querySelector('.crmo3045-pencil')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' });
+      });
+      article.addEventListener('click', () => openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' }));
+      article.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' });
+        }
+      });
+      grid.appendChild(card);
+    });
+    if (tilesNote) tilesNote.textContent = `Gallery ${galleryEditorIndex + 1} draft contains ${galleryEditorDraft.tiles.length} tiles. First 6 tiles are required before Add tile unlocks.`;
   }
 
   function openGalleryEditor(galleryIndex) {
@@ -5357,14 +5734,16 @@ window.CRMOForceOpenAuthModal = function(event){
       try { window.CRMOAuthModal?.open('login'); } catch (_) {}
       return;
     }
+    const wasOpen = !!galleryDialog.open;
     galleryEditorIndex = galleryIndex;
-    galleryEditorDraft = structuredClone(galleries[galleryIndex]);
+    galleryEditorDraft = ensureGalleryTileCapacity(structuredClone(galleries[galleryIndex]));
     renderGalleryEditor();
     byId('crmo3047GalleryNote').textContent = `Editing gallery ${galleryIndex + 1}. Save will commit only this gallery.`;
-    galleryDialog.showModal();
+    if (!wasOpen) galleryDialog.showModal();
   }
 
   function closeGalleryEditor() {
+    if (tileDialog.open && editorContext?.source === 'gallery-draft') closeTileEditor();
     try { if (galleryDialog.open) galleryDialog.close(); } catch (_) {}
     galleryEditorDraft = null;
   }
@@ -5404,17 +5783,22 @@ window.CRMOForceOpenAuthModal = function(event){
     tileEditorDraft.overlay.link = byId('crmo3047Link').value.trim();
   }
 
-  function openTileEditor(galleryIndex, tileIndex) {
+  function openTileEditor(galleryIndex, tileIndex, opts = {}) {
     if (!canEdit()) {
       setStatus('Viewer mode only. Login to enable tile editing.');
       try { window.CRMOAuthModal?.open('login'); } catch (_) {}
       return;
     }
-    editorContext = { galleryIndex, tileIndex };
+    const source = opts?.source || ((galleryEditorDraft && galleryDialog.open && galleryEditorIndex === galleryIndex) ? 'gallery-draft' : 'committed');
+    const tiles = getTileSourceCollection(galleryIndex);
+    const sourceTile = tiles[tileIndex] || makeTile(galleryIndex, tileIndex);
+    editorContext = { galleryIndex, tileIndex, source };
     activeMediaIndex = 0;
-    tileEditorDraft = structuredClone(galleries[galleryIndex].tiles[tileIndex]);
+    tileEditorDraft = structuredClone(sourceTile);
     renderTileEditor();
-    byId('crmo3047EditorNote').textContent = `Editing tile ${tileIndex + 1} inside gallery ${galleryIndex + 1}. Draft changes stay inside the popup until Save.`;
+    byId('crmo3047EditorNote').textContent = source === 'gallery-draft'
+      ? `Editing tile ${tileIndex + 1} inside gallery ${galleryIndex + 1} draft. Save tile updates only the gallery draft until Save gallery.`
+      : `Editing tile ${tileIndex + 1} inside gallery ${galleryIndex + 1}. Draft changes stay inside the popup until Save.`;
     tileDialog.showModal();
   }
 
@@ -5646,7 +6030,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3071] gallery save failed', err);
+      console.error('[CRMO_v3093] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5654,14 +6038,22 @@ window.CRMOForceOpenAuthModal = function(event){
   async function commitTileEditorAndSave() {
     if (!tileEditorDraft) return;
     syncTileDraftFromFields();
-    const { galleryIndex, tileIndex } = editorContext;
+    const { galleryIndex, tileIndex, source } = editorContext;
     const workingDraft = await ensureTileMediaUploaded(tileEditorDraft, galleryIndex, tileIndex);
-    galleries[galleryIndex].tiles[tileIndex] = normalizeTile(workingDraft, galleryIndex, tileIndex);
+    const normalized = normalizeTile(workingDraft, galleryIndex, tileIndex);
+    if (source === 'gallery-draft' && galleryEditorDraft && galleryEditorIndex === galleryIndex) {
+      galleryEditorDraft.tiles[tileIndex] = normalized;
+      closeTileEditor();
+      renderGalleryEditor();
+      byId('crmo3047GalleryNote').textContent = `Tile ${tileIndex + 1} updated inside gallery ${galleryIndex + 1} draft. Save gallery to commit all draft changes.`;
+      return;
+    }
+    galleries[galleryIndex].tiles[tileIndex] = normalized;
     renderGalleryStack();
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3071] tile save failed', err);
+      console.error('[CRMO_v3093] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -5672,14 +6064,60 @@ window.CRMOForceOpenAuthModal = function(event){
   lb.addEventListener('close', () => document.body.classList.remove('lightbox-open'));
 
   galleryDialog.querySelector('[data-close-gallery-editor]').addEventListener('click', closeGalleryEditor);
-  ['crmo3047GalleryTitle','crmo3047GalleryLabel','crmo3047GalleryDesc'].forEach((id) => {
+  ['crmo3047GalleryTitleMobile','crmo3047GalleryTitleDesktop','crmo3047GalleryTitleExpanded','crmo3047GalleryDescMobile','crmo3047GalleryDescDesktop','crmo3047GalleryDescExpanded','crmo3047GalleryLabel','crmo3047ExpandedEnabled','crmo3047ExpandedCount'].forEach((id) => {
     byId(id).addEventListener('input', () => {
       syncGalleryDraftFromFields();
       byId('crmo3047GalleryNote').textContent = `Gallery ${galleryEditorIndex + 1} draft updated. Save will commit only this gallery.`;
     });
   });
+  byId('crmo3047GallerySelect').addEventListener('change', (e) => {
+    const nextIndex = Number(e.target.value || 0);
+    if (Number.isNaN(nextIndex) || nextIndex === galleryEditorIndex) return;
+    openGalleryEditor(nextIndex);
+    byId('crmo3047GalleryNote').textContent = `Now editing gallery ${nextIndex + 1}. Unsaved draft changes from the previous gallery were discarded.`;
+  });
+  byId('crmo3047AddTile').addEventListener('click', () => {
+    if (!galleryEditorDraft || !canAddTileToGalleryDraft()) return;
+    galleryEditorDraft.tiles.push(makeTile(galleryEditorIndex, galleryEditorDraft.tiles.length));
+    renderGalleryEditor();
+    byId('crmo3047GalleryNote').textContent = `Added draft tile ${galleryEditorDraft.tiles.length}.`;
+  });
+  byId('crmo3047GalleryDropzone').addEventListener('click', (e) => {
+    if (e.target.closest('button,article,a,input,textarea,select,label')) return;
+    byId('crmo3047GalleryFileInput').click();
+  });
+  ['dragenter','dragover'].forEach((evt) => byId('crmo3047GalleryDropzone').addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.add('is-drag');
+  }));
+  ['dragleave','drop'].forEach((evt) => byId('crmo3047GalleryDropzone').addEventListener(evt, (e) => {
+    e.preventDefault();
+    if (evt === 'drop') {
+      e.currentTarget.classList.remove('is-drag');
+    } else if (!e.currentTarget.contains(e.relatedTarget)) {
+      e.currentTarget.classList.remove('is-drag');
+    }
+  }));
+  byId('crmo3047GalleryDropzone').addEventListener('drop', async (e) => {
+    if (!galleryEditorDraft) return;
+    const files = Array.from(e.dataTransfer?.files || []);
+    if (!files.length) return;
+    const result = await insertFilesIntoGalleryDraft(files);
+    if (result.placed) {
+      byId('crmo3047GalleryNote').textContent = `נוספו ${result.placed} אריחים מטיוטת גרירה · מולאו ${result.filled} מתוך 6 הראשונים, נוספו ${result.appended} מהאריח השביעי ומעלה.`;
+    }
+  });
+  byId('crmo3047GalleryFileInput').addEventListener('change', async (e) => {
+    if (!galleryEditorDraft) return;
+    const files = Array.from(e.target.files || []);
+    const result = await insertFilesIntoGalleryDraft(files);
+    e.target.value = '';
+    if (result.placed) {
+      byId('crmo3047GalleryNote').textContent = `נוספו ${result.placed} אריחים מקבצים · מולאו ${result.filled} מתוך 6 הראשונים, נוספו ${result.appended} מהאריח השביעי ומעלה.`;
+    }
+  });
   byId('crmo3047ResetGallery').addEventListener('click', () => {
-    galleryEditorDraft = makeGallery(galleryEditorIndex);
+    galleryEditorDraft = ensureGalleryTileCapacity(makeGallery(galleryEditorIndex));
     renderGalleryEditor();
     byId('crmo3047GalleryNote').textContent = `Gallery ${galleryEditorIndex + 1} draft reset. Save to commit.`;
   });
@@ -5737,7 +6175,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3071] cloud load failed', err);
+      console.error('[CRMO_v3093] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -5746,7 +6184,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3071] local load failed', err);
+      console.error('[CRMO_v3093] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -5755,18 +6193,32 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3071] save now failed', err);
+      console.error('[CRMO_v3093] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
+
+  [galleryDialog, tileDialog].forEach((dialog) => dialog.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    if (dialog === tileDialog) closeTileEditor();
+    else closeGalleryEditor();
+  }));
 
   window.addEventListener('keydown', (e) => {
     if (lb.open && e.key === 'ArrowLeft') { e.preventDefault(); shiftTile(-1); }
     if (lb.open && e.key === 'ArrowRight') { e.preventDefault(); shiftTile(1); }
     if (e.key === 'Escape') {
+      if (tileDialog.open) {
+        e.preventDefault();
+        closeTileEditor();
+        return;
+      }
+      if (galleryDialog.open) {
+        e.preventDefault();
+        closeGalleryEditor();
+        return;
+      }
       try { if (lb.open) lb.close(); } catch (_) {}
-      if (galleryDialog.open) closeGalleryEditor();
-      if (tileDialog.open) closeTileEditor();
     }
   });
 
@@ -5797,7 +6249,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3071] post-auth cloud load failed', err);
+        console.error('[CRMO_v3093] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -5832,7 +6284,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3071] initial cloud load failed', err);
+      console.error('[CRMO_v3093] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
