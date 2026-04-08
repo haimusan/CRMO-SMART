@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<!-- CRMO_v3136 -->
 
 <html dir="rtl" lang="he">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3093</title>
+<title>CRMO_v3136</title>
 <style>
     :root {
       --bg: #f2f2f2;
@@ -1543,7 +1544,7 @@
 
 
 
-  /* CRMO_v3049 tile editor rebuild */
+  /* CRMO_v3132 tile editor desc-per-subtile refinement */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1553,6 +1554,11 @@
   .tile-editor-top .editor-field{margin:0}
   .tile-editor-top .editor-field-label{font-size:12px;color:rgba(0,0,0,.55);margin-bottom:4px}
   .tile-editor-top input,.tile-editor-top select,.tile-editor-top textarea{padding:8px 12px;background:#fff;border:1px solid rgba(0,0,0,.18);border-radius:0;font-size:15px;font:inherit}
+  .editor-combobox{position:relative}
+  .editor-combobox input{width:100%;padding-left:52px;padding-right:12px}
+  .editor-combobox-toggle{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:30px;height:30px;display:grid;place-items:center;border:0;background:rgba(255,255,255,.72);color:#1f1f1f;cursor:pointer;padding:0;opacity:1;border-radius:999px;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+  .editor-combobox-toggle:hover{background:rgba(255,255,255,.96)}
+  .editor-combobox-toggle svg{width:20px;height:20px;display:block}
   .tile-editor-top input,.tile-editor-top select{height:40px}
   .tile-editor-top textarea{min-height:84px;resize:vertical;line-height:1.35}
   .tile-editor-stage-wrap{display:flex;flex-direction:column;gap:8px}
@@ -1582,11 +1588,16 @@
   .tile-editor-flags .editor-toggle{min-height:34px}
   .tile-editor-link-row{margin:0}
   .tile-editor-link-row input{height:40px;border-radius:0}
+  .crmo3045-tile-flags{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;align-items:center}
+  .crmo3045-tile-flag{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#2a2a2a;min-height:34px;cursor:pointer}
+  .crmo3045-tile-flag input{width:16px;height:16px;margin:0}
+  .crmo3045-tile-flag.is-disabled{opacity:.46;cursor:not-allowed}
+  .crmo3045-tile-flag.is-disabled input{cursor:not-allowed}
   .tile-editor-actions{display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;padding-top:2px;position:sticky;bottom:0;background:#f3f3f3;padding-bottom:2px}
   .tile-editor-actions #editorLoadCloudBtn,.tile-editor-actions #editorAddMediaBtn{justify-self:start}
   .editor-save-note{margin:0;min-width:0;font-size:12px;color:rgba(0,0,0,.55)}
   .tile-editor-actions .primary-btn,.tile-editor-actions .danger-btn,.tile-editor-actions .ghost-btn{height:46px;border-radius:10px;padding:0 18px}
-  @media (max-width:700px){.tile-editor-top,.tile-editor-flags,.tile-editor-actions{grid-template-columns:1fr}.tile-editor-actions .editor-save-note{order:10}.tile-editor-shell{width:min(96vw,940px)}.tile-editor-thumbs{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @media (max-width:700px){.tile-editor-top,.tile-editor-flags,.tile-editor-actions,.crmo3045-tile-flags{grid-template-columns:1fr}.tile-editor-actions .editor-save-note{order:10}.tile-editor-shell{width:min(96vw,940px)}.tile-editor-thumbs{grid-template-columns:repeat(3,minmax(0,1fr))} }
 </style>
 <style id="crmo-auth-modal-inline-css">
 :root{
@@ -1952,7 +1963,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3093</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3132</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2092,7 +2103,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel">CRMO_v3093 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel">CRMO_v3136 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="lightbox-safe-area" id="lightboxSafeArea">
@@ -2124,21 +2135,31 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3093</h2>
+<h2>עורך אריח — CRMO_v3132</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
   <section class="tile-editor-top">
     <label class="editor-field editor-field-compact">
       <span class="editor-field-label">לקוח</span>
-      <input id="tileClientInput" list="clientOptions" placeholder="שם הלקוח" type="text"/>
+      <div class="editor-combobox">
+        <input autocomplete="off" id="tileClientInput" list="clientOptions" placeholder="שם הלקוח" type="text"/>
+        <button aria-label="פתח רשימת לקוחות" class="editor-combobox-toggle" id="tileClientToggleBtn" type="button">
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M4 7.25 10 13l6-5.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>
+        </button>
+      </div>
       <datalist id="clientOptions">
         <option value="אסם"></option><option value="תנובה"></option><option value="שטראוס"></option><option value="כתר"></option>
       </datalist>
     </label>
     <label class="editor-field editor-field-compact">
       <span class="editor-field-label">מותג</span>
-      <input id="tileBrandInput" list="brandOptions" placeholder="שם המותג" type="text"/>
+      <div class="editor-combobox">
+        <input autocomplete="off" id="tileBrandInput" list="brandOptions" placeholder="שם המותג" type="text"/>
+        <button aria-label="פתח רשימת מותגים" class="editor-combobox-toggle" id="tileBrandToggleBtn" type="button">
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M4 7.25 10 13l6-5.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>
+        </button>
+      </div>
       <datalist id="brandOptions">
         <option value="CRMO"></option><option value="מנה חמה"></option><option value="Hisense"></option><option value="Braun"></option>
       </datalist>
@@ -2209,7 +2230,7 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3093';
+      const VERSION = 'CRMO_v3136';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2247,8 +2268,8 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           link: ''
         },
         display: {
-          showLinkInTile: true,
-          openLinkInNewTab: true,
+          showLinkInTile: false,
+          openLinkInNewTab: false,
           multiItemMode: true,
           showLike: true,
           showLikeCount: true,
@@ -2284,6 +2305,53 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
       let saveInFlight = false;
       let loginInFlight = false;
       const diagEntries = [];
+
+      function collectMetaSuggestions(kind) {
+        const optionsEl = kind === 'client' ? els.clientOptions : els.brandOptions;
+        const key = kind === 'client' ? 'client' : 'brand';
+        const values = [];
+        const seen = new Set();
+        const addValue = (value) => {
+          const next = String(value || '').trim();
+          if (!next || seen.has(next)) return;
+          seen.add(next);
+          values.push(next);
+        };
+        optionsEl?.querySelectorAll('option').forEach((option) => addValue(option.value));
+        addValue(state?.meta?.[key]);
+        addValue(editorDraft?.meta?.[key]);
+        try {
+          if (Array.isArray(galleries)) {
+            galleries.forEach((gallery) => {
+              (gallery?.tiles || []).forEach((tile) => addValue(tile?.meta?.[key]));
+            });
+          }
+        } catch (_) {}
+        return values;
+      }
+
+      function refreshMetaSuggestionLists() {
+        const build = (kind, el) => {
+          if (!el) return;
+          const values = collectMetaSuggestions(kind);
+          el.innerHTML = values.map((value) => `<option value="${escapeHtml(value)}"></option>`).join('');
+        };
+        build('client', els.clientOptions);
+        build('brand', els.brandOptions);
+      }
+
+      function openMetaSuggestionList(input, kind) {
+        if (!input) return;
+        refreshMetaSuggestionLists();
+        try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); }
+        try {
+          input.showPicker();
+          return;
+        } catch (_) {}
+        try {
+          input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', code: 'ArrowDown', keyCode: 40, which: 40, bubbles: true }));
+        } catch (_) {}
+      }
 
       const $ = (id) => document.getElementById(id);
       const els = {
@@ -2370,6 +2438,10 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
         closeEditorBtn: $('closeEditorBtn'),
         tileClientInput: $('tileClientInput'),
         tileBrandInput: $('tileBrandInput'),
+        tileClientToggleBtn: $('tileClientToggleBtn'),
+        tileBrandToggleBtn: $('tileBrandToggleBtn'),
+        clientOptions: $('clientOptions'),
+        brandOptions: $('brandOptions'),
         tileTitleInput: $('tileTitleInput'),
         tileDescInput: $('tileDescInput'),
         tileLinkInput: $('tileLinkInput'),
@@ -2875,20 +2947,31 @@ body.role-ux .crmo-auth-modal__settings{display:grid}
           markEditorDirty('שינוי טקסט לכל תמונה נשמר כטיוטה.');
           renderEditorPreview();
         });
+        els.tileClientToggleBtn?.addEventListener('click', () => openMetaSuggestionList(els.tileClientInput, 'client'));
+        els.tileBrandToggleBtn?.addEventListener('click', () => openMetaSuggestionList(els.tileBrandInput, 'brand'));
+        els.tileClientInput?.addEventListener('focus', refreshMetaSuggestionLists);
+        els.tileBrandInput?.addEventListener('focus', refreshMetaSuggestionLists);
         [els.tileClientInput, els.tileBrandInput, els.tileTitleInput, els.tileDescInput, els.tileLinkInput, els.showLinkInTileInput, els.openLinkInNewTabInput].forEach((field) => {
           field?.addEventListener(field.type === 'checkbox' ? 'change' : 'input', () => {
             if (!editorDraft) return;
+            const prevLink = String(editorDraft?.overlay?.link || '').trim();
+            const nextLink = String(els.tileLinkInput?.value || '').trim();
+            if (field === els.tileLinkInput && nextLink && !prevLink) {
+              if (els.showLinkInTileInput) els.showLinkInTileInput.checked = true;
+              if (els.openLinkInNewTabInput) els.openLinkInNewTabInput.checked = true;
+            }
+            if (field === els.tileLinkInput && !nextLink) {
+              if (els.showLinkInTileInput) els.showLinkInTileInput.checked = false;
+              if (els.openLinkInNewTabInput) els.openLinkInNewTabInput.checked = false;
+            }
             syncDraftHeaderFromForm();
             markEditorDirty('עודכנו פרטי האריח בטיוטה.');
             renderEditorPreview();
           });
         });
         els.activeLayerTitleInput?.addEventListener('input', () => {
-          if (!editorDraft?.layers?.[currentEditorLayerIndex]) return;
-          const layer = editorDraft.layers[currentEditorLayerIndex];
-          layer.useOwnText = !!els.useOwnTextPerImageInput?.checked;
-          layer.title = els.activeLayerTitleInput.value;
-          markEditorDirty('עודכן טקסט נפרד לתמונה הפעילה.');
+          if (!editorDraft) return;
+          markEditorDirty('שם הפרויקט נשאר ברמת הפרויקט.');
           renderEditorPreview();
         });
         els.activeLayerDescInput?.addEventListener('input', () => {
@@ -3273,6 +3356,7 @@ function updateAuthUI(isLoggedIn) {
         try {
           editorDraft = deepClone(state);
           currentEditorLayerIndex = 0;
+          refreshMetaSuggestionLists();
           fillEditor(editorDraft);
           applyDraftModeFlags();
           renderLayersEditor();
@@ -3371,8 +3455,8 @@ function updateAuthUI(isLoggedIn) {
         els.tileLinkInput.value = data.overlay?.link || '';
         if (els.multiItemModeInput) els.multiItemModeInput.checked = data.display?.multiItemMode !== false && (data.layers?.length || 0) > 1;
         if (els.useOwnTextPerImageInput) els.useOwnTextPerImageInput.checked = data.display?.perImageText === true;
-        els.showLinkInTileInput.checked = data.display?.showLinkInTile !== false;
-        els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab !== false;
+        els.showLinkInTileInput.checked = data.display?.showLinkInTile === true;
+        els.openLinkInNewTabInput.checked = data.display?.openLinkInNewTab === true;
         updateDropzoneMeta(data);
       }
 
@@ -3420,6 +3504,28 @@ function updateAuthUI(isLoggedIn) {
             lightboxReady: true
           }
         };
+      }
+
+
+      function getBaseOverlayText() {
+        return {
+          title: els.tileTitleInput?.value?.trim() || editorDraft?.overlay?.title || '',
+          desc: els.tileDescInput?.value?.trim() || editorDraft?.overlay?.desc || '',
+          link: els.tileLinkInput?.value?.trim() || editorDraft?.overlay?.link || ''
+        };
+      }
+
+      function getResolvedLayerText(layer) {
+        const base = getBaseOverlayText();
+        const perImageText = !!els.useOwnTextPerImageInput?.checked;
+        if (perImageText && layer?.useOwnText) {
+          return {
+            title: layer.title || base.title,
+            desc: layer.desc || base.desc,
+            link: layer.link || base.link || ''
+          };
+        }
+        return base;
       }
 
       const layerOps = {
@@ -3490,6 +3596,7 @@ function updateAuthUI(isLoggedIn) {
         els.editorPreviewStrip.innerHTML = '';
         const layers = editorDraft?.layers || [];
         if (!layers.length) {
+          if (els.editorPreviewStrip) els.editorPreviewStrip.hidden = true;
           els.editorPreviewStage.innerHTML = '<div class="editor-preview-empty">עדיין לא נוספה מדיה</div>';
           if (els.editorMiniTitle) els.editorMiniTitle.textContent = els.tileTitleInput?.value || 'שם הפרויקט';
           if (els.editorMiniDesc) els.editorMiniDesc.textContent = els.tileDescInput?.value || 'תיאור קצר על הפרויקט';
@@ -3500,28 +3607,27 @@ function updateAuthUI(isLoggedIn) {
         }
         currentEditorLayerIndex = clamp(currentEditorLayerIndex, 0, layers.length - 1);
         const active = layers[currentEditorLayerIndex];
+        if (els.editorPreviewStrip) els.editorPreviewStrip.hidden = layers.length <= 1;
         els.editorPreviewStage.appendChild(createMediaElement(active, 'lightbox-media', true));
-        const baseTitle = els.tileTitleInput?.value?.trim() || '';
-        const baseDesc = els.tileDescInput?.value?.trim() || '';
-        const baseLink = els.tileLinkInput?.value?.trim() || '';
         const perImageText = !!els.useOwnTextPerImageInput?.checked;
-        const title = active.useOwnText ? (active.title || baseTitle) : baseTitle;
-        const desc = active.useOwnText ? (active.desc || baseDesc) : baseDesc;
-        if (els.editorMiniTitle) els.editorMiniTitle.textContent = title || 'שם הפרויקט';
-        if (els.editorMiniDesc) els.editorMiniDesc.textContent = desc || 'תיאור קצר על הפרויקט';
+        const resolvedText = getResolvedLayerText(active);
+        if (els.editorMiniTitle) els.editorMiniTitle.textContent = resolvedText.title || 'שם הפרויקט';
+        if (els.editorMiniDesc) els.editorMiniDesc.textContent = resolvedText.desc || 'תיאור קצר על הפרויקט';
         if (els.editorMiniLink) {
-          bindLink(els.editorMiniLink, baseLink, !!els.openLinkInNewTabInput?.checked);
-          els.editorMiniLink.hidden = !baseLink;
+          bindLink(els.editorMiniLink, resolvedText.link, !!els.openLinkInNewTabInput?.checked);
+          els.editorMiniLink.hidden = !resolvedText.link || !els.showLinkInTileInput?.checked;
         }
-        if (els.editorMiniCopy) els.editorMiniCopy.classList.toggle('is-compact', !baseLink);
+        if (els.editorMiniCopy) els.editorMiniCopy.classList.toggle('is-compact', !resolvedText.link);
         if (els.editorMiniCopyFields) els.editorMiniCopyFields.hidden = !perImageText;
         if (els.activeLayerTitleInput) {
           els.activeLayerTitleInput.disabled = !perImageText;
-          els.activeLayerTitleInput.value = active.useOwnText ? (active.title || '') : '';
+          els.activeLayerTitleInput.value = perImageText && active.useOwnText ? (active.title || '') : '';
+          els.activeLayerTitleInput.placeholder = perImageText ? (resolvedText.title || 'שם הפרויקט') : 'כותרת לתמונה הפעילה';
         }
         if (els.activeLayerDescInput) {
           els.activeLayerDescInput.disabled = !perImageText;
-          els.activeLayerDescInput.value = active.useOwnText ? (active.desc || '') : '';
+          els.activeLayerDescInput.value = perImageText && active.useOwnText ? (active.desc || '') : '';
+          els.activeLayerDescInput.placeholder = perImageText ? (resolvedText.desc || 'תיאור לתמונה הפעילה') : 'תיאור לתמונה הפעילה';
         }
 
         layers.forEach((layer, idx) => {
@@ -3638,7 +3744,7 @@ function updateAuthUI(isLoggedIn) {
           const startIndex = editorDraft.layers.length;
           editorDraft.layers.push(...layers);
           syncLayerOrder(editorDraft.layers);
-          if (els.multiItemModeInput && editorDraft.layers.length > 1) els.multiItemModeInput.checked = true;
+          if (els.multiItemModeInput && picked.length > 1) els.multiItemModeInput.checked = true;
           applyDraftModeFlags();
           currentEditorLayerIndex = startIndex;
           currentTileIndex = 0;
@@ -4144,8 +4250,12 @@ function updateAuthUI(isLoggedIn) {
     
   function getLightboxMedia(tile) {
     const source = Array.isArray(tile?.media) ? tile.media.filter((item) => item && item.src) : [];
+    if (tile?.display?.multiItemMode === false) {
+      const firstVisible = source.find((item) => item.isVisible !== false);
+      return firstVisible ? [firstVisible] : (source[0] ? [source[0]] : []);
+    }
     const activeOnly = source.filter((item) => item.isVisible !== false && item.isEnabled !== false);
-    return activeOnly;
+    return activeOnly.length ? activeOnly : source;
   }
 
   function renderLightbox() {
@@ -4168,6 +4278,7 @@ function updateAuthUI(isLoggedIn) {
         els.lbTitle.textContent = lbText.title || 'שם הפרויקט';
         els.lbDesc.textContent = lbText.desc || 'תיאור קצר של הפרויקט';
         bindLink(els.lbLink, lbText.link, state.display?.openLinkInNewTab !== false);
+        if (els.lbLink) els.lbLink.hidden = !lbText.link || state.display?.showLinkInTile === false;
         renderThumbs();
         requestAnimationFrame(() => applyLightboxScale());
       }
@@ -4196,11 +4307,11 @@ function updateAuthUI(isLoggedIn) {
           desc: state.overlay?.desc || 'תיאור קצר של הפרויקט',
           link: state.overlay?.link || ''
         };
-        if (layer?.useOwnText) {
+        if (state.display?.perImageText === true && layer?.useOwnText) {
           return {
             title: layer.title || base.title,
             desc: layer.desc || base.desc,
-            link: base.link
+            link: layer.link || base.link
           };
         }
         return base;
@@ -4215,6 +4326,10 @@ function updateAuthUI(isLoggedIn) {
 
       function getVisibleLayers() {
         const source = Array.isArray(state.layers) ? state.layers : [];
+        if (state.display?.multiItemMode === false) {
+          const firstVisible = source.find((layer) => layer.isVisible !== false);
+          return firstVisible ? [firstVisible] : (source[0] ? [source[0]] : []);
+        }
         const filtered = source.filter((layer) => layer.isVisible !== false && layer.isEnabled !== false);
         if (filtered.length) return filtered;
         const visibleOnly = source.filter((layer) => layer.isVisible !== false);
@@ -4804,10 +4919,20 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3047-badge.live{background:#111;color:#fff}
   .crmo3045-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
   .crmo3045-tile-wrap{position:relative;display:grid;gap:0}
+.crmo3045-gallery-editor-grid .crmo3045-tile-wrap{cursor:grab}
+  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.is-dragging{opacity:.42}
+  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.drop-before{box-shadow:inset 4px 0 0 #111}
+  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.drop-after{box-shadow:inset -4px 0 0 #111}
   .crmo3045-tile{position:relative;aspect-ratio:16/9;background:#e5e5e5;border:1px solid rgba(0,0,0,.1);overflow:hidden;cursor:pointer}
   .crmo3045-tile-media,.crmo3045-lb-media,.crmo3045-thumb img,.crmo3045-thumb video,.crmo3045-stage img,.crmo3045-stage video{width:100%;height:100%;object-fit:cover;display:block}
   .crmo3045-fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#555;font-size:14px;background:linear-gradient(180deg,#efefef,#dcdcdc)}
   .crmo3045-pencil{position:absolute;top:10px;left:10px;z-index:3;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 4px 18px rgba(0,0,0,.14);cursor:pointer;font-size:18px}
+  .crmo3045-pencil{opacity:1!important;visibility:visible!important;display:block!important}
+  .is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+  .is-brands-gallery .crmo3045-tile{aspect-ratio:1/1;background:#fff}
+  .is-brands-gallery .crmo3045-fallback{background:#fff;color:#777;font-size:12px;border:1px dashed rgba(0,0,0,.12)}
+  @media (max-width:900px){.is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+  @media (max-width:640px){.is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
   .crmo3045-copy,.crmo3047-gallery-copy{display:none !important}
   .crmo3045-meta{font-size:11px;color:#777}
   .crmo3045-name{font-size:16px;font-weight:700;color:#111;min-height:20px}
@@ -4833,10 +4958,10 @@ window.CRMOForceOpenAuthModal = function(event){
   #crmo3047TileEditor .crmo3045-modal{position:relative;width:min(760px,calc(100vw - 96px));max-width:min(760px,calc(100vw - 96px));height:auto;max-height:min(calc(100vh - 96px),920px);margin:0 auto!important;overflow:hidden;box-sizing:border-box;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
   #crmo3047TileEditor .crmo3045-modal-head{display:flex;position:sticky;top:0;z-index:4;align-items:center;justify-content:space-between;min-height:72px;padding:18px 20px 10px;background:#efefef;border-bottom:1px solid rgba(0,0,0,.08)}
   #crmo3047TileEditor .crmo3045-modal-head h2{margin:0;padding-inline-start:56px;font-size:16px;font-weight:700}
-  #crmo3047TileEditor .crmo3045-editor-body{display:grid;gap:12px;padding:14px 18px 18px;overflow:auto;overscroll-behavior:contain;max-height:calc(min(100vh - 96px, 920px) - 72px)}
-  #crmo3047TileEditor .crmo3045-x{top:14px;left:14px;position:absolute}
-  #crmo3047TileEditor .crmo3045-stage{max-height:42vh}
-  #crmo3047TileEditor .crmo3045-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #crmo3047TileEditor .crmo3045-editor-body{display:grid;gap:12px;padding:14px 18px 18px;overflow:auto;overscroll-behavior:contain;max-height:calc(min(100vh - 96px, 920px) - 72px);align-content:start;grid-auto-rows:max-content}
+  #crmo3047TileEditor .crmo3045-x{top:14px;left:14px;position:absolute;width:auto;height:auto;border:none;background:transparent;box-shadow:none;border-radius:0;padding:0;font-size:26px;line-height:1;color:#111}
+  #crmo3047TileEditor .crmo3045-stage{max-height:34vh;position:relative;z-index:1}
+  #crmo3047TileEditor .crmo3045-strip{grid-template-columns:repeat(4,minmax(0,1fr));position:relative;z-index:2;margin-top:0;padding-top:0}
   #crmo3047GalleryEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0 auto!important;padding:24px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;place-items:center;overflow:auto}
   #crmo3047GalleryEditor.crmo3045-dialog[open]{display:grid!important}
   #crmo3047GalleryEditor .crmo3045-modal{width:min(820px,calc(100vw - 64px));max-width:min(820px,calc(100vw - 64px));max-height:calc(100vh - 48px);margin:auto}
@@ -4848,6 +4973,9 @@ window.CRMOForceOpenAuthModal = function(event){
   #crmo3047GalleryEditor .crmo3047-inline-check input{margin:0}
   #crmo3047GalleryEditor .crmo3047-grid-drop{border:1px dashed rgba(0,0,0,.16);border-radius:16px;padding:14px;background:#fafafa}
   #crmo3047GalleryEditor .crmo3047-grid-drop.is-drag{background:#f0f0f0;border-color:#111}
+  #crmo3047GalleryEditor .crmo3047-dropzone-mini{display:flex;align-items:center;justify-content:center;min-height:52px;margin:10px 0 12px;padding:10px 14px;border:1px dashed rgba(0,0,0,.24);border-radius:12px;background:#fff;color:#444;font-size:13px;line-height:1.4;text-align:center;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease}
+  #crmo3047GalleryEditor .crmo3047-dropzone-mini:hover,#crmo3047GalleryEditor .crmo3047-dropzone-mini:focus-visible{background:#f7f7f7;border-color:#111;color:#111;outline:none}
+  #crmo3047GalleryEditor .crmo3047-dropzone-mini.is-drag{background:#f0f0f0;border-color:#111;color:#111}
   #crmo3047GalleryEditor .crmo3047-gallery-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
   #crmo3047GalleryEditor .crmo3047-gallery-topbar .crmo3045-field{margin:0;min-width:260px}
   #crmo3047GalleryEditor select,#crmo3047GalleryEditor input[type="text"],#crmo3047GalleryEditor textarea{width:100%}
@@ -4907,11 +5035,17 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-strip[hidden]{display:none!important}
   .crmo3045-thumb{border:2px solid transparent;background:#d8d8d8;padding:0;aspect-ratio:16/9;overflow:hidden;cursor:pointer;border-radius:10px}
   .crmo3045-thumb.active{border:4px solid #111}
+  .crmo3045-thumb.is-dragging{opacity:.42}
+  .crmo3045-thumb.drop-before{box-shadow:inset 4px 0 0 #111}
+  .crmo3045-thumb.drop-after{box-shadow:inset -4px 0 0 #111}
   .crmo3045-editor-body{display:grid;gap:12px;padding:14px 18px 18px;overflow:auto}
   .crmo3045-editor-top{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
   .crmo3045-field{display:grid;gap:4px}
   .crmo3045-field span{font-size:12px;color:#666}
   .crmo3045-field input,.crmo3045-field textarea{width:100%;border:1px solid rgba(0,0,0,.16);background:#fff;padding:10px 12px;font:inherit}
+  #crmo3047TileEditor #crmo3047Link{direction:ltr;text-align:left;unicode-bidi:plaintext}
+  #crmo3047TileEditor .crmo3045-lb-link{direction:ltr;text-align:left;unicode-bidi:plaintext}
+  #crmo3047TileEditor .tile-editor-copy-link{direction:ltr;text-align:left;unicode-bidi:plaintext}
   .crmo3045-field textarea{min-height:72px;resize:vertical}
   .crmo3045-stage{aspect-ratio:16/9;background:#d8d8d8;border:1px solid rgba(0,0,0,.12);overflow:hidden;position:relative}
   .crmo3045-drop{padding:16px;border:2px dashed rgba(0,0,0,.28);background:#fafafa;cursor:pointer}
@@ -4928,12 +5062,12 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3093';
-  const STORAGE_KEY = 'CRMO_v3093_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3136';
+  const STORAGE_KEY = 'CRMO_v3132_MULTI_GALLERY_DEMO';
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
-  const GALLERY_COUNT = 2;
+  const GALLERY_COUNT = 3;
   const TILES_PER_GALLERY = 6;
   const MAX_TILES_PER_GALLERY = 24;
   const STACK_TILE_LIMIT = 6;
@@ -5033,6 +5167,7 @@ window.CRMOForceOpenAuthModal = function(event){
               <button class="crmo3045-btn-ghost" id="crmo3047AddTile" type="button">הוסף אריח</button>
             </div>
           </div>
+          <div class="crmo3047-dropzone-mini" id="crmo3047GalleryDropzoneMini" role="button" tabindex="0" aria-label="גרירת קבצים לעורך הגלריה">גרור קבצים לכאן או לחץ לבחירה · ממלא קודם את אריחים 1–6 ורק אחר כך מוסיף מ־7 ומעלה</div>
           <div class="crmo3045-grid crmo3045-gallery-editor-grid" id="crmo3047GalleryTiles"></div>
           <input class="crmo3045-hidden-input" id="crmo3047GalleryFileInput" type="file" accept="image/*,video/*,.gif" multiple>
         </div>
@@ -5053,26 +5188,34 @@ window.CRMOForceOpenAuthModal = function(event){
   tileDialog.innerHTML = `
     <div class="crmo3045-modal">
       <div class="crmo3045-modal-head">
-        <h2>${VERSION} · Tile Editor</h2>
+        <h2>עריכת פרויקט</h2>
         <button class="crmo3045-x" type="button" data-close-tile-editor>✕</button>
       </div>
       <div class="crmo3045-editor-body">
         <div class="crmo3045-editor-top">
-          <label class="crmo3045-field"><span>Client</span><input id="crmo3047Client" type="text"></label>
-          <label class="crmo3045-field"><span>Brand</span><input id="crmo3047Brand" type="text"></label>
-          <label class="crmo3045-field"><span>Project title</span><input id="crmo3047Title" type="text"></label>
-          <label class="crmo3045-field"><span>Project description</span><textarea id="crmo3047Desc" placeholder="תיאור קצר של הפרויקט"></textarea></label>
+          <label class="crmo3045-field"><span>לקוח</span><input id="crmo3047Client" type="text" list="crmo3047ClientOptions" autocomplete="off"></label>
+          <label class="crmo3045-field"><span>מותג</span><input id="crmo3047Brand" type="text" list="crmo3047BrandOptions" autocomplete="off"></label>
+          <datalist id="crmo3047ClientOptions"></datalist>
+          <datalist id="crmo3047BrandOptions"></datalist>
+          <label class="crmo3045-field"><span>שם הפרויקט</span><input id="crmo3047Title" type="text"></label>
+          <label class="crmo3045-field"><span>תיאור</span><textarea id="crmo3047Desc" placeholder="תיאור קצר של הפרויקט"></textarea></label>
         </div>
         <div class="crmo3045-stage" id="crmo3047EditorStage"></div>
         <div class="crmo3045-strip" id="crmo3047EditorStrip"></div>
-        <label class="crmo3045-drop" id="crmo3047Dropzone">Drag media here or click to choose files</label>
-        <label class="crmo3045-field"><span>Link</span><input id="crmo3047Link" type="text" placeholder="https://example.com"></label>
+        <label class="crmo3045-drop" id="crmo3047Dropzone">גרור תמונות לכאן או לחץ לבחירה</label>
+        <label class="crmo3045-field"><span>לינק</span><input id="crmo3047Link" type="text" placeholder="https://example.com"></label>
+        <div class="crmo3045-tile-flags">
+          <label class="crmo3045-tile-flag"><input id="crmo3047ShowLinkInTile" type="checkbox"><span>הצג לינק באריח</span></label>
+          <label class="crmo3045-tile-flag"><input id="crmo3047OpenInNewTab" type="checkbox"><span>פתח בטאב חדש</span></label>
+          <label class="crmo3045-tile-flag"><input id="crmo3047MultiItemMode" type="checkbox"><span>פרויקט רב שכבתי</span></label>
+          <label class="crmo3045-tile-flag"><input id="crmo3047OwnTextPerImage" type="checkbox"><span>טקסט נפרד לכל תמונה</span></label>
+        </div>
         <div class="crmo3045-editor-actions">
-          <div class="crmo3045-note" id="crmo3047EditorNote">Draft changes stay inside the popup until Save.</div>
+          <div class="crmo3045-note" id="crmo3047EditorNote">השינויים נשמרים בתוך החלון עד לשמירה.</div>
           <div class="crmo3045-btns">
-            <button class="crmo3045-btn-ghost" id="crmo3047AddMedia" type="button">Add media</button>
-            <button class="crmo3045-btn-danger" id="crmo3047ResetTile" type="button">Reset tile</button>
-            <button class="crmo3045-btn" id="crmo3047SaveTile" type="button">Save tile</button>
+            <button class="crmo3045-btn-ghost" id="crmo3047AddMedia" type="button">הוסף מדיה</button>
+            <button class="crmo3045-btn-danger" id="crmo3047ResetTile" type="button">איפוס פרויקט</button>
+            <button class="crmo3045-btn" id="crmo3047SaveTile" type="button">שמירה</button>
           </div>
         </div>
         <input class="crmo3045-hidden-input" id="crmo3047FileInput" type="file" accept="image/*,video/*,.gif" multiple>
@@ -5176,20 +5319,33 @@ window.CRMOForceOpenAuthModal = function(event){
     if (addBtn) addBtn.disabled = !canAddTileToGalleryDraft();
     updateExpandedControls();
   }
+  function readFileAsDataUrlForGalleryEditor(file) {
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error || new Error('FileReader failed'));
+        reader.readAsDataURL(file);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   async function filesToTileDrafts(fileList, galleryIndex) {
     const files = Array.from(fileList || []).slice(0, MAX_TILES_PER_GALLERY);
     const tiles = [];
     for (const file of files) {
-      const dataUrl = await readFileAsDataUrl(file);
+      const dataUrl = await readFileAsDataUrlForGalleryEditor(file);
       const idx = tiles.length;
       const tile = makeTile(galleryIndex, idx);
       const base = String(file.name || '').replace(/\.[^.]+$/, '');
-      tile.overlay.title = base || tile.overlay.title;
+      tile.overlay.title = 'שם הפרויקט';
       tile.media = [normalizeMedia({
         id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
         type: file.type || 'image',
         src: dataUrl,
-        title: base,
+        title: 'שם הפרויקט',
         fileName: file.name || ''
       }, galleryIndex, idx, 0)];
       tiles.push(tile);
@@ -5228,6 +5384,14 @@ window.CRMOForceOpenAuthModal = function(event){
     }
     renderGalleryEditor();
     return { placed: cursor, filled, appended };
+  }
+
+  async function handleGalleryDraftFiles(fileList, sourceLabel = 'קבצים') {
+    if (!galleryEditorDraft) return;
+    const result = await insertFilesIntoGalleryDraft(fileList);
+    if (result.placed) {
+      byId('crmo3047GalleryNote').textContent = `נוספו ${result.placed} אריחים מ${sourceLabel} · מולאו ${result.filled} מתוך 6 הראשונים, נוספו ${result.appended} מהאריח השביעי ומעלה.`;
+    }
   }
   function closeEditorsIfUnauthorized() {
     if (canEdit()) return;
@@ -5318,7 +5482,7 @@ window.CRMOForceOpenAuthModal = function(event){
     tileId: `gallery-${galleryIndex + 1}-tile-${String(tileIndex + 1).padStart(2,'0')}`,
     meta: { client: '', brand: '' },
     overlay: { title: 'שם הפרויקט', desc: 'תיאור קצר של הפרויקט', link: '' },
-    display: { openLinkInNewTab: true },
+    display: { openLinkInNewTab: false, showLinkInTile: false, multiItemMode: false, perImageText: false },
     media: []
   });
 
@@ -5334,6 +5498,33 @@ window.CRMOForceOpenAuthModal = function(event){
     ui: { editMode: galleryIndex === 0 },
     tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => makeTile(galleryIndex, tileIndex))
   });
+
+  const makeBrandsGallery = () => ({
+    galleryId: 'brands-gallery',
+    meta: ensureGalleryMeta({
+      title: 'מותגים',
+      desc: 'גלריית מותגים חדשה ונפרדת',
+      label: 'brands',
+      expandedEnabled: false,
+      expandedCount: 9
+    }),
+    ui: { editMode: false },
+    tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => normalizeTile({
+      tileId: `brands-tile-${String(tileIndex + 1).padStart(2,'0')}`,
+      meta: { client: '', brand: '' },
+      overlay: { title: '', desc: '', link: '' },
+      display: { openLinkInNewTab: false, showLinkInTile: false, multiItemMode: false, perImageText: false },
+      media: []
+    }, 0, tileIndex))
+  });
+
+  function ensureBrandsFirst(rawGalleries) {
+    const list = Array.isArray(rawGalleries) ? rawGalleries.slice() : [];
+    const existingIndex = list.findIndex((g) => String(g?.galleryId || '') === 'brands-gallery' || String(g?.meta?.label || '').toLowerCase() === 'brands');
+    const brands = existingIndex >= 0 ? list.splice(existingIndex, 1)[0] : makeBrandsGallery();
+    const rest = list.slice(0, GALLERY_COUNT - 1);
+    return [brands, ...rest].map((gallery, galleryIndex) => normalizeGallery(gallery, galleryIndex));
+  }
 
   const normalizeMedia = (m, galleryIndex, tileIndex, mediaIndex) => ({
     id: String(m?.id || `${Date.now()}-${galleryIndex}-${tileIndex}-${mediaIndex}`),
@@ -5356,7 +5547,7 @@ window.CRMOForceOpenAuthModal = function(event){
       desc: String(tile?.overlay?.desc || 'תיאור קצר של הפרויקט'),
       link: String(tile?.overlay?.link || '')
     },
-    display: { openLinkInNewTab: tile?.display?.openLinkInNewTab !== false },
+    display: { openLinkInNewTab: tile?.display?.openLinkInNewTab === true, showLinkInTile: tile?.display?.showLinkInTile === true, multiItemMode: tile?.display?.multiItemMode === true, perImageText: tile?.display?.perImageText === true },
     media: Array.isArray(tile?.media) ? tile.media.map((m, i) => normalizeMedia(m, galleryIndex, tileIndex, i)).filter((m) => m.src) : []
   });
 
@@ -5384,7 +5575,7 @@ window.CRMOForceOpenAuthModal = function(event){
     };
   };
 
-  const emptyGalleries = () => Array.from({length:GALLERY_COUNT}, (_, galleryIndex) => makeGallery(galleryIndex));
+  const emptyGalleries = () => ensureBrandsFirst(Array.from({length:GALLERY_COUNT - 1}, (_, galleryIndex) => makeGallery(galleryIndex)));
 
   function loadLocalWrapper() {
     try {
@@ -5397,7 +5588,7 @@ window.CRMOForceOpenAuthModal = function(event){
         source: raw.source || 'local',
         savedBy: raw.savedBy || '',
         syncMode: raw.syncMode || 'cloud-primary-local-fallback',
-        galleries: raw.galleries.slice(0, GALLERY_COUNT).map(normalizeGallery)
+        galleries: ensureBrandsFirst(raw.galleries)
       };
     } catch (_) {
       return null;
@@ -5409,6 +5600,8 @@ window.CRMOForceOpenAuthModal = function(event){
   let activeGalleryIndex = 0;
   let activeTileIndex = 0;
   let activeMediaIndex = 0;
+  let tileEditorDragIndex = -1;
+  let galleryTileDragIndex = -1;
   let editorContext = { galleryIndex: 0, tileIndex: 0 };
   let galleryEditorIndex = 0;
   let tileEditorDraft = null;
@@ -5422,7 +5615,7 @@ window.CRMOForceOpenAuthModal = function(event){
       source: isLoggedIn() ? 'cloud' : 'local',
       savedBy: getSession()?.user?.email || 'anonymous',
       syncMode: 'cloud-primary-local-fallback',
-      galleries: currentGalleries.map((gallery, galleryIndex) => normalizeGallery(gallery, galleryIndex))
+      galleries: ensureBrandsFirst(currentGalleries)
     };
   }
 
@@ -5441,7 +5634,7 @@ window.CRMOForceOpenAuthModal = function(event){
     document.title = isIndexRuntime() ? 'CRMO | sales oriented design' : VERSION;
     applyFaviconLaw();
     const footer = document.getElementById('footerVersionLabel');
-    if (footer) footer.textContent = `${VERSION} · multi-gallery context test area`;
+    if (footer) footer.textContent = `${VERSION} · tile component rebuild test area`;
     const admin = document.getElementById('adminVersionPill');
     if (admin) admin.textContent = VERSION;
     const title = document.querySelector('.app-shell header h1');
@@ -5478,21 +5671,18 @@ window.CRMOForceOpenAuthModal = function(event){
     galleries.forEach((gallery, galleryIndex) => {
       const editEnabled = canEdit();
       const section = document.createElement('section');
-      section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}`;
+      const isBrandsGallery = gallery.galleryId === 'brands-gallery';
+      section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
       section.dataset.galleryIndex = String(galleryIndex);
       section.innerHTML = `
         <div class="crmo3047-gallery-head">
           <div class="crmo3047-gallery-copy">
-            <div class="crmo3047-gallery-kicker">${escape(gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
+            <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'brands-gallery' : gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
             <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
             <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
           </div>
           <div class="crmo3047-gallery-tools">
-            ${editEnabled
-              ? `<span class="crmo3047-badge ${gallery.ui.editMode ? 'live' : ''}">${gallery.ui.editMode ? 'Gallery edit mode ON' : 'Gallery edit mode OFF'}</span>
-            <button class="crmo3045-btn-ghost" type="button" data-gallery-toggle>${gallery.ui.editMode ? 'Exit gallery edit' : 'Enter gallery edit'}</button>
-            <button class="crmo3045-btn" type="button" data-gallery-editor>Edit gallery</button>`
-              : ``}
+            ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
           </div>
         </div>
         <div class="crmo3045-grid" data-gallery-grid></div>
@@ -5509,11 +5699,11 @@ window.CRMOForceOpenAuthModal = function(event){
         card.innerHTML = `
           ${editEnabled ? `<button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery ${galleryIndex + 1}">✎</button>` : ''}
           <article class="crmo3045-tile" tabindex="0" aria-label="Gallery ${galleryIndex + 1} tile ${tileIndex + 1}">
-            ${first ? '' : '<div class="crmo3045-fallback">CRMO TILE<br>16:9</div>'}
+            ${first ? '' : `<div class="crmo3045-fallback">${isBrandsGallery ? 'BRAND' : 'CRMO TILE<br>16:9'}</div>`}
             <div class="crmo3045-hover">
               <div class="crmo3045-hover-title">${escape(hoverTitle)}</div>
               <div class="crmo3045-hover-desc">${escape(hoverDesc)}</div>
-              <a class="crmo3045-hover-link${hoverLink ? ' is-visible' : ''}" ${tile.overlay.link ? `href="${escape(tile.overlay.link)}" target="_blank" rel="noopener"` : ''}>${escape(hoverLink)}</a>
+              <a class="crmo3045-hover-link${hoverLink && tile.display?.showLinkInTile !== false ? ' is-visible' : ''}" ${tile.overlay.link && tile.display?.showLinkInTile !== false ? `href="${escape(tile.overlay.link)}"${tile.display?.openLinkInNewTab !== false ? ' target="_blank" rel="noopener"' : ''}` : ''}>${escape(tile.display?.showLinkInTile !== false ? hoverLink : '')}</a>
             </div>
           </article>
           <div class="crmo3045-copy">
@@ -5553,7 +5743,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3093] gallery mode save failed', err);
+          console.error('[CRMO_v3132] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -5567,8 +5757,14 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function getLightboxMedia(tile) {
     const source = Array.isArray(tile?.media) ? tile.media.filter((item) => item && item.src) : [];
+    if (tile?.display?.multiItemMode === false) {
+      const firstVisible = source.find((item) => item.isVisible !== false);
+      return firstVisible ? [firstVisible] : (source[0] ? [source[0]] : []);
+    }
     const activeOnly = source.filter((item) => item.isVisible !== false && item.isEnabled !== false);
-    return activeOnly;
+    if (activeOnly.length) return activeOnly;
+    const visibleOnly = source.filter((item) => item.isVisible !== false);
+    return visibleOnly.length ? visibleOnly : source;
   }
 
   function renderLightbox() {
@@ -5594,13 +5790,18 @@ window.CRMOForceOpenAuthModal = function(event){
     byId('crmo3047LbDesc').textContent = tile.overlay.desc || 'תיאור קצר של הפרויקט';
     const link = byId('crmo3047LbLink');
     const prettyLink = prettifyHoverUrl(tile.overlay.link || '');
-    if (prettyLink) {
+    const showLink = !!prettyLink && tile.display?.showLinkInTile !== false;
+    if (showLink) {
       link.hidden = false;
       link.href = tile.overlay.link;
+      link.target = tile.display?.openLinkInNewTab !== false ? '_blank' : '_self';
+      link.rel = tile.display?.openLinkInNewTab !== false ? 'noopener' : '';
       link.textContent = prettyLink;
     } else {
       link.hidden = true;
       link.removeAttribute('href');
+      link.removeAttribute('target');
+      link.removeAttribute('rel');
       link.textContent = '';
     }
     strip.innerHTML = '';
@@ -5682,15 +5883,49 @@ window.CRMOForceOpenAuthModal = function(event){
     return getTileSourceCollection(galleryIndex);
   }
 
+  function clearGalleryEditorTileDragState() {
+    const grid = byId('crmo3047GalleryTiles');
+    if (!grid) return;
+    grid.querySelectorAll('.crmo3045-tile-wrap').forEach((el) => {
+      el.classList.remove('is-dragging', 'drop-before', 'drop-after');
+    });
+  }
+
+  function reorderGalleryEditorTiles(fromIndex, toIndex) {
+    if (!galleryEditorDraft || !Array.isArray(galleryEditorDraft.tiles)) return;
+    const tiles = galleryEditorDraft.tiles;
+    if (fromIndex === toIndex) return;
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= tiles.length || toIndex >= tiles.length) return;
+    const [moved] = tiles.splice(fromIndex, 1);
+    tiles.splice(toIndex, 0, moved);
+    galleryEditorDraft.tiles = tiles.map((tile, idx) => normalizeTile(tile, galleryEditorIndex, idx));
+    renderGalleryEditor();
+    byId('crmo3047GalleryNote').textContent = `Gallery ${galleryEditorIndex + 1} tile order updated. Save will commit the new order.`;
+  }
+
   function renderGalleryEditorTiles() {
     const grid = byId('crmo3047GalleryTiles');
     const tilesNote = byId('crmo3047GalleryTilesNote');
     grid.innerHTML = '';
     if (!galleryEditorDraft) return;
+    grid.addEventListener('dragover', (e) => {
+      if (galleryTileDragIndex < 0) return;
+      e.preventDefault();
+      try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+    });
+    grid.addEventListener('drop', (e) => {
+      if (galleryTileDragIndex < 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      clearGalleryEditorTileDragState();
+      galleryTileDragIndex = -1;
+    });
     const label = galleryEditorDraft.meta.label || `G${galleryEditorIndex + 1}`;
     galleryEditorDraft.tiles.forEach((tile, tileIndex) => {
       const card = document.createElement('div');
       card.className = 'crmo3045-tile-wrap';
+      card.draggable = galleryEditorDraft.tiles.length > 1;
+      card.dataset.tileIndex = String(tileIndex);
       const first = tile.media[0] || null;
       const meta = [label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
       card.innerHTML = `
@@ -5712,6 +5947,9 @@ window.CRMOForceOpenAuthModal = function(event){
       `;
       const article = card.querySelector('.crmo3045-tile');
       if (first) article.appendChild(mediaEl(first, 'crmo3045-tile-media'));
+      article.draggable = false;
+      const pencilBtn = card.querySelector('.crmo3045-pencil');
+      if (pencilBtn) pencilBtn.draggable = false;
       card.querySelector('.crmo3045-pencil')?.addEventListener('click', (e) => {
         e.stopPropagation();
         openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' });
@@ -5722,6 +5960,48 @@ window.CRMOForceOpenAuthModal = function(event){
           e.preventDefault();
           openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' });
         }
+      });
+      card.addEventListener('dragstart', (e) => {
+        galleryTileDragIndex = tileIndex;
+        clearGalleryEditorTileDragState();
+        card.classList.add('is-dragging');
+        try {
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', String(tileIndex));
+          e.dataTransfer.setData('application/x-crmo-gallery-tile', String(tileIndex));
+        } catch (_) {}
+        e.stopPropagation();
+      });
+      card.addEventListener('dragend', () => {
+        galleryTileDragIndex = -1;
+        clearGalleryEditorTileDragState();
+      });
+      card.addEventListener('dragover', (e) => {
+        if (galleryTileDragIndex < 0 || galleryTileDragIndex === tileIndex) return;
+        e.preventDefault();
+        e.stopPropagation();
+        try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+        const rect = card.getBoundingClientRect();
+        const placeAfter = (e.clientX - rect.left) > (rect.width / 2);
+        clearGalleryEditorTileDragState();
+        card.classList.add(placeAfter ? 'drop-after' : 'drop-before');
+      });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drop-before', 'drop-after');
+      });
+      card.addEventListener('drop', (e) => {
+        if (galleryTileDragIndex < 0 || galleryTileDragIndex === tileIndex) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = card.getBoundingClientRect();
+        const placeAfter = (e.clientX - rect.left) > (rect.width / 2);
+        let targetIndex = tileIndex + (placeAfter ? 1 : 0);
+        if (galleryTileDragIndex < targetIndex) targetIndex -= 1;
+        targetIndex = Math.max(0, Math.min(targetIndex, galleryEditorDraft.tiles.length - 1));
+        clearGalleryEditorTileDragState();
+        reorderGalleryEditorTiles(galleryTileDragIndex, targetIndex);
+        galleryTileDragIndex = -1;
+        return false;
       });
       grid.appendChild(card);
     });
@@ -5745,31 +6025,228 @@ window.CRMOForceOpenAuthModal = function(event){
   function closeGalleryEditor() {
     if (tileDialog.open && editorContext?.source === 'gallery-draft') closeTileEditor();
     try { if (galleryDialog.open) galleryDialog.close(); } catch (_) {}
+    galleryTileDragIndex = -1;
     galleryEditorDraft = null;
+  }
+
+
+  function collectCrmo3047MetaSuggestions(kind) {
+    const key = kind === 'client' ? 'client' : 'brand';
+    const values = [];
+    const seen = new Set();
+    const addValue = (value) => {
+      const next = String(value || '').trim();
+      if (!next || seen.has(next)) return;
+      seen.add(next);
+      values.push(next);
+    };
+    try {
+      if (Array.isArray(galleries)) {
+        galleries.forEach((gallery) => {
+          (gallery?.tiles || []).forEach((tile) => addValue(tile?.meta?.[key]));
+        });
+      }
+    } catch (_) {}
+    try {
+      if (galleryEditorDraft && Array.isArray(galleryEditorDraft.tiles)) {
+        galleryEditorDraft.tiles.forEach((tile) => addValue(tile?.meta?.[key]));
+      }
+    } catch (_) {}
+    addValue(tileEditorDraft?.meta?.[key]);
+    return values.sort((a, b) => a.localeCompare(b, 'he'));
+  }
+
+  function refreshCrmo3047MetaSuggestionLists() {
+    const build = (kind, listId) => {
+      const el = byId(listId);
+      if (!el) return;
+      const values = collectCrmo3047MetaSuggestions(kind);
+      el.innerHTML = values.map((value) => `<option value="${escape(value)}"></option>`).join('');
+    };
+    build('client', 'crmo3047ClientOptions');
+    build('brand', 'crmo3047BrandOptions');
+  }
+
+  function getResolvedTileEditorText(tile, mediaIndex) {
+    const safeTile = tile || tileEditorDraft || {};
+    const overlay = safeTile.overlay || {};
+    const media = Array.isArray(safeTile.media) ? safeTile.media[mediaIndex] || null : null;
+    const perImageText = !!safeTile?.display?.perImageText;
+    return {
+      title: String(overlay.title || ''),
+      desc: perImageText && media && String(media.desc || '').trim() ? String(media.desc || '') : String(overlay.desc || ''),
+      link: String(overlay.link || '')
+    };
+  }
+
+  function applyTileEditorCheckboxLogic(opts = {}) {
+    const tile = tileEditorDraft;
+    if (!tile) return;
+    tile.display = tile.display || {};
+    const mediaCount = Array.isArray(tile.media) ? tile.media.filter(Boolean).length : 0;
+    const hasMultiData = mediaCount > 1;
+    const linkValue = String(tile?.overlay?.link || '').trim();
+    const hasLink = !!linkValue;
+    const multiInput = byId('crmo3047MultiItemMode');
+    const ownTextInput = byId('crmo3047OwnTextPerImage');
+    const showLinkInput = byId('crmo3047ShowLinkInTile');
+    const openLinkInput = byId('crmo3047OpenInNewTab');
+    const forceAutoMulti = !!opts.forceAutoMulti;
+    const forceAutoLink = !!opts.forceAutoLink;
+
+    if (!hasMultiData) {
+      tile.display.multiItemMode = false;
+      tile.display.perImageText = false;
+    } else if (forceAutoMulti) {
+      tile.display.multiItemMode = true;
+    }
+
+    const multiChecked = hasMultiData && tile.display.multiItemMode === true;
+    if (!multiChecked) tile.display.perImageText = false;
+
+    if (!hasLink) {
+      tile.display.showLinkInTile = false;
+      tile.display.openLinkInNewTab = false;
+    } else if (forceAutoLink) {
+      tile.display.showLinkInTile = true;
+      tile.display.openLinkInNewTab = true;
+    }
+
+    if (multiInput) {
+      multiInput.checked = multiChecked;
+      multiInput.disabled = !hasMultiData;
+      multiInput.closest('label')?.classList.toggle('is-disabled', !hasMultiData);
+    }
+    if (ownTextInput) {
+      ownTextInput.checked = multiChecked && tile.display.perImageText === true;
+      ownTextInput.disabled = !multiChecked;
+      ownTextInput.closest('label')?.classList.toggle('is-disabled', !multiChecked);
+    }
+    if (showLinkInput) {
+      showLinkInput.checked = hasLink && tile.display.showLinkInTile === true;
+      showLinkInput.disabled = !hasLink;
+      showLinkInput.closest('label')?.classList.toggle('is-disabled', !hasLink);
+    }
+    if (openLinkInput) {
+      openLinkInput.checked = hasLink && tile.display.openLinkInNewTab === true;
+      openLinkInput.disabled = !hasLink;
+      openLinkInput.closest('label')?.classList.toggle('is-disabled', !hasLink);
+    }
+  }
+
+  function clearTileEditorThumbDragState() {
+    const strip = byId('crmo3047EditorStrip');
+    if (!strip) return;
+    strip.querySelectorAll('.crmo3045-thumb').forEach((el) => {
+      el.classList.remove('is-dragging', 'drop-before', 'drop-after');
+    });
+  }
+
+  function reorderTileEditorMedia(fromIndex, toIndex) {
+    const media = Array.isArray(tileEditorDraft?.media) ? tileEditorDraft.media : null;
+    if (!media || fromIndex === toIndex) return;
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= media.length || toIndex >= media.length) return;
+    const [moved] = media.splice(fromIndex, 1);
+    media.splice(toIndex, 0, moved);
+    activeMediaIndex = toIndex;
+    syncTileDraftFromFields();
+    renderTileEditor();
+    byId('crmo3047EditorNote').textContent = `Gallery ${editorContext.galleryIndex + 1} · tile ${editorContext.tileIndex + 1} media order updated.`;
   }
 
   function renderTileEditor() {
     const tile = tileEditorDraft;
     if (!tile) return;
+    refreshCrmo3047MetaSuggestionLists();
     byId('crmo3047Client').value = tile.meta.client || '';
     byId('crmo3047Brand').value = tile.meta.brand || '';
     byId('crmo3047Title').value = tile.overlay.title || '';
     byId('crmo3047Desc').value = tile.overlay.desc || '';
     byId('crmo3047Link').value = tile.overlay.link || '';
+    applyTileEditorCheckboxLogic();
     const stage = byId('crmo3047EditorStage');
     const strip = byId('crmo3047EditorStrip');
     const item = tile.media[activeMediaIndex] || null;
+    const resolvedText = getResolvedTileEditorText(tile, activeMediaIndex);
+    const perImageText = !!tile?.display?.perImageText;
     stage.innerHTML = '';
     if (item) stage.appendChild(mediaEl(item));
-    else stage.innerHTML = '<div class="crmo3045-fallback">No draft media yet</div>';
+    else stage.innerHTML = '<div class="crmo3045-fallback">עדיין לא נוספה מדיה</div>';
+    const miniTitle = byId('editorMiniTitle');
+    const miniDesc = byId('editorMiniDesc');
+    const miniLink = byId('editorMiniLink');
+    const miniCopyFields = byId('editorMiniCopyFields');
+    const activeLayerTitleInput = byId('activeLayerTitleInput');
+    const activeLayerDescInput = byId('activeLayerDescInput');
+    if (miniTitle) miniTitle.textContent = resolvedText.title || 'שם הפרויקט';
+    if (miniDesc) miniDesc.textContent = resolvedText.desc || 'תיאור קצר על הפרויקט';
+    if (miniLink) {
+      const href = String(resolvedText.link || '').trim();
+      miniLink.hidden = !href || !tile?.display?.showLinkInTile;
+      miniLink.textContent = href || 'www.crmo.co.il';
+      miniLink.href = href || '#';
+      miniLink.target = tile?.display?.openLinkInNewTab ? '_blank' : '_self';
+      miniLink.rel = 'noopener';
+    }
+    if (miniCopyFields) miniCopyFields.hidden = !perImageText;
+    if (activeLayerTitleInput) {
+      activeLayerTitleInput.disabled = true;
+      activeLayerTitleInput.value = '';
+      activeLayerTitleInput.placeholder = 'שם הפרויקט נשאר ברמת הפרויקט';
+    }
+    if (activeLayerDescInput) {
+      activeLayerDescInput.disabled = !perImageText;
+      activeLayerDescInput.value = perImageText && item ? String(item.desc || '') : '';
+      activeLayerDescInput.placeholder = perImageText ? (resolvedText.desc || 'תיאור לתמונה הפעילה') : 'תיאור לתמונה הפעילה';
+    }
     strip.innerHTML = '';
-    tile.media.forEach((media, idx) => {
+    const visibleMedia = Array.isArray(tile.media) ? tile.media.filter(Boolean) : [];
+    strip.hidden = visibleMedia.length <= 1;
+    visibleMedia.forEach((media, idx) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
+      btn.draggable = visibleMedia.length > 1;
+      btn.dataset.mediaIndex = String(idx);
       const thumb = mediaEl(media);
       if (thumb) btn.appendChild(thumb);
       btn.addEventListener('click', () => { activeMediaIndex = idx; renderTileEditor(); });
+      btn.addEventListener('dragstart', (e) => {
+        tileEditorDragIndex = idx;
+        clearTileEditorThumbDragState();
+        btn.classList.add('is-dragging');
+        try {
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', String(idx));
+        } catch (_) {}
+      });
+      btn.addEventListener('dragend', () => {
+        tileEditorDragIndex = -1;
+        clearTileEditorThumbDragState();
+      });
+      btn.addEventListener('dragover', (e) => {
+        if (tileEditorDragIndex < 0 || tileEditorDragIndex === idx) return;
+        e.preventDefault();
+        const rect = btn.getBoundingClientRect();
+        const placeAfter = (e.clientX - rect.left) > (rect.width / 2);
+        clearTileEditorThumbDragState();
+        btn.classList.add(placeAfter ? 'drop-after' : 'drop-before');
+      });
+      btn.addEventListener('dragleave', () => {
+        btn.classList.remove('drop-before', 'drop-after');
+      });
+      btn.addEventListener('drop', (e) => {
+        if (tileEditorDragIndex < 0 || tileEditorDragIndex === idx) return;
+        e.preventDefault();
+        const rect = btn.getBoundingClientRect();
+        const placeAfter = (e.clientX - rect.left) > (rect.width / 2);
+        let targetIndex = idx + (placeAfter ? 1 : 0);
+        if (tileEditorDragIndex < targetIndex) targetIndex -= 1;
+        targetIndex = Math.max(0, Math.min(targetIndex, visibleMedia.length - 1));
+        clearTileEditorThumbDragState();
+        reorderTileEditorMedia(tileEditorDragIndex, targetIndex);
+        tileEditorDragIndex = -1;
+      });
       strip.appendChild(btn);
     });
   }
@@ -5781,6 +6258,12 @@ window.CRMOForceOpenAuthModal = function(event){
     tileEditorDraft.overlay.title = byId('crmo3047Title').value.trim();
     tileEditorDraft.overlay.desc = byId('crmo3047Desc').value.trim();
     tileEditorDraft.overlay.link = byId('crmo3047Link').value.trim();
+    tileEditorDraft.display = tileEditorDraft.display || {};
+    tileEditorDraft.display.showLinkInTile = !!byId('crmo3047ShowLinkInTile')?.checked;
+    tileEditorDraft.display.openLinkInNewTab = !!byId('crmo3047OpenInNewTab')?.checked;
+    tileEditorDraft.display.multiItemMode = !!byId('crmo3047MultiItemMode')?.checked;
+    tileEditorDraft.display.perImageText = !!byId('crmo3047OwnTextPerImage')?.checked;
+    applyTileEditorCheckboxLogic();
   }
 
   function openTileEditor(galleryIndex, tileIndex, opts = {}) {
@@ -5794,17 +6277,19 @@ window.CRMOForceOpenAuthModal = function(event){
     const sourceTile = tiles[tileIndex] || makeTile(galleryIndex, tileIndex);
     editorContext = { galleryIndex, tileIndex, source };
     activeMediaIndex = 0;
+    tileEditorDragIndex = -1;
     tileEditorDraft = structuredClone(sourceTile);
     renderTileEditor();
     byId('crmo3047EditorNote').textContent = source === 'gallery-draft'
-      ? `Editing tile ${tileIndex + 1} inside gallery ${galleryIndex + 1} draft. Save tile updates only the gallery draft until Save gallery.`
-      : `Editing tile ${tileIndex + 1} inside gallery ${galleryIndex + 1}. Draft changes stay inside the popup until Save.`;
+      ? `עריכת פרויקט ${tileIndex + 1} בתוך גלריה ${galleryIndex + 1}. שמירה תעדכן רק את טיוטת הגלריה עד שמירת גלריה.`
+      : `עריכת פרויקט ${tileIndex + 1} בתוך גלריה ${galleryIndex + 1}. השינויים נשמרים בתוך החלון עד לשמירה.`;
     tileDialog.showModal();
   }
 
   function closeTileEditor() {
     try { if (tileDialog.open) tileDialog.close(); } catch (_) {}
     tileEditorDraft = null;
+    tileEditorDragIndex = -1;
     byId('crmo3047FileInput').value = '';
   }
 
@@ -5821,8 +6306,8 @@ window.CRMOForceOpenAuthModal = function(event){
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         type: file.type || 'image',
         src,
-        title: 'שם הפרויקט',
-        desc: 'תיאור קצר של הפרויקט',
+        title: '',
+        desc: '',
         fileName: file.name || '',
         storageBucket: '',
         storagePath: ''
@@ -5914,7 +6399,7 @@ window.CRMOForceOpenAuthModal = function(event){
       source: payload.source || 'cloud',
       savedBy: payload.savedBy || '',
       syncMode: payload.syncMode || 'cloud-primary-local-fallback',
-      galleries: payload.galleries.slice(0, GALLERY_COUNT).map(normalizeGallery)
+      galleries: ensureBrandsFirst(payload.galleries)
     };
   }
 
@@ -5948,7 +6433,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const { closeDrafts = false, draftCloseReason = 'Incoming state applied. Open editors were closed to avoid draft/committed mismatch.' } = opts || {};
     if (closeDrafts) closeDraftEditorsForIncomingState(draftCloseReason);
     const next = wrapper && Array.isArray(wrapper.galleries) ? wrapper : makePayload(emptyGalleries());
-    galleries = (next.galleries?.length ? next.galleries : emptyGalleries()).map(normalizeGallery);
+    galleries = ensureBrandsFirst(next.galleries?.length ? next.galleries : emptyGalleries());
     clampActivePointers();
     persistLocal(next);
     renderGalleryStack();
@@ -6030,7 +6515,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3093] gallery save failed', err);
+      console.error('[CRMO_v3132] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -6053,7 +6538,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3093] tile save failed', err);
+      console.error('[CRMO_v3132] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -6082,40 +6567,91 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryEditor();
     byId('crmo3047GalleryNote').textContent = `Added draft tile ${galleryEditorDraft.tiles.length}.`;
   });
-  byId('crmo3047GalleryDropzone').addEventListener('click', (e) => {
-    if (e.target.closest('button,article,a,input,textarea,select,label')) return;
-    byId('crmo3047GalleryFileInput').click();
+  let galleryFilePickerLock = false;
+  let galleryFilePickerActive = false;
+
+  function openGalleryFilePicker() {
+    const input = byId('crmo3047GalleryFileInput');
+    if (!input || galleryFilePickerLock) return;
+    galleryFilePickerLock = true;
+    galleryFilePickerActive = true;
+    input.value = '';
+    try { input.click(); }
+    catch (_) {
+      galleryFilePickerLock = false;
+      galleryFilePickerActive = false;
+    }
+    window.setTimeout(() => { galleryFilePickerLock = false; }, 300);
+  }
+  const galleryDropTargets = [byId('crmo3047GalleryDropzone'), byId('crmo3047GalleryDropzoneMini')].filter(Boolean);
+  galleryDropTargets.forEach((target) => {
+    target.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.id === 'crmo3047GalleryDropzone' && e.target.closest('button,article,a,input,textarea,select,label')) return;
+      openGalleryFilePicker();
+    });
+    target.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      e.stopPropagation();
+      openGalleryFilePicker();
+    });
+    ['dragenter','dragover'].forEach((evt) => target.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      target.classList.add('is-drag');
+    }));
+    ['dragleave','drop'].forEach((evt) => target.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (evt === 'drop') {
+        target.classList.remove('is-drag');
+      } else if (!target.contains(e.relatedTarget)) {
+        target.classList.remove('is-drag');
+      }
+    }));
+    target.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!galleryEditorDraft) return;
+      const files = Array.from(e.dataTransfer?.files || []);
+      if (!files.length) return;
+      try {
+        await handleGalleryDraftFiles(files, 'גרירה');
+      } catch (err) {
+        console.error('[CRMO_v3132] gallery drop import failed', err);
+        byId('crmo3047GalleryNote').textContent = `ייבוא בגרירה נכשל · ${err?.message || err}`;
+      }
+    });
   });
-  ['dragenter','dragover'].forEach((evt) => byId('crmo3047GalleryDropzone').addEventListener(evt, (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add('is-drag');
-  }));
-  ['dragleave','drop'].forEach((evt) => byId('crmo3047GalleryDropzone').addEventListener(evt, (e) => {
-    e.preventDefault();
-    if (evt === 'drop') {
-      e.currentTarget.classList.remove('is-drag');
-    } else if (!e.currentTarget.contains(e.relatedTarget)) {
-      e.currentTarget.classList.remove('is-drag');
-    }
-  }));
-  byId('crmo3047GalleryDropzone').addEventListener('drop', async (e) => {
-    if (!galleryEditorDraft) return;
-    const files = Array.from(e.dataTransfer?.files || []);
-    if (!files.length) return;
-    const result = await insertFilesIntoGalleryDraft(files);
-    if (result.placed) {
-      byId('crmo3047GalleryNote').textContent = `נוספו ${result.placed} אריחים מטיוטת גרירה · מולאו ${result.filled} מתוך 6 הראשונים, נוספו ${result.appended} מהאריח השביעי ומעלה.`;
-    }
+  byId('crmo3047GalleryFileInput').addEventListener('click', (e) => {
+    e.stopPropagation();
   });
   byId('crmo3047GalleryFileInput').addEventListener('change', async (e) => {
+    e.stopPropagation();
+    galleryFilePickerLock = false;
+    galleryFilePickerActive = false;
     if (!galleryEditorDraft) return;
     const files = Array.from(e.target.files || []);
-    const result = await insertFilesIntoGalleryDraft(files);
-    e.target.value = '';
-    if (result.placed) {
-      byId('crmo3047GalleryNote').textContent = `נוספו ${result.placed} אריחים מקבצים · מולאו ${result.filled} מתוך 6 הראשונים, נוספו ${result.appended} מהאריח השביעי ומעלה.`;
+    if (!files.length) {
+      e.target.value = '';
+      return;
     }
+    try {
+      await handleGalleryDraftFiles(files, 'בחירה');
+    } catch (err) {
+      console.error('[CRMO_v3132] gallery picker import failed', err);
+      byId('crmo3047GalleryNote').textContent = `ייבוא נכשל · ${err?.message || err}`;
+    }
+    e.target.value = '';
   });
+  window.addEventListener('focus', () => {
+    window.setTimeout(() => {
+      galleryFilePickerLock = false;
+      if (galleryFilePickerActive) galleryFilePickerActive = false;
+    }, 120);
+  }, true);
   byId('crmo3047ResetGallery').addEventListener('click', () => {
     galleryEditorDraft = ensureGalleryTileCapacity(makeGallery(galleryEditorIndex));
     renderGalleryEditor();
@@ -6135,14 +6671,40 @@ window.CRMOForceOpenAuthModal = function(event){
   byId('crmo3047Dropzone').addEventListener('click', () => byId('crmo3047FileInput').click());
   ['crmo3047Client','crmo3047Brand','crmo3047Title','crmo3047Desc','crmo3047Link'].forEach((id) => {
     byId(id).addEventListener('input', () => {
+      let forceAutoLink = false;
+      if (id === 'crmo3047Link' && tileEditorDraft) {
+        const prevLink = String(tileEditorDraft?.overlay?.link || '').trim();
+        const nextLink = String(byId('crmo3047Link').value || '').trim();
+        forceAutoLink = !!nextLink && !prevLink;
+      }
       syncTileDraftFromFields();
+      if (forceAutoLink) applyTileEditorCheckboxLogic({ forceAutoLink: true });
+      if (id === 'crmo3047Client' || id === 'crmo3047Brand') refreshCrmo3047MetaSuggestionLists();
       byId('crmo3047EditorNote').textContent = `Gallery ${editorContext.galleryIndex + 1} · tile ${editorContext.tileIndex + 1} draft updated. Save will commit only this tile.`;
     });
   });
+  ['crmo3047ShowLinkInTile','crmo3047OpenInNewTab','crmo3047MultiItemMode','crmo3047OwnTextPerImage'].forEach((id) => {
+    byId(id).addEventListener('change', () => {
+      syncTileDraftFromFields();
+      renderTileEditor();
+      byId('crmo3047EditorNote').textContent = `Gallery ${editorContext.galleryIndex + 1} · tile ${editorContext.tileIndex + 1} draft updated. Save will commit only this tile.`;
+    });
+  });
+  byId('activeLayerDescInput')?.addEventListener('input', () => {
+    if (!tileEditorDraft?.media?.[activeMediaIndex]) return;
+    tileEditorDraft.media[activeMediaIndex].desc = String(byId('activeLayerDescInput').value || '');
+    syncTileDraftFromFields();
+    renderTileEditor();
+    byId('crmo3047EditorNote').textContent = `Gallery ${editorContext.galleryIndex + 1} · tile ${editorContext.tileIndex + 1} active media description updated.`;
+  });
+
   byId('crmo3047FileInput').addEventListener('change', async (e) => {
     if (!tileEditorDraft) return;
+    const beforeCount = Array.isArray(tileEditorDraft.media) ? tileEditorDraft.media.length : 0;
     const incoming = await filesToMedia(e.target.files);
     tileEditorDraft.media.push(...incoming);
+    syncTileDraftFromFields();
+    if (beforeCount <= 1 && tileEditorDraft.media.length > 1) applyTileEditorCheckboxLogic({ forceAutoMulti: true });
     activeMediaIndex = Math.max(0, tileEditorDraft.media.length - incoming.length);
     renderTileEditor();
     byId('crmo3047EditorNote').textContent = `${incoming.length} media added to gallery ${editorContext.galleryIndex + 1} tile ${editorContext.tileIndex + 1}. Not committed until Save.`;
@@ -6151,8 +6713,11 @@ window.CRMOForceOpenAuthModal = function(event){
   byId('crmo3047Dropzone').addEventListener('drop', async (e) => {
     e.preventDefault();
     if (!tileEditorDraft) return;
+    const beforeCount = Array.isArray(tileEditorDraft.media) ? tileEditorDraft.media.length : 0;
     const incoming = await filesToMedia(e.dataTransfer.files);
     tileEditorDraft.media.push(...incoming);
+    syncTileDraftFromFields();
+    if (beforeCount <= 1 && tileEditorDraft.media.length > 1) applyTileEditorCheckboxLogic({ forceAutoMulti: true });
     activeMediaIndex = Math.max(0, tileEditorDraft.media.length - incoming.length);
     renderTileEditor();
     byId('crmo3047EditorNote').textContent = `${incoming.length} media added to gallery ${editorContext.galleryIndex + 1} tile ${editorContext.tileIndex + 1}. Not committed until Save.`;
@@ -6175,7 +6740,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3093] cloud load failed', err);
+      console.error('[CRMO_v3132] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -6184,7 +6749,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3093] local load failed', err);
+      console.error('[CRMO_v3132] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -6193,7 +6758,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3093] save now failed', err);
+      console.error('[CRMO_v3132] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
@@ -6205,6 +6770,7 @@ window.CRMOForceOpenAuthModal = function(event){
   }));
 
   window.addEventListener('keydown', (e) => {
+    if (galleryFilePickerActive && e.key === 'Escape') return;
     if (lb.open && e.key === 'ArrowLeft') { e.preventDefault(); shiftTile(-1); }
     if (lb.open && e.key === 'ArrowRight') { e.preventDefault(); shiftTile(1); }
     if (e.key === 'Escape') {
@@ -6249,7 +6815,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3093] post-auth cloud load failed', err);
+        console.error('[CRMO_v3132] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -6269,8 +6835,12 @@ window.CRMOForceOpenAuthModal = function(event){
 
   installAuthRefreshBridge();
   installLiveAuthWatcher();
-  window.addEventListener('focus', () => syncGalleryUiWithAuth({ preserveStatus: true }));
+  window.addEventListener('focus', () => {
+    if (galleryFilePickerActive) return;
+    syncGalleryUiWithAuth({ preserveStatus: true });
+  });
   document.addEventListener('visibilitychange', () => {
+    if (galleryFilePickerActive) return;
     if (document.visibilityState === 'visible') syncGalleryUiWithAuth({ preserveStatus: true });
   });
 
@@ -6284,7 +6854,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3093] initial cloud load failed', err);
+      console.error('[CRMO_v3132] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
