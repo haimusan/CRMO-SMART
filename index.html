@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- CRMO_v3190 -->
+<!-- CRMO_v3232 -->
 
 <html dir="rtl" lang="he">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3190</title>
+<title>CRMO_v3232</title>
 <style>
     :root {
       --bg: #ffffff;
@@ -1544,7 +1544,7 @@
 
 
 
-  /* CRMO_v3185 super gallery persistence fix */
+  /* CRMO_v3227 super gallery persistence fix */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1985,13 +1985,26 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 .crmo3047-about-text,.crmo3045-hover,.crmo3045-sub{font-weight:400 !important;}
 .crmo-auth-modal,.crmo-auth-modal *{font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif !important;}
 </style>
+
+<style id="crmo-v3232-gallery1-frame-fix">
+  .crmo3045-shell{background:transparent!important;border:0!important;box-shadow:none!important;outline:none!important}
+  .crmo3047-stack > .crmo3047-gallery:first-of-type{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    outline:none!important;
+    padding-top:0!important;
+    margin-top:0!important;
+  }
+</style>
+
 </head>
 <body>
 <div class="app">
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3185</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3232</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2031,7 +2044,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
             <input id="keyColumnInput" type="text" value="key"/>
 </label>
 <label>Row Key Value
-            <input id="rowKeyInput" type="text" value="crmo_v3013_tile_demo"/>
+            <input id="rowKeyInput" type="text" value="main"/>
 </label>
 <label>Payload Column
             <input id="payloadColumnInput" type="text" value="payload"/>
@@ -2046,6 +2059,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <button id="runConnTestBtn" type="button">בדיקת Supabase</button>
 <button id="runSmokeBtn" type="button">Smoke Test</button>
 <button id="copyDiagBtn" type="button">העתק דיאגנוסטיקה</button>
+<button id="rewriteCloudBtn" type="button">נקה כפילויות וכתוב מחדש לשרת</button>
 </div>
 <div class="advanced-grid">
 <div class="note" id="diagSummary">טרם הורצה בדיקה.</div>
@@ -2174,7 +2188,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3185</h2>
+<h2>עורך אריח — CRMO_v3227</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2269,7 +2283,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3196';
+      const VERSION = 'CRMO_v3227';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2415,6 +2429,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
         runConnTestBtn: $('runConnTestBtn'),
         runSmokeBtn: $('runSmokeBtn'),
         copyDiagBtn: $('copyDiagBtn'),
+        rewriteCloudBtn: $('rewriteCloudBtn'),
         diagSummary: $('diagSummary'),
         diagRuntime: $('diagRuntime'),
         diagLog: $('diagLog'),
@@ -2848,6 +2863,9 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
         els.runConnTestBtn?.addEventListener('click', runConnectionTest);
         els.runSmokeBtn?.addEventListener('click', runSmokeTests);
         els.copyDiagBtn?.addEventListener('click', copyDiagnostics);
+        els.rewriteCloudBtn?.addEventListener('click', () => {
+          try { window.dispatchEvent(new CustomEvent('crmo:rewrite-cloud-request')); } catch (_) {}
+        });
         document.querySelectorAll('[data-dashboard-tab]').forEach((tabBtn) => {
           tabBtn.addEventListener('click', () => setDashboardTab(tabBtn.dataset.dashboardTab || 'status'));
         });
@@ -5358,9 +5376,9 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3196';
-  const STORAGE_KEY = 'CRMO_v3196_MULTI_GALLERY_DEMO';
-  const LEGACY_STORAGE_KEYS = ['CRMO_v3163_MULTI_GALLERY_DEMO'];
+  const VERSION = 'CRMO_v3227';
+  const STORAGE_KEY = 'CRMO_v3227_MULTI_GALLERY_DEMO';
+  const LEGACY_STORAGE_KEYS = ['CRMO_v3223_MULTI_GALLERY_DEMO','CRMO_v3196_MULTI_GALLERY_DEMO','CRMO_v3163_MULTI_GALLERY_DEMO'];
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
@@ -5807,13 +5825,14 @@ window.CRMOForceOpenAuthModal = function(event){
     return isLoggedIn();
   }
   function ensureGalleryMeta(meta = {}) {
-    const title = String(meta.title || '');
-    const desc = String(meta.desc || '');
+    const title = String(meta.title || 'כותרת הגלריה');
+    const desc = String(meta.desc || 'הסבר הגלריה');
     const expandedCount = EXPANDED_TILE_OPTIONS.includes(Number(meta.expandedCount)) ? Number(meta.expandedCount) : 9;
     return {
       title,
       desc,
       label: String(meta.label || ''),
+      buttonLabel: String(meta.buttonLabel || ''),
       titleMobile: String(meta.titleMobile || title),
       titleDesktop: String(meta.titleDesktop || title),
       titleExpanded: String(meta.titleExpanded || title),
@@ -6142,8 +6161,8 @@ window.CRMOForceOpenAuthModal = function(event){
   const makeGallery = (galleryIndex) => ({
     galleryId: `gallery-${galleryIndex + 1}`,
     meta: ensureGalleryMeta({
-      title: `Gallery ${galleryIndex + 1}`,
-      desc: `Test gallery ${galleryIndex + 1} for gallery context + tile context`,
+      title: 'כותרת הגלריה',
+      desc: 'הסבר הגלריה',
       label: `gallery-${galleryIndex + 1}`,
       expandedEnabled: false,
       expandedCount: 9
@@ -6175,12 +6194,23 @@ window.CRMOForceOpenAuthModal = function(event){
   const SUPER_GALLERY_ID = 'super-gallery-1';
   const SUPER_SUB_COUNT = 8;
   const SUPER_SUB_PREFIX = `${SUPER_GALLERY_ID}-sub-`;
+  const SUPER_SUB_BUTTON_LABELS = Array.from({length: SUPER_SUB_COUNT}, (_, slotIndex) => `תת כפתור ${slotIndex + 1}`);
+  const SUPER_SUB_TITLES = Array.from({length: SUPER_SUB_COUNT}, (_, slotIndex) => `תת גלריה ${slotIndex + 1}`);
+
+  function getSuperSubButtonLabel(slotIndex) {
+    return String(SUPER_SUB_BUTTON_LABELS[slotIndex] || `תת כפתור ${slotIndex + 1}`);
+  }
+
+  function getSuperSubGalleryTitle(slotIndex) {
+    return String(SUPER_SUB_TITLES[slotIndex] || `תת גלריה ${slotIndex + 1}`);
+  }
   const makeSuperSubGallery = (slotIndex) => ({
     galleryId: `${SUPER_SUB_PREFIX}${slotIndex + 1}`,
     meta: ensureGalleryMeta({
-      title: `תת-גלריה ${slotIndex + 1}`,
+      title: getSuperSubGalleryTitle(slotIndex),
       desc: 'הסבר הגלריה',
       label: `super-gallery-${slotIndex + 1}`,
+      buttonLabel: getSuperSubButtonLabel(slotIndex),
       expandedEnabled: false,
       expandedCount: 9
     }),
@@ -6213,8 +6243,79 @@ window.CRMOForceOpenAuthModal = function(event){
     return [...regular, ...supers];
   }
 
+  function dedupeRegularGalleries(rawGalleries) {
+    const list = Array.isArray(rawGalleries) ? rawGalleries.slice() : [];
+    const seen = new Set();
+    return list.filter((gallery) => {
+      if (isSuperSubGallery(gallery)) return true;
+      if (String(gallery?.galleryId || '') === 'brands-gallery') return true;
+      const label = String(gallery?.meta?.label || '').trim().toLowerCase();
+      const title = String(gallery?.meta?.title || '').trim().toLowerCase();
+      const key = label || title;
+      if (!key) return true;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  const CANONICAL_REGULAR_GALLERY_LABELS = ['intro', 'stores', 'branding', 'product-design', 'exhibitions', 'packaging', 'small-business'];
+  const CANONICAL_GALLERY_COPY = {
+    intro: {
+      title: 'INTRO',
+      desc: 'גלריית פתיחה'
+    }
+  };
+
   function ensureAllGalleries(rawGalleries) {
-    return ensureSuperSubGalleries(ensureBrandsFirst(rawGalleries));
+    return applyCanonicalSectionOrder(ensureSuperSubGalleries(ensureBrandsFirst(dedupeRegularGalleries(rawGalleries))));
+  }
+
+  function isGenericGalleryTitle(value) {
+    const normalized = String(value || '').trim();
+    return !normalized || normalized === 'כותרת הגלריה';
+  }
+
+  function isGenericGalleryDesc(value) {
+    const normalized = String(value || '').trim();
+    return !normalized || normalized === 'הסבר הגלריה';
+  }
+
+  function applyCanonicalGalleryCopy(gallery, label) {
+    const copy = CANONICAL_GALLERY_COPY[String(label || '').trim().toLowerCase()];
+    if (!copy || !gallery?.meta) return gallery;
+    if (isGenericGalleryTitle(gallery.meta.title)) gallery.meta.title = copy.title;
+    if (isGenericGalleryTitle(gallery.meta.titleMobile)) gallery.meta.titleMobile = copy.title;
+    if (isGenericGalleryTitle(gallery.meta.titleDesktop)) gallery.meta.titleDesktop = copy.title;
+    if (isGenericGalleryTitle(gallery.meta.titleExpanded)) gallery.meta.titleExpanded = copy.title;
+    if (isGenericGalleryDesc(gallery.meta.desc)) gallery.meta.desc = copy.desc;
+    if (isGenericGalleryDesc(gallery.meta.descMobile)) gallery.meta.descMobile = copy.desc;
+    if (isGenericGalleryDesc(gallery.meta.descDesktop)) gallery.meta.descDesktop = copy.desc;
+    if (isGenericGalleryDesc(gallery.meta.descExpanded)) gallery.meta.descExpanded = copy.desc;
+    return gallery;
+  }
+
+  function applyCanonicalSectionOrder(rawGalleries) {
+    const list = Array.isArray(rawGalleries) ? rawGalleries.slice() : [];
+    const brandsGallery = list.find((gallery) => String(gallery?.galleryId || '') === 'brands-gallery') || makeBrandsGallery();
+    const superSubs = list.filter((gallery) => isSuperSubGallery(gallery));
+    const regular = list.filter((gallery) => !isSuperSubGallery(gallery) && String(gallery?.galleryId || '') !== 'brands-gallery');
+
+    const normalizedRegular = regular.map((gallery, index) => {
+      const next = normalizeGallery(gallery, index + 1);
+      const desiredLabel = CANONICAL_REGULAR_GALLERY_LABELS[index] || next.meta.label || `gallery-${index + 1}`;
+      const currentLabel = String(next.meta.label || '').trim().toLowerCase();
+      if (!currentLabel || currentLabel.startsWith('gallery-') || currentLabel === 'brands') {
+        next.meta.label = desiredLabel;
+      }
+      if (String(next.galleryId || '').startsWith('gallery-')) {
+        next.galleryId = desiredLabel;
+      }
+      applyCanonicalGalleryCopy(next, desiredLabel);
+      return next;
+    });
+
+    return [normalizeGallery(brandsGallery, 0), ...normalizedRegular, ...superSubs.map((gallery, index) => normalizeGallery(gallery, normalizedRegular.length + 1 + index))];
   }
 
   function ensureBrandsFirst(rawGalleries) {
@@ -6257,9 +6358,10 @@ window.CRMOForceOpenAuthModal = function(event){
 
   const normalizeGallery = (gallery, galleryIndex) => {
     const meta = ensureGalleryMeta({
-      title: String(gallery?.meta?.title || `Gallery ${galleryIndex + 1}`),
-      desc: String(gallery?.meta?.desc || ''),
+      title: String(gallery?.meta?.title || 'כותרת הגלריה'),
+      desc: String(gallery?.meta?.desc || 'הסבר הגלריה'),
       label: String(gallery?.meta?.label || `gallery-${galleryIndex + 1}`),
+      buttonLabel: gallery?.meta?.buttonLabel,
       titleMobile: gallery?.meta?.titleMobile,
       titleDesktop: gallery?.meta?.titleDesktop,
       titleExpanded: gallery?.meta?.titleExpanded,
@@ -6710,7 +6812,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving contact section to cloud + local' : 'saving contact section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן צור קשר נשמר לענן.' : 'סקשן צור קשר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3190] contact save failed', err);
+      console.error('[CRMO_v3227] contact save failed', err);
       setStatus(`Cloud: contact section saved locally only · ${err.message || err}`);
     }
     closeContactEditor();
@@ -6762,7 +6864,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving footer section to cloud + local' : 'saving footer section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'הפוטר נשמר לענן.' : 'הפוטר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3196] footer save failed', err);
+      console.error('[CRMO_v3227] footer save failed', err);
       setStatus(`Cloud: footer section saved locally only · ${err.message || err}`);
     }
     closeFooterEditor();
@@ -6823,7 +6925,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving accessibility section to cloud + local' : 'saving accessibility section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'הצהרת הנגישות נשמרה לענן.' : 'הצהרת הנגישות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3196] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3227] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
     closeAccessibilityEditor();
   }
 
@@ -6858,7 +6960,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving privacy section to cloud + local' : 'saving privacy section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'מדיניות הפרטיות נשמרה לענן.' : 'מדיניות הפרטיות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3196] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3227] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
     closePrivacyEditor();
   }
 
@@ -6954,7 +7056,7 @@ window.CRMOForceOpenAuthModal = function(event){
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-title">${escape(activeGallery.meta.title || 'שם הגלריה')}</div>
+          <div class="crmo3047-gallery-title">${escape(activeGallery.meta.title || 'כותרת הגלריה')}</div>
           <div class="crmo3047-gallery-desc">${escape(activeGallery.meta.desc || 'הסבר הגלריה')}</div>
         </div>
       </div>
@@ -6973,10 +7075,14 @@ window.CRMOForceOpenAuthModal = function(event){
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `crmo3047-super-btn${gallery.galleryId === activeSuperGalleryId ? ' is-active' : ''}`;
-      btn.textContent = String(gallery.meta.title || `תת-גלריה ${slotIndex + 1}`);
-      btn.addEventListener('click', () => {
+      btn.textContent = getSuperSubButtonLabel(slotIndex);
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const scrollY = window.scrollY || window.pageYOffset || 0;
         activeSuperGalleryId = gallery.galleryId;
         renderGalleryStack();
+        requestAnimationFrame(() => window.scrollTo(0, scrollY));
       });
       nav.appendChild(btn);
     });
@@ -6990,56 +7096,67 @@ window.CRMOForceOpenAuthModal = function(event){
     galleryStack.appendChild(section);
   }
 
+  function renderRegularGallerySection(gallery, galleryIndex, editEnabled) {
+    const section = document.createElement('section');
+    const isBrandsGallery = gallery.galleryId === 'brands-gallery';
+    const sectionLabel = String(isBrandsGallery ? 'our-brands' : gallery?.meta?.label || gallery?.galleryId || '').trim().toLowerCase();
+    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
+    section.dataset.galleryIndex = String(galleryIndex);
+    if (sectionLabel) section.id = sectionLabel;
+    section.innerHTML = `
+      <div class="crmo3047-gallery-head">
+        <div class="crmo3047-gallery-copy">
+          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'brands-gallery' : gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
+          <div class="crmo3047-gallery-title">${escape(gallery.meta.title || 'כותרת הגלריה')}</div>
+          <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'הסבר הגלריה')}</div>
+        </div>
+        <div class="crmo3047-gallery-tools">
+          ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
+        </div>
+      </div>
+      <div class="crmo3045-grid" data-gallery-grid></div>
+    `;
+    const grid = section.querySelector('[data-gallery-grid]');
+    gallery.tiles.slice(0, STACK_TILE_LIMIT).forEach((tile, tileIndex) => {
+      grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
+    });
+
+    const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
+    galleryEditorBtn?.addEventListener('click', () => openGalleryEditor(galleryIndex));
+    galleryStack.appendChild(section);
+  }
+
   function renderGalleryStack() {
     galleryStack.innerHTML = '';
     const editEnabled = canEdit();
-    renderAboutSection(editEnabled);
-    renderContactSection(editEnabled);
-    renderSuperGallerySection(editEnabled);
+    const brandsGalleryIndex = galleries.findIndex((gallery) => String(gallery?.galleryId || '') === 'brands-gallery');
+    const brandsGallery = brandsGalleryIndex >= 0 ? galleries[brandsGalleryIndex] : null;
+    const regularGalleryOrder = ['intro', 'stores', 'branding', 'product-design', 'exhibitions', 'packaging', 'small-business'];
+
+    const regularGalleriesByLabel = new Map();
     galleries.forEach((gallery, galleryIndex) => {
       if (isSuperSubGallery(gallery)) return;
-      const section = document.createElement('section');
-      const isBrandsGallery = gallery.galleryId === 'brands-gallery';
-      section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
-      section.dataset.galleryIndex = String(galleryIndex);
-      section.innerHTML = `
-        <div class="crmo3047-gallery-head">
-          <div class="crmo3047-gallery-copy">
-            <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'brands-gallery' : gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
-            <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
-            <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
-          </div>
-          <div class="crmo3047-gallery-tools">
-            ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
-          </div>
-        </div>
-        <div class="crmo3045-grid" data-gallery-grid></div>
-      `;
-      const grid = section.querySelector('[data-gallery-grid]');
-      gallery.tiles.slice(0, STACK_TILE_LIMIT).forEach((tile, tileIndex) => {
-        grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
-      });
-
-      const toggleBtn = section.querySelector('[data-gallery-toggle]');
-      toggleBtn?.addEventListener('click', async () => {
-        if (!canEdit()) {
-          setStatus('Viewer mode only. Login to enable gallery editing.');
-          try { window.CRMOAuthModal?.open('login'); } catch (_) {}
-          return;
-        }
-        galleries[galleryIndex].ui.editMode = !galleries[galleryIndex].ui.editMode;
-        renderGalleryStack();
-        persistLocal(makePayload(galleries));
-        try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3185] gallery mode save failed', err);
-          setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
-        }
-      });
-
-      const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
-      galleryEditorBtn?.addEventListener('click', () => openGalleryEditor(galleryIndex));
-      galleryStack.appendChild(section);
+      if (String(gallery?.galleryId || '') === 'brands-gallery') return;
+      const label = String(gallery?.meta?.label || '').trim().toLowerCase();
+      if (label && !regularGalleriesByLabel.has(label)) {
+        regularGalleriesByLabel.set(label, { gallery, galleryIndex });
+      }
     });
+
+    const introEntry = regularGalleriesByLabel.get('intro');
+    if (introEntry) renderRegularGallerySection(introEntry.gallery, introEntry.galleryIndex, editEnabled);
+    if (brandsGallery) renderRegularGallerySection(brandsGallery, brandsGalleryIndex, editEnabled);
+    const storesEntry = regularGalleriesByLabel.get('stores');
+    if (storesEntry) renderRegularGallerySection(storesEntry.gallery, storesEntry.galleryIndex, editEnabled);
+    renderSuperGallerySection(editEnabled);
+
+    regularGalleryOrder.filter((label) => !['intro', 'stores'].includes(label)).forEach((label) => {
+      const entry = regularGalleriesByLabel.get(label);
+      if (entry) renderRegularGallerySection(entry.gallery, entry.galleryIndex, editEnabled);
+    });
+
+    renderAboutSection(editEnabled);
+    renderContactSection(editEnabled);
     renderFooterSection(editEnabled);
     renderLegalSection(editEnabled);
   }
@@ -7387,7 +7504,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving about section to cloud + local' : 'saving about section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן על הסטודיו נשמר לענן.' : 'סקשן על הסטודיו נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3185] about save failed', err);
+      console.error('[CRMO_v3227] about save failed', err);
       setStatus(`Cloud: about section saved locally only · ${err.message || err}`);
     }
     closeAboutEditor();
@@ -8032,7 +8149,7 @@ window.CRMOForceOpenAuthModal = function(event){
     if (isSuperSubGallery(gallery)) {
       return buildAssetTreePath('galleries', ['children', SUPER_GALLERY_ID, galleryId, 'items'], fileBase);
     }
-    return buildAssetTreePath('galleries', ['standalone', galleryId, 'items'], fileBase);
+    return buildAssetTreePath('galleries', [galleryId, `tile-${String(tileIndex + 1).padStart(2, '0')}`, `layer-${String(mediaIndex + 1).padStart(2, '0')}`], fileBase);
   }
 
   function getAboutLogoAssetPath(fileName) {
@@ -8122,7 +8239,7 @@ window.CRMOForceOpenAuthModal = function(event){
       syncMode: payload.syncMode || 'cloud-primary-local-fallback',
       aboutSection: ensureAboutSection(payload.aboutSection || {}),
       contactSection: ensureContactSection(payload.contactSection || {}),
-      galleries: ensureBrandsFirst(payload.galleries)
+      galleries: ensureAllGalleries(payload.galleries)
     };
   }
 
@@ -8177,6 +8294,128 @@ window.CRMOForceOpenAuthModal = function(event){
   function getPreferredWrapper(localPayload, cloudPayload) {
     if (isLoggedIn()) return cloudPayload || localPayload || makePayload(emptyGalleries());
     return localPayload || cloudPayload || makePayload(emptyGalleries());
+  }
+
+  function galleryContentScore(gallery) {
+    const normalized = normalizeGallery(gallery || {}, 0);
+    const meta = normalized.meta || {};
+    const tiles = Array.isArray(normalized.tiles) ? normalized.tiles : [];
+    const title = String(meta.title || '').trim();
+    const desc = String(meta.desc || '').trim();
+    const label = String(meta.label || '').trim();
+    const defaults = new Set(['כותרת הגלריה','הסבר הגלריה']);
+    let score = 0;
+    if (title && !defaults.has(title)) score += 4;
+    if (desc && !defaults.has(desc)) score += 4;
+    if (label && !/^gallery-\d+$/i.test(label) && !/^super-gallery-\d+$/i.test(label)) score += 2;
+    tiles.forEach((tile) => {
+      const media = Array.isArray(tile?.media) ? tile.media : [];
+      score += media.filter((m) => String(m?.src || '').trim()).length * 10;
+      const overlayTitle = String(tile?.overlay?.title || '').trim();
+      const overlayDesc = String(tile?.overlay?.desc || '').trim();
+      if (overlayTitle && overlayTitle !== 'שם הפרויקט') score += 1;
+      if (overlayDesc && overlayDesc !== 'תיאור קצר של הפרויקט') score += 1;
+    });
+    return score;
+  }
+
+  function choosePreferredGallery(existing, incoming) {
+    if (!existing) return incoming;
+    const existingScore = galleryContentScore(existing);
+    const incomingScore = galleryContentScore(incoming);
+    return incomingScore >= existingScore ? incoming : existing;
+  }
+
+  function regularGalleryRewriteKey(gallery) {
+    const normalized = normalizeGallery(gallery || {}, 0);
+    const label = String(normalized?.meta?.label || '').trim().toLowerCase();
+    const title = String(normalized?.meta?.title || '').trim().toLowerCase();
+    const galleryId = String(normalized?.galleryId || '').trim().toLowerCase();
+    if (label) return `label:${label}`;
+    if (title) return `title:${title}`;
+    return `id:${galleryId}`;
+  }
+
+  function sanitizeGalleriesForRewrite(rawGalleries) {
+    const list = Array.isArray(rawGalleries) ? rawGalleries.slice() : [];
+    const brandsCandidates = [];
+    const superMap = new Map();
+    const regularMap = new Map();
+    list.forEach((gallery) => {
+      if (!gallery) return;
+      if (isSuperSubGallery(gallery)) {
+        const gid = String(gallery.galleryId || '');
+        superMap.set(gid, choosePreferredGallery(superMap.get(gid), gallery));
+        return;
+      }
+      const normalized = normalizeGallery(gallery, 0);
+      const label = String(normalized?.meta?.label || '').trim().toLowerCase();
+      const title = String(normalized?.meta?.title || '').trim().toLowerCase();
+      const gid = String(normalized?.galleryId || '').trim().toLowerCase();
+      const isBrands = gid === 'brands-gallery' || label === 'brands' || title === 'מותגים';
+      if (isBrands) {
+        brandsCandidates.push(gallery);
+        return;
+      }
+      const key = regularGalleryRewriteKey(normalized);
+      regularMap.set(key, choosePreferredGallery(regularMap.get(key), gallery));
+    });
+    const brands = brandsCandidates.reduce((best, candidate) => choosePreferredGallery(best, candidate), null) || makeBrandsGallery();
+    const regular = Array.from(regularMap.values());
+    const supers = Array.from({length: SUPER_SUB_COUNT}, (_, slotIndex) => {
+      const gid = `${SUPER_SUB_PREFIX}${slotIndex + 1}`;
+      return superMap.get(gid) || makeSuperSubGallery(slotIndex);
+    });
+    return ensureAllGalleries([brands, ...regular, ...supers]);
+  }
+
+  function sanitizePayloadForRewrite(payload) {
+    const wrapper = payload && typeof payload === 'object' ? payload : makePayload(galleries);
+    return {
+      schema: wrapper.schema || CLOUD_SCHEMA,
+      version: VERSION,
+      updatedAt: new Date().toISOString(),
+      source: isLoggedIn() ? 'cloud' : (wrapper.source || 'local'),
+      savedBy: getSession()?.user?.email || wrapper.savedBy || 'anonymous',
+      syncMode: wrapper.syncMode || 'cloud-primary-local-fallback',
+      aboutSection: ensureAboutSection(wrapper.aboutSection || aboutSection),
+      contactSection: ensureContactSection(wrapper.contactSection || contactSection),
+      footerSection: ensureFooterSection(wrapper.footerSection || footerSection),
+      accessibilitySection: ensureAccessibilitySection(wrapper.accessibilitySection || accessibilitySection),
+      privacySection: ensurePrivacySection(wrapper.privacySection || privacySection),
+      galleries: sanitizeGalleriesForRewrite(wrapper.galleries || [])
+    };
+  }
+
+  async function rewriteCloudPayloadClean() {
+    if (!isLoggedIn()) {
+      setStatus('יש להתחבר לפני ניקוי וכתיבה מחדש לשרת.');
+      return false;
+    }
+    const cloud = await readCloudPayload();
+    const local = loadLocalWrapper();
+    const sourceWrapper = cloud || local || makePayload(galleries);
+    const cleaned = sanitizePayloadForRewrite(sourceWrapper);
+    const beforeCount = Array.isArray(sourceWrapper?.galleries) ? sourceWrapper.galleries.length : 0;
+    const afterCount = Array.isArray(cleaned?.galleries) ? cleaned.galleries.length : 0;
+    const removedCount = Math.max(0, beforeCount - afterCount);
+    const ok = window.confirm(`לנקות כפילויות מהשרת ולכתוב מחדש?\n\nלפני: ${beforeCount} גלריות\nאחרי ניקוי: ${afterCount} גלריות\nיוסרו: ${removedCount}`);
+    if (!ok) {
+      setStatus('ניקוי השרת בוטל.');
+      return false;
+    }
+    galleries = cleaned.galleries;
+    aboutSection = cleaned.aboutSection;
+    contactSection = cleaned.contactSection;
+    footerSection = cleaned.footerSection;
+    accessibilitySection = cleaned.accessibilitySection;
+    privacySection = cleaned.privacySection;
+    applyWrapper(cleaned, 'cloud rewrite prepared', { closeDrafts: true, draftCloseReason: 'Cloud rewrite applied. Open editors were closed.' });
+    persistLocal(cleaned);
+    await saveGalleriesToCloud();
+    await loadFromCloudAndApply();
+    setStatus(`בוצע ניקוי וכתיבה מחדש לשרת · הוסרו ${removedCount} כפילויות.`);
+    return true;
   }
 
   async function saveGalleriesToCloud() {
@@ -8254,7 +8493,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3185] gallery save failed', err);
+      console.error('[CRMO_v3227] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8299,7 +8538,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3185] tile save failed', err);
+      console.error('[CRMO_v3227] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8450,7 +8689,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         byId('crmo3047AboutNote').textContent = '';
       } catch (err) {
-        console.error('[CRMO_v3185] about media load failed', err);
+        console.error('[CRMO_v3227] about media load failed', err);
         byId('crmo3047AboutNote').textContent = 'טעינת המדיה נכשלה.';
       }
       event.target.value = '';
@@ -8545,7 +8784,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await handleGalleryDraftFiles(files, 'גרירה');
       } catch (err) {
-        console.error('[CRMO_v3185] gallery drop import failed', err);
+        console.error('[CRMO_v3227] gallery drop import failed', err);
         byId('crmo3047GalleryNote').textContent = `ייבוא בגרירה נכשל · ${err?.message || err}`;
       }
     });
@@ -8566,7 +8805,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await handleGalleryDraftFiles(files, 'בחירה');
     } catch (err) {
-      console.error('[CRMO_v3185] gallery picker import failed', err);
+      console.error('[CRMO_v3227] gallery picker import failed', err);
       byId('crmo3047GalleryNote').textContent = `ייבוא נכשל · ${err?.message || err}`;
     }
     e.target.value = '';
@@ -8708,7 +8947,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3185] cloud load failed', err);
+      console.error('[CRMO_v3227] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -8717,7 +8956,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3185] local load failed', err);
+      console.error('[CRMO_v3227] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -8726,8 +8965,17 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3185] save now failed', err);
+      console.error('[CRMO_v3227] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
+    }
+  });
+
+  window.addEventListener('crmo:rewrite-cloud-request', async () => {
+    try {
+      await runWithSyncLock('cleaning duplicate galleries and rewriting cloud payload', async () => rewriteCloudPayloadClean());
+    } catch (err) {
+      console.error('[CRMO_v3227] cloud rewrite failed', err);
+      setStatus(`ניקוי וכתיבה מחדש לשרת נכשלו · ${err.message || err}`);
     }
   });
 
@@ -8784,7 +9032,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3185] post-auth cloud load failed', err);
+        console.error('[CRMO_v3232] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -8848,7 +9096,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3185] initial cloud load failed', err);
+      console.error('[CRMO_v3227] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
