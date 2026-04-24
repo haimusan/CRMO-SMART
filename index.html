@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- CRMO_v3243 -->
+<!-- CRMO_v3244 -->
 
 <html dir="rtl" lang="he">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3243</title>
+<title>CRMO_v3244</title>
 <style>
     :root {
       --bg: #ffffff;
@@ -1544,7 +1544,7 @@
 
 
 
-  /* CRMO_v3243 super gallery persistence fix */
+  /* CRMO_v3244 super gallery persistence fix */
   #editorDialog{max-width:min(980px,calc(100vw - 28px));width:min(980px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:hidden}
   .tile-editor-shell{width:min(940px,calc(100vw - 28px));max-width:940px;padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 28px);overflow:hidden;background:#f3f3f3}
   .tile-editor-head{padding:16px 18px;background:#f3f3f3;border-bottom:1px solid rgba(0,0,0,.12);position:sticky;top:0;z-index:6}
@@ -1991,7 +1991,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3243</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3244</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2174,7 +2174,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3243</h2>
+<h2>עורך אריח — CRMO_v3244</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2269,7 +2269,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3243';
+      const VERSION = 'CRMO_v3244';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -4594,8 +4594,52 @@ function updateAuthUI(isLoggedIn) {
         }
       }
 
+
+      function makeStorageSafe(value, key = '') {
+        if (Array.isArray(value)) return value.map((item) => makeStorageSafe(item));
+        if (!value || typeof value !== 'object') {
+          if (typeof value === 'string') {
+            const lower = value.toLowerCase();
+            if ((key === 'src' || key === 'localObjectUrl' || key === 'dataUrl' || key === 'pendingFileToken') &&
+                (lower.startsWith('data:') || lower.startsWith('blob:'))) {
+              return '';
+            }
+          }
+          return value;
+        }
+        const out = {};
+        Object.entries(value).forEach(([k, v]) => {
+          if ((k === 'file' || k === 'localFile') && v) return;
+          if (k === 'pendingUpload') {
+            out[k] = false;
+            return;
+          }
+          if (typeof v === 'string') {
+            const lower = v.toLowerCase();
+            if ((k === 'src' || k === 'localObjectUrl' || k === 'dataUrl' || k === 'pendingFileToken') &&
+                (lower.startsWith('data:') || lower.startsWith('blob:'))) {
+              out[k] = '';
+              return;
+            }
+          }
+          out[k] = makeStorageSafe(v, k);
+        });
+        return out;
+      }
+
+      function writeSafeLocalStorage(key, payload) {
+        try {
+          localStorage.setItem(key, JSON.stringify(makeStorageSafe(payload)));
+          return true;
+        } catch (error) {
+          console.warn('CRMO localStorage skipped:', key, error);
+          try { localStorage.removeItem(key); } catch (_) {}
+          return false;
+        }
+      }
+
       function saveLocalTile(payload) {
-        localStorage.setItem(LOCAL_TILE_KEY, JSON.stringify(normalizeState(payload)));
+        writeSafeLocalStorage(LOCAL_TILE_KEY, normalizeState(payload));
       }
 
       function loadLocalTile() {
@@ -5358,8 +5402,8 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3243';
-  const STORAGE_KEY = 'CRMO_v3243_MULTI_GALLERY_DEMO';
+  const VERSION = 'CRMO_v3244';
+  const STORAGE_KEY = 'CRMO_v3244_MULTI_GALLERY_DEMO';
   const LEGACY_STORAGE_KEYS = ['CRMO_v3163_MULTI_GALLERY_DEMO'];
   const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
   const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
@@ -6351,7 +6395,7 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function persistLocal(payload = makePayload(galleries)) {
     localWrapper = payload;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    writeSafeLocalStorage(STORAGE_KEY, payload);
   }
 
   function isIndexRuntime() {
@@ -6710,7 +6754,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving contact section to cloud + local' : 'saving contact section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן צור קשר נשמר לענן.' : 'סקשן צור קשר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3243] contact save failed', err);
+      console.error('[CRMO_v3244] contact save failed', err);
       setStatus(`Cloud: contact section saved locally only · ${err.message || err}`);
     }
     closeContactEditor();
@@ -6762,7 +6806,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving footer section to cloud + local' : 'saving footer section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'הפוטר נשמר לענן.' : 'הפוטר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3243] footer save failed', err);
+      console.error('[CRMO_v3244] footer save failed', err);
       setStatus(`Cloud: footer section saved locally only · ${err.message || err}`);
     }
     closeFooterEditor();
@@ -6823,7 +6867,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving accessibility section to cloud + local' : 'saving accessibility section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'הצהרת הנגישות נשמרה לענן.' : 'הצהרת הנגישות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3243] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3244] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
     closeAccessibilityEditor();
   }
 
@@ -6858,7 +6902,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving privacy section to cloud + local' : 'saving privacy section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'מדיניות הפרטיות נשמרה לענן.' : 'מדיניות הפרטיות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3243] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3244] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
     closePrivacyEditor();
   }
 
@@ -7031,7 +7075,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         persistLocal(makePayload(galleries));
         try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
-          console.error('[CRMO_v3243] gallery mode save failed', err);
+          console.error('[CRMO_v3244] gallery mode save failed', err);
           setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
         }
       });
@@ -7387,7 +7431,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving about section to cloud + local' : 'saving about section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן על הסטודיו נשמר לענן.' : 'סקשן על הסטודיו נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3243] about save failed', err);
+      console.error('[CRMO_v3244] about save failed', err);
       setStatus(`Cloud: about section saved locally only · ${err.message || err}`);
     }
     closeAboutEditor();
@@ -8254,7 +8298,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3243] gallery save failed', err);
+      console.error('[CRMO_v3244] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8299,7 +8343,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3243] tile save failed', err);
+      console.error('[CRMO_v3244] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8450,7 +8494,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         byId('crmo3047AboutNote').textContent = '';
       } catch (err) {
-        console.error('[CRMO_v3243] about media load failed', err);
+        console.error('[CRMO_v3244] about media load failed', err);
         byId('crmo3047AboutNote').textContent = 'טעינת המדיה נכשלה.';
       }
       event.target.value = '';
@@ -8545,7 +8589,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await handleGalleryDraftFiles(files, 'גרירה');
       } catch (err) {
-        console.error('[CRMO_v3243] gallery drop import failed', err);
+        console.error('[CRMO_v3244] gallery drop import failed', err);
         byId('crmo3047GalleryNote').textContent = `ייבוא בגרירה נכשל · ${err?.message || err}`;
       }
     });
@@ -8566,7 +8610,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await handleGalleryDraftFiles(files, 'בחירה');
     } catch (err) {
-      console.error('[CRMO_v3243] gallery picker import failed', err);
+      console.error('[CRMO_v3244] gallery picker import failed', err);
       byId('crmo3047GalleryNote').textContent = `ייבוא נכשל · ${err?.message || err}`;
     }
     e.target.value = '';
@@ -8708,7 +8752,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3243] cloud load failed', err);
+      console.error('[CRMO_v3244] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -8717,7 +8761,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3243] local load failed', err);
+      console.error('[CRMO_v3244] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -8726,7 +8770,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3243] save now failed', err);
+      console.error('[CRMO_v3244] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
@@ -8784,7 +8828,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3243] post-auth cloud load failed', err);
+        console.error('[CRMO_v3244] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -8848,7 +8892,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3243] initial cloud load failed', err);
+      console.error('[CRMO_v3244] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
