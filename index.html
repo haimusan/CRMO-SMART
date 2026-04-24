@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- CRMO_v3240 -->
+<!-- CRMO_v3190 -->
 
 <html dir="rtl" lang="he">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CRMO_v3240</title>
+<title>CRMO_v3190</title>
 <style>
     :root {
       --bg: #ffffff;
@@ -338,7 +338,7 @@
     .tile-edit-btn {
       position: absolute;
       top: 12px;
-      right: 12px;
+      left: 12px;
       z-index: 9999;
       pointer-events: auto;
       touch-action: manipulation;
@@ -843,7 +843,7 @@
         grid-template-columns: 1fr;
       }
       .layer-top { grid-template-columns: 1fr; }
-      .tile-edit-btn { top: 10px; right: 10px; }
+      .tile-edit-btn { top: 10px; left: 10px; }
     }
 
     /* CRMO_v3015 tile/editor surgical rebuild: tile + editor only */
@@ -877,7 +877,7 @@
 
     .tile-edit-btn {
       top: 10px;
-      right: 10px;
+      left: 10px;
       width: 38px;
       height: 38px;
       border-radius: 0;
@@ -1964,9 +1964,6 @@ header{position:sticky;top:var(--crmo-sticky-top, 0px);z-index:9999;background:#
 body.role-admin header{top: calc(var(--crmo-sticky-top, 0px) + var(--crmo-admin-tabs-h, 44px) + var(--crmo-admin-panels-h, 0px));}
 body.role-admin main, body.role-master main{padding-top: calc(var(--crmo-admin-tabs-h, 44px) + var(--crmo-admin-panels-h, 0px));}
 body.role-admin section, body.role-master section{scroll-margin-top: calc(88px + var(--crmo-admin-tabs-h, 44px) + var(--crmo-admin-panels-h, 0px));}
-#our-brands, #pos, #branding, #product-design, #stores, #exhibitions{scroll-margin-top: 96px;}
-body.role-admin #our-brands, body.role-admin #pos, body.role-admin #branding, body.role-admin #product-design,
-body.role-master #our-brands, body.role-master #pos, body.role-master #branding, body.role-master #product-design, body.role-master #stores, body.role-master #exhibitions{scroll-margin-top: calc(96px + var(--crmo-admin-tabs-h, 44px) + var(--crmo-admin-panels-h, 0px));}
 .wrap{width:min(85vw, 1440px);margin-inline:auto}
 header > .wrap{width:min(85vw, var(--layout-max));margin-inline:auto}
 .nav{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1.6vw,18px);flex-wrap:wrap;min-height:64px;padding-block:6px;position:relative;padding-left:52px}
@@ -1994,7 +1991,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <section aria-label="דאשבורד ניהול" class="admin-dashboard" id="adminDashboard">
 <div class="dashboard-top">
 <div class="dashboard-pill">ADMIN DASHBOARD</div>
-<div class="dashboard-pill" id="adminVersionPill">CRMO_v3240</div>
+<div class="dashboard-pill" id="adminVersionPill">CRMO_v3185</div>
 <div class="dashboard-pill" id="adminTileId">tile: crmo-tile-001</div>
 <div class="dashboard-pill" id="adminSyncState">sync: local</div>
 <div class="dashboard-pill" id="serverVerifyPill">server: local draft</div>
@@ -2034,7 +2031,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
             <input id="keyColumnInput" type="text" value="key"/>
 </label>
 <label>Row Key Value
-            <input id="rowKeyInput" type="text" value="main"/>
+            <input id="rowKeyInput" type="text" value="crmo_v3013_tile_demo"/>
 </label>
 <label>Payload Column
             <input id="payloadColumnInput" type="text" value="payload"/>
@@ -2065,11 +2062,11 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Zm0 2.2c-4.4 0-8 2.2-8 4.9V21h16v-1.9c0-2.7-3.6-4.9-8-4.9Z"/></svg>
 </a>
 <a href="#stores">חנויות וחללי מסחר</a>
-<a href="#pos">נקודות מכירה</a>
-<a href="#branding">מיתוג עסקי</a>
-<a href="#product-design">עיצוב מוצר</a>
+<a href="#stands">נקודות מכירה</a>
+<a href="#identity">מיתוג עסקי</a>
+<a href="#product">עיצוב מוצר</a>
 <a href="#exhibitions">תערוכות</a>
-<a href="#our-brands">המותגים שלנו</a>
+<a href="#brands">המותגים שלנו</a>
 <a href="#about">על הסטודיו</a>
 <a href="#contact">צור קשר</a>
 <a aria-controls="crmo-auth-modal" aria-expanded="false" href="#" id="login-trigger" title="כניסת לקוחות">כניסת לקוחות</a>
@@ -2145,7 +2142,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
   </section>
 </section>
 </main>
-<footer id="footerVersionLabel" hidden>CRMO_v3240 · tile component rebuild test area</footer>
+<footer id="footerVersionLabel" hidden>CRMO_v3193 · tile component rebuild test area</footer>
 </div>
 <dialog aria-label="Lightbox" id="lightboxDialog">
 <div class="lightbox-safe-area" id="lightboxSafeArea">
@@ -2177,7 +2174,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 <dialog aria-label="עורך אריח" id="editorDialog">
 <div class="modal-shell tile-editor-shell">
 <div class="modal-head tile-editor-head">
-<h2>עורך אריח — CRMO_v3240</h2>
+<h2>עורך אריח — CRMO_v3185</h2>
 <button aria-label="סגור" class="x-btn" id="closeEditorBtn" type="button">✕</button>
 </div>
 <div class="tile-editor-layout">
@@ -2272,7 +2269,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
     (() => {
       'use strict';
 
-      const VERSION = 'CRMO_v3240';
+      const VERSION = 'CRMO_v3196';
       const TILE_ID = 'crmo-tile-001';
       const MAX_LAYERS = 18;
       const LOCAL_CONN_KEY = 'CRMO_SMART_CONNECTION';
@@ -2284,7 +2281,7 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
         anonKey: 'sb_publishable_iy8PYn5zkjZb6I7YQtW8Bg_w8eKvrWs',
         table: 'crmo_site_config',
         keyColumn: 'key',
-        rowKey: 'main',
+        rowKey: 'crmo_v3018_tile_demo',
         payloadColumn: 'payload'
       });
 
@@ -4597,45 +4594,8 @@ function updateAuthUI(isLoggedIn) {
         }
       }
 
-      function makeLocalCacheSafeState(payload) {
-        const state = normalizeState(payload);
-        const scrub = (value, key = '') => {
-          if (Array.isArray(value)) return value.map((item) => scrub(item));
-          if (!value || typeof value !== 'object') {
-            if (typeof value === 'string') {
-              const lower = value.toLowerCase();
-              if ((key === 'src' || key === 'localObjectUrl' || key === 'pendingFileToken' || key === 'dataUrl') && (lower.startsWith('data:') || lower.startsWith('blob:'))) return '';
-            }
-            return value;
-          }
-          const out = {};
-          Object.entries(value).forEach(([k, v]) => {
-            if ((k === 'localFile' || k === 'file' || k === 'pendingUpload') && v) {
-              if (k == 'pendingUpload') out[k] = false;
-              return;
-            }
-            if (typeof v === 'string') {
-              const lower = v.toLowerCase();
-              if ((k === 'src' || k === 'localObjectUrl' || k === 'pendingFileToken' || k === 'dataUrl') && (lower.startsWith('data:') || lower.startsWith('blob:'))) {
-                out[k] = '';
-                return;
-              }
-            }
-            out[k] = scrub(v, k);
-          });
-          return out;
-        };
-        return scrub(state);
-      }
-
       function saveLocalTile(payload) {
-        try {
-          const safeState = makeLocalCacheSafeState(payload);
-          localStorage.setItem(LOCAL_TILE_KEY, JSON.stringify(safeState));
-        } catch (error) {
-          console.warn('CRMO local draft cache skipped:', error);
-          try { localStorage.removeItem(LOCAL_TILE_KEY); } catch (_) {}
-        }
+        localStorage.setItem(LOCAL_TILE_KEY, JSON.stringify(normalizeState(payload)));
       }
 
       function loadLocalTile() {
@@ -4962,9 +4922,7 @@ window.CRMOAuthBridge = {
     if (e.target === wrap) close();
   });
   document.addEventListener('keydown', (e) => {
-    const authEditorOpen = !(document.getElementById('crmoAuthPopupEditor')?.hidden ?? true);
-    const profileEditorOpen = !(document.getElementById('crmoProfilePopupEditor')?.hidden ?? true);
-    if (e.key === 'Escape' && !wrap.hidden && !authEditorOpen && !profileEditorOpen) close();
+    if (e.key === 'Escape' && !wrap.hidden) close();
   });
   wrap.querySelectorAll('.crmo-auth-modal__sso-btn').forEach(btn => btn.addEventListener('click', async () => {
     const provider = btn.getAttribute('aria-label')?.includes('LinkedIn') ? 'linkedin_oidc' : 'google';
@@ -5006,7 +4964,6 @@ window.CRMOForceOpenAuthModal = function(event){
   @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
   #tileWrap,#galleryTestSections,#lightboxDialog,#editorDialog{display:none!important}
   .crmo3045-shell{width:100%;margin:18px auto 28px;display:grid;gap:16px}
-.crmo3045-shell .crmo3047-gallery.is-first-stack-section{border-top:none;padding-top:0}
   .crmo3045-shell[hidden]{display:none!important}
   .crmo3045-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   .crmo3045-title{font-size:18px;font-weight:700}
@@ -5033,21 +4990,8 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3045-tile{position:relative;aspect-ratio:16/9;background:#e5e5e5;border:1px solid rgba(0,0,0,.1);overflow:hidden;cursor:pointer}
   .crmo3045-tile-media,.crmo3045-lb-media,.crmo3045-thumb img,.crmo3045-thumb video,.crmo3045-stage img,.crmo3045-stage video{width:100%;height:100%;object-fit:cover;display:block}
   .crmo3045-fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#555;font-size:14px;background:linear-gradient(180deg,#efefef,#dcdcdc)}
-  .crmo3045-pencil{position:absolute;top:10px;right:10px;z-index:3;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 4px 18px rgba(0,0,0,.14);cursor:pointer;font-size:18px}
+  .crmo3045-pencil{position:absolute;top:10px;left:10px;z-index:3;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 4px 18px rgba(0,0,0,.14);cursor:pointer;font-size:18px}
   .crmo3045-pencil{opacity:1!important;visibility:visible!important;display:block!important}
-  .crmo3047-card-tools{position:absolute;top:10px;right:10px;z-index:4;display:flex;align-items:center;gap:8px;direction:rtl}
-  .crmo3047-icon-btn,.crmo3047-icon-indicator{width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 4px 18px rgba(0,0,0,.14);display:inline-flex;align-items:center;justify-content:center;color:#111}
-  .crmo3047-icon-btn{cursor:pointer}
-  .crmo3047-icon-indicator{cursor:default}
-  .crmo3047-icon-btn svg,.crmo3047-icon-indicator svg{width:20px;height:20px;display:block}
-  .crmo3047-icon-btn.is-off{color:#666;background:rgba(255,255,255,.9)}
-  .crmo3047-card-tools .crmo3045-pencil{position:static!important;top:auto!important;right:auto!important;left:auto!important;margin:0!important;z-index:auto!important}
-  .crmo3047-card-tools .crmo3047-icon-btn,.crmo3047-card-tools .crmo3047-icon-indicator{flex:0 0 38px}
-  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile{opacity:.58}
-  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.42);z-index:1;pointer-events:none}
-  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap.is-hidden-tile .crmo3045-copy{opacity:.58}
-  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap .crmo3045-hover{z-index:2}
-  .crmo3045-gallery-editor-grid .crmo3045-tile-wrap .crmo3045-tile-media,.crmo3045-gallery-editor-grid .crmo3045-tile-wrap .crmo3045-fallback{position:relative;z-index:0}
   .is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
   .is-brands-gallery .crmo3045-tile{aspect-ratio:1/1;background:#fff}
   .is-brands-gallery .crmo3045-fallback{background:#fff;color:#777;font-size:12px;border:1px dashed rgba(0,0,0,.12)}
@@ -5275,7 +5219,7 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3047-about-section .crmo3047-about-logo img{max-width:min(360px,72vw);max-height:96px;display:block;object-fit:contain}
   .crmo3047-about-section .crmo3047-about-title{margin:0;font-size:clamp(26px,3vw,44px);line-height:1.15;font-weight:500;color:#111}
   .crmo3047-about-section .crmo3047-about-text{margin:0 auto;max-width:min(80%,1100px);font-size:clamp(17px,1.35vw,20px);line-height:1.85;color:#111;white-space:pre-line}
-  .crmo3047-about-section .crmo3045-pencil{position:absolute;top:10px;right:10px}
+  .crmo3047-about-section .crmo3045-pencil{position:absolute;top:10px;left:10px}
   #crmo3047AboutEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0 auto!important;padding:24px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;place-items:center;overflow:auto}
   #crmo3047AboutEditor.crmo3045-dialog[open]{display:grid!important}
   #crmo3047AboutEditor .crmo3045-modal{width:min(1040px,calc(100vw - 64px));max-width:min(1040px,calc(100vw - 64px));max-height:calc(100vh - 48px);margin:auto;position:relative;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.22);overflow:hidden}
@@ -5347,7 +5291,7 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3047-contact-icons img{width:44px;height:44px;display:block}
   .crmo3047-contact-icons a.is-soon{opacity:.45;filter:grayscale(1);pointer-events:none;position:relative}
   .crmo3047-contact-icons a.is-soon::after{content:'בקרוב';position:absolute;inset:auto 50% -18px auto;transform:translateX(50%);font-size:11px;color:#666;white-space:nowrap}
-  .crmo3045-contact-pencil{position:absolute;top:12px;right:12px;z-index:2}
+  .crmo3045-contact-pencil{position:absolute;top:12px;left:12px;z-index:2}
   #crmo3047ContactEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0 auto!important;padding:24px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;place-items:center;align-items:center;justify-items:center;overflow:auto;box-sizing:border-box;z-index:2147483647!important}
   #crmo3047ContactEditor.crmo3045-dialog[open]{display:grid!important}
   .crmo3047-contact-editor .crmo3045-modal{width:min(820px,calc(100vw - 24px));max-width:min(820px,calc(100vw - 24px));margin:auto;position:relative}
@@ -5372,12 +5316,11 @@ window.CRMOForceOpenAuthModal = function(event){
   .crmo3047-footer{width:min(85vw,1440px);margin:0 auto 40px;padding:0 0 8px;position:relative}
   .crmo3047-footer-inner{border-top:1px solid rgba(0,0,0,.10);padding-top:20px;position:relative}
   .crmo3047-footer-top{display:block;min-height:0;height:0}
-  .crmo3047-footer .crmo3045-pencil{display:none;position:absolute;top:10px;right:10px;z-index:3}
+  .crmo3047-footer .crmo3045-pencil{display:none;position:absolute;top:10px;left:10px;z-index:3}
   .crmo3047-footer-bottom{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;direction:ltr;text-align:center;color:#111;font-size:14px;line-height:1.45;padding-top:8px}
   .crmo3047-footer-favicon{width:36px;height:36px;display:block;object-fit:contain}
   .crmo3047-footer-credit{display:inline-block}
-  .crmo3047-footer-version{display:none;font-size:11px;opacity:.65;margin-top:4px}
-  body.role-admin .crmo3047-footer-version,body.role-master .crmo3047-footer-version{display:block}
+  .crmo3047-footer-version{display:block;font-size:11px;opacity:.65;margin-top:4px}
   body.role-admin .crmo3047-footer .crmo3045-pencil,body.role-master .crmo3047-footer .crmo3045-pencil{display:block!important}
   #crmo3047FooterEditor.crmo3045-dialog{position:fixed!important;inset:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;transform:none!important;margin:0!important;padding:24px!important;width:100vw!important;max-width:100vw!important;height:100vh!important;max-height:100vh!important;background:transparent!important;display:none;align-items:center!important;justify-content:center!important;overflow:auto;box-sizing:border-box;z-index:2147483647!important}
   #crmo3047FooterEditor.crmo3045-dialog[open]{display:flex!important}
@@ -5415,45 +5358,16 @@ window.CRMOForceOpenAuthModal = function(event){
 <script id="crmo3047-multigallery-script">
 (() => {
   'use strict';
-  const VERSION = 'CRMO_v3240';
-  const STORAGE_KEY = 'CRMO_v3240_MULTI_GALLERY_DEMO';
-  const LEGACY_STORAGE_KEYS = ['CRMO_v3222_MULTI_GALLERY_DEMO','CRMO_v3163_MULTI_GALLERY_DEMO'];
-  const CLOUD_SCHEMA = 'crmo-structured-content-v1';
-  const CLOUD_ROW_SUFFIX = '';
+  const VERSION = 'CRMO_v3196';
+  const STORAGE_KEY = 'CRMO_v3196_MULTI_GALLERY_DEMO';
+  const LEGACY_STORAGE_KEYS = ['CRMO_v3163_MULTI_GALLERY_DEMO'];
+  const CLOUD_SCHEMA = 'crmo-multi-gallery-demo';
+  const CLOUD_ROW_SUFFIX = '__multi_gallery_demo';
   const CLOUD_BUCKET = 'assets';
-  const GALLERY_COUNT = 9;
+  const GALLERY_COUNT = 3;
   const TILES_PER_GALLERY = 6;
   const MAX_TILES_PER_GALLERY = 24;
   const STACK_TILE_LIMIT = 6;
-
-  const BRANDS_GALLERY_BLUEPRINT = Object.freeze({
-    galleryId: 'our-brands',
-    label: 'our-brands',
-    title: 'brands shape decisions',
-    desc: 'ברשותנו ניסיון רב שנים עם מותגים מובילים בארץ ובעולם. אנו מראים איך ערך מותג הופך לבחירה ואיך עיצוב הופך לקנייה.'
-  });
-
-  const MAIN_GALLERY_BLUEPRINTS = Object.freeze([
-    { galleryId: 'intro', label: 'intro', title: 'Sales Oriented Design', desc: 'קריאייטיב מונסטר מתמחה בעיצוב מוטה מכירה S.O.D. אנו מלווים אתכם מהקונספט ועד ליישום בשטח, להגברת המכירות וליצירת מותגים מנצחים.' },
-    { galleryId: 'intro-more', label: 'intro-more', title: 'decisions drive design', desc: 'אנו עובדים בשיטת dream. define. deliver. מקשיבים ומנסחים יחד את החזון. ממפים משימה, קהל יעד ומדדי הצלחה. מעצבים ומשיקים פתרון שהוא סיפור הצלחה מכירתי.' },
-    { galleryId: 'stores', label: 'stores', title: 'עיצוב ותכנון חווית לקוח, הופכים חלל מסחרי למנוע מכירות.', desc: 'ממתחמים קמעונאיים וחנויות דגל ועד דוכני מכירה ממוקדים בקניונים, אנו מתכננים מסע לקוח המוביל לבחירה ולקנייה, ממקסם כל מטר ומחבר את סיפור המותג לחלל.' },
-    { galleryId: 'branding', label: 'branding', title: 'שפה חזותית אחידה שמתחברת לכל נקודת מגע.', desc: 'אנחנו מגדירים אסטרטגיית מותג ומתרגמים אותה לשפה חזותית. זהות שמחזיקה את כל נקודות המגע של הלקוח, במדיה, נקודת המכירה ובכנס המקצועי.' },
-    { galleryId: 'product-design', label: 'product-design', title: 'איפיון, פיתוח ועיצוב מוצרים שמוכרים יותר.', desc: 'פתרונות פרקטיים, יעילים ומוכרים. עיצוב המשלב פסיכולוגיה והנדסת אנוש, טכנולוגיה ויצירתיות.' },
-    { galleryId: 'exhibitions', label: 'exhibitions', title: 'ביתן שמספר מהר ומשאיר רושם.', desc: 'בעולם של תערוכות, יש לכם שניות בודדות ללכוד תשומת לב. אנחנו מעצבים ביתנים ודוכנים עם מסר ברור, זרימה נכונה וחוויה שמייצרת עניין ולידים בשטח. מתכנון ועד הרכבה ופירוק.' },
-    { galleryId: 'packaging', label: 'packaging', title: 'האריזה היא המוכר השקט על המדף.', desc: 'אריזה מוכרת היא עיצוב שמדבר. אנחנו מעצבים את הפנים והחוץ של המוצר, משפה חזותית ועד פתרונות מבניים, כדי לוודא שהמסר ברור והמוצר נבחר מול המתחרים.' },
-    { galleryId: 'small-business', label: 'small-business', title: 'השפעה של מותג גדול, בתקציב חכם.', desc: 'מתודת ה-S.O.D מתאימה לכל עסק, ובמיוחד לכאלו בתחילת דרכם. אנו בונים זהות מסחרית, שפה מיתוגית וכלים חזותיים ממוקדי מכירה, כל מה שצריך כדי לבנות בסיס לצמיחה עסקית והגדלת מכירות.' }
-  ]);
-
-  const POS_GALLERY_BLUEPRINTS = Object.freeze([
-    { galleryId: 'all-works', label: 'all-works', buttonLabel: 'כל העבודות', title: 'כל העבודות', desc: 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.' },
-    { galleryId: 'shop-in-shop', label: 'shop-in-shop', buttonLabel: 'מתחמי מכירה', title: 'מתחמי מכירה', desc: 'מרחב ממותג שמרכז תשומת לב ומוביל להתנסות ולמכירה.' },
-    { galleryId: 'floor-stands', label: 'floor-stands', buttonLabel: 'סטנדים רצפתיים', title: 'סטנדים רצפתיים', desc: 'הבמה של המותג. נוכחות שאי אפשר להתעלם ממנה.' },
-    { galleryId: 'counter-displays', label: 'counter-displays', buttonLabel: 'סטנדים דלפקיים', title: 'סטנדים דלפקיים', desc: 'הסגירה האחרונה. קניית אימפולס ברגע הנכון.' },
-    { galleryId: 'shelf-talkers', label: 'shelf-talkers', buttonLabel: 'כובשי מדף', title: 'כובשי מדף', desc: 'יתרון הראייה. בידול חד על המדף הצפוף.' },
-    { galleryId: 'sampling-carts', label: 'sampling-carts', buttonLabel: 'עגלות קד"מ', title: 'עגלות קד"מ', desc: 'מפגש ישיר. מייצרים לידים ודגימות בשטח.' },
-    { galleryId: 'product-platforms', label: 'product-platforms', buttonLabel: 'במות מוצר', title: 'במות מוצר', desc: 'פתרונות תצוגה שמבליטים את המוצר ברגע האמת.' },
-    { galleryId: 'custom-solutions', label: 'custom-solutions', buttonLabel: 'מיוחדים', title: 'פתרונות מיוחדים', desc: 'פתרונות מיוחדים' }
-  ]);
   const EXPANDED_TILE_OPTIONS = [9,12,15,18,21,24];
   const stage = document.querySelector('main.stage');
   if (!stage) return;
@@ -5474,7 +5388,13 @@ window.CRMOForceOpenAuthModal = function(event){
   const shell = document.createElement('section');
   shell.className = 'crmo3045-shell';
   shell.innerHTML = `
-    <div id="crmo3047Status" class="crmo3045-note" style="margin:0 0 6px" hidden></div>
+    <div class="crmo3045-head">
+      <div>
+        <div class="crmo3045-title">Gallery Context Test Area</div>
+        <div class="crmo3045-sub">2 galleries · gallery editor rebuild · first 6 tiles shown in stack</div>
+      </div>
+    </div>
+    <div id="crmo3047Status" class="crmo3045-note" style="margin:-2px 0 6px" hidden></div>
     <div class="crmo3047-stack" id="crmo3047GalleryStack"></div>
   `;
   stage.appendChild(shell);
@@ -5900,10 +5820,6 @@ window.CRMOForceOpenAuthModal = function(event){
       descMobile: String(meta.descMobile || desc),
       descDesktop: String(meta.descDesktop || desc),
       descExpanded: String(meta.descExpanded || desc),
-      visible: meta.visible !== false,
-      visibleMobile: meta.visibleMobile !== false,
-      galleryType: String(meta.galleryType || ''),
-      parentId: String(meta.parentId || ''),
       expandedEnabled: meta.expandedEnabled === true,
       expandedCount
     };
@@ -5911,9 +5827,9 @@ window.CRMOForceOpenAuthModal = function(event){
 
   function ensureAboutSection(section = {}) {
     const title = String(section.title || 'על הסטודיו');
-    const desc = String(section.desc || 'אנחנו סטודיו לעיצוב מוטה מכירה. פיתחנו את מתודת Sales Oriented Design המחברת רעיון לביצוע מדויק ומקדמת מכירה. אנו עובדים בשיטת Dream Define Deliver כדי להפוך את האסטרטגיה לנראות עובדת בשטח: בחנות, בסטנד, בביתן ובאריזה. אנחנו מקשיבים ומנסחים את החזון והמסר שלכם, ממפים את המשימה, מגדירים תקציב ומדדי הצלחה. התוצאה: פתרונות עיצוב מנצחים שמובילים את קהל היעד לבחירה בכם.');
+    const desc = String(section.desc || 'אנחנו סטודיו לעיצוב מוטה מכירה. כאן אפשר לערוך בהמשך טקסט תדמיתי מלא לסקשן על הסטודיו.');
     return {
-      sectionId: 'about',
+      sectionId: 'about-studio',
       visible: true,
       title,
       desc,
@@ -6001,7 +5917,7 @@ window.CRMOForceOpenAuthModal = function(event){
       toggleLabel: String(section.toggleLabel || '+ מדיניות פרטיות'),
       title: String(section.title || 'פרטיות ונתונים'),
       subtitle: String(section.subtitle || 'שקיפות קצרה (בלי אותיות קטנות).'),
-      body: String(section.body || 'אנחנו שומרים רק מידע מינימלי (שם, אימייל, תמונת פרופיל). בלי ספאם, בלי רשימות תפוצה. אפשר למחוק הכל בכל עת.')
+      body: String(section.body || 'אנחנו שומרים רק מידע מינימלי (שם, אימייל, תמונת פרופיל) ועוד מה שתבחר/י להוסיף בפרופיל. אין ספאם, אין רשימות תפוצה.')
     };
   }
   function tileHasMeaningfulContent(tile) {
@@ -6150,7 +6066,7 @@ window.CRMOForceOpenAuthModal = function(event){
   }
   function getCloudRowKey() {
     const conn = getConnection();
-    return String(conn?.rowKey || 'main');
+    return `${String(conn?.rowKey || 'crmo-tile-001')}${CLOUD_ROW_SUFFIX}`;
   }
   function getSupabaseClient() {
     const conn = getConnection();
@@ -6223,12 +6139,12 @@ window.CRMOForceOpenAuthModal = function(event){
     media: []
   });
 
-  const makeGallery = (galleryIndex, blueprint = null) => ({
-    galleryId: blueprint?.galleryId || `gallery-${galleryIndex + 1}`,
+  const makeGallery = (galleryIndex) => ({
+    galleryId: `gallery-${galleryIndex + 1}`,
     meta: ensureGalleryMeta({
-      title: blueprint?.title || `Gallery ${galleryIndex + 1}`,
-      desc: blueprint?.desc || `Test gallery ${galleryIndex + 1} for gallery context + tile context`,
-      label: blueprint?.label || `gallery-${galleryIndex + 1}`,
+      title: `Gallery ${galleryIndex + 1}`,
+      desc: `Test gallery ${galleryIndex + 1} for gallery context + tile context`,
+      label: `gallery-${galleryIndex + 1}`,
       expandedEnabled: false,
       expandedCount: 9
     }),
@@ -6237,11 +6153,11 @@ window.CRMOForceOpenAuthModal = function(event){
   });
 
   const makeBrandsGallery = () => ({
-    galleryId: BRANDS_GALLERY_BLUEPRINT.galleryId,
+    galleryId: 'brands-gallery',
     meta: ensureGalleryMeta({
-      title: BRANDS_GALLERY_BLUEPRINT.title,
-      desc: BRANDS_GALLERY_BLUEPRINT.desc,
-      label: BRANDS_GALLERY_BLUEPRINT.label,
+      title: 'מותגים',
+      desc: 'גלריית מותגים חדשה ונפרדת',
+      label: 'brands',
       expandedEnabled: false,
       expandedCount: 9
     }),
@@ -6256,44 +6172,27 @@ window.CRMOForceOpenAuthModal = function(event){
   });
 
 
-  const SUPER_GALLERY_ID = 'pos';
-  const SUPER_SUB_COUNT = POS_GALLERY_BLUEPRINTS.length;
+  const SUPER_GALLERY_ID = 'super-gallery-1';
+  const SUPER_SUB_COUNT = 8;
   const SUPER_SUB_PREFIX = `${SUPER_GALLERY_ID}-sub-`;
-  const SUPER_SUB_BUTTON_LABELS = POS_GALLERY_BLUEPRINTS.map((item) => item.buttonLabel);
-  const SUPER_SUB_TITLES = POS_GALLERY_BLUEPRINTS.map((item) => item.title);
-
-  function getPosBlueprint(slotIndex) {
-    return POS_GALLERY_BLUEPRINTS[slotIndex] || POS_GALLERY_BLUEPRINTS[0];
-  }
-
-  function getSuperSubButtonLabel(slotIndex) {
-    return String(getPosBlueprint(slotIndex)?.buttonLabel || `תת כפתור ${slotIndex + 1}`);
-  }
-
-  function getSuperSubGalleryTitle(slotIndex) {
-    return String(getPosBlueprint(slotIndex)?.title || `תת גלריה ${slotIndex + 1}`);
-  }
-  const makeSuperSubGallery = (slotIndex) => {
-    const blueprint = getPosBlueprint(slotIndex);
-    return ({
-      galleryId: `${SUPER_SUB_PREFIX}${slotIndex + 1}`,
-      meta: ensureGalleryMeta({
-        title: String(blueprint?.title || getSuperSubGalleryTitle(slotIndex)),
-        desc: String(blueprint?.desc || 'הסבר הגלריה'),
-        label: String(blueprint?.label || `super-gallery-${slotIndex + 1}`),
-        expandedEnabled: false,
-        expandedCount: 9
-      }),
-      ui: { editMode: false },
-      tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => normalizeTile({
-        tileId: `${SUPER_SUB_PREFIX}${slotIndex + 1}-tile-${String(tileIndex + 1).padStart(2,'0')}`,
-        meta: { client: '', brand: '' },
-        overlay: { title: 'שם הפרויקט', desc: 'תיאור קצר על הפרויקט', link: '' },
-        display: { openLinkInNewTab: false, showLinkInTile: false, multiItemMode: false, perImageText: false },
-        media: []
-      }, slotIndex + 100, tileIndex))
-    });
-  };
+  const makeSuperSubGallery = (slotIndex) => ({
+    galleryId: `${SUPER_SUB_PREFIX}${slotIndex + 1}`,
+    meta: ensureGalleryMeta({
+      title: `תת-גלריה ${slotIndex + 1}`,
+      desc: 'הסבר הגלריה',
+      label: `super-gallery-${slotIndex + 1}`,
+      expandedEnabled: false,
+      expandedCount: 9
+    }),
+    ui: { editMode: false },
+    tiles: Array.from({length:TILES_PER_GALLERY}, (_, tileIndex) => normalizeTile({
+      tileId: `${SUPER_SUB_PREFIX}${slotIndex + 1}-tile-${String(tileIndex + 1).padStart(2,'0')}`,
+      meta: { client: '', brand: '' },
+      overlay: { title: 'שם הפרויקט', desc: 'תיאור קצר של הפרויקט', link: '' },
+      display: { openLinkInNewTab: false, showLinkInTile: false, multiItemMode: false, perImageText: false },
+      media: []
+    }, slotIndex + 100, tileIndex))
+  });
 
   function isSuperSubGallery(gallery) {
     return String(gallery?.galleryId || '').indexOf(SUPER_SUB_PREFIX) === 0;
@@ -6314,38 +6213,16 @@ window.CRMOForceOpenAuthModal = function(event){
     return [...regular, ...supers];
   }
 
-  function applyGalleryBlueprint(gallery, galleryIndex, blueprint) {
-    const base = normalizeGallery(gallery || makeGallery(galleryIndex, blueprint), galleryIndex);
-    const existingMeta = ensureGalleryMeta(base.meta || {});
-    base.galleryId = blueprint.galleryId;
-    base.meta = ensureGalleryMeta({
-      ...existingMeta,
-      title: String(existingMeta.title || blueprint.title || ''),
-      desc: String(existingMeta.desc || blueprint.desc || ''),
-      label: blueprint.label,
-      titleMobile: String(existingMeta.titleMobile || existingMeta.title || blueprint.title || ''),
-      titleDesktop: String(existingMeta.titleDesktop || existingMeta.title || blueprint.title || ''),
-      titleExpanded: String(existingMeta.titleExpanded || existingMeta.title || blueprint.title || ''),
-      descMobile: String(existingMeta.descMobile || existingMeta.desc || blueprint.desc || ''),
-      descDesktop: String(existingMeta.descDesktop || existingMeta.desc || blueprint.desc || ''),
-      descExpanded: String(existingMeta.descExpanded || existingMeta.desc || blueprint.desc || '')
-    });
-    return base;
+  function ensureAllGalleries(rawGalleries) {
+    return ensureSuperSubGalleries(ensureBrandsFirst(rawGalleries));
   }
 
-  function ensureAllGalleries(rawGalleries) {
+  function ensureBrandsFirst(rawGalleries) {
     const list = Array.isArray(rawGalleries) ? rawGalleries.slice() : [];
-    const regular = list.filter((gallery) => !isSuperSubGallery(gallery));
-    const brandsIndex = regular.findIndex((g) => {
-      const id = String(g?.galleryId || '').toLowerCase();
-      const label = String(g?.meta?.label || '').toLowerCase();
-      return id === 'brands-gallery' || id === 'our-brands' || label === 'brands' || label === 'our-brands';
-    });
-    const brandsSource = brandsIndex >= 0 ? regular.splice(brandsIndex, 1)[0] : makeBrandsGallery();
-    const mappedRegulars = MAIN_GALLERY_BLUEPRINTS.map((blueprint, idx) => applyGalleryBlueprint(regular[idx], idx + 1, blueprint));
-    const brandsGallery = applyGalleryBlueprint(brandsSource, 0, BRANDS_GALLERY_BLUEPRINT);
-    const combined = [brandsGallery, ...mappedRegulars];
-    return ensureSuperSubGalleries(combined);
+    const existingIndex = list.findIndex((g) => String(g?.galleryId || '') === 'brands-gallery' || String(g?.meta?.label || '').toLowerCase() === 'brands');
+    const brands = existingIndex >= 0 ? list.splice(existingIndex, 1)[0] : makeBrandsGallery();
+    const rest = list;
+    return [brands, ...rest].map((gallery, galleryIndex) => normalizeGallery(gallery, galleryIndex));
   }
 
   const normalizeMedia = (m, galleryIndex, tileIndex, mediaIndex) => ({
@@ -6375,7 +6252,6 @@ window.CRMOForceOpenAuthModal = function(event){
       enableLightbox: tile?.brandConfig?.enableLightbox === true || (tile?.brandConfig?.enableLightbox == null && ((Array.isArray(tile?.media) && tile.media.some((m) => m?.src)) || (Array.isArray(tile?.brandConfig?.attachedWorkRefs) && tile.brandConfig.attachedWorkRefs.length))),
       attachedWorkRefs: Array.isArray(tile?.brandConfig?.attachedWorkRefs) ? tile.brandConfig.attachedWorkRefs.map((ref) => ({ galleryIndex: Number(ref?.galleryIndex || 0), tileIndex: Number(ref?.tileIndex || 0) })).filter((ref) => Number.isFinite(ref.galleryIndex) && Number.isFinite(ref.tileIndex)).slice(0, 18) : []
     },
-    isVisible: tile?.isVisible !== false,
     media: Array.isArray(tile?.media) ? tile.media.map((m, i) => normalizeMedia(m, galleryIndex, tileIndex, i)).filter((m) => m.src) : []
   });
 
@@ -6403,262 +6279,28 @@ window.CRMOForceOpenAuthModal = function(event){
     };
   };
 
-  const emptyGalleries = () => ensureAllGalleries([makeBrandsGallery(), ...MAIN_GALLERY_BLUEPRINTS.map((blueprint, galleryIndex) => makeGallery(galleryIndex + 1, blueprint))]);
-
-  function ensureSiteState(site = {}) {
-    return {
-      sectionFamily: 'sections',
-      about: ensureAboutSection(site.about || site.aboutSection || {}),
-      contact: ensureContactSection(site.contact || site.contactSection || {}),
-      footer: ensureFooterSection(site.footer || site.footerSection || {}),
-      accessibility: ensureAccessibilitySection(site.accessibility || site.accessibilitySection || {}),
-      privacy: ensurePrivacySection(site.privacy || site.privacySection || {}),
-      ui: site && typeof site.ui === 'object' ? { ...site.ui } : {},
-      mediaFamilies: Array.isArray(site?.mediaFamilies) ? site.mediaFamilies.slice() : ['galleries','sections','brands','clients','ui','backups']
-    };
-  }
-
-  function getGalleryType(gallery) {
-    const id = String(gallery?.galleryId || '');
-    if (id === 'brands-gallery' || id === 'our-brands') return 'brands';
-    if (id === SUPER_GALLERY_ID) return 'master';
-    if (isSuperSubGallery(gallery)) return 'child';
-    return 'regular';
-  }
-
-  function getGalleryParentId(gallery) {
-    return isSuperSubGallery(gallery) ? SUPER_GALLERY_ID : '';
-  }
-
-  function ensureClientsState(clients = {}) {
-    const items = clients && typeof clients.items === 'object' ? clients.items : {};
-    return {
-      items: { ...items },
-      order: Array.isArray(clients?.order) ? clients.order.slice() : Object.keys(items)
-    };
-  }
-
-  function extractClientsState(currentGalleries) {
-    const items = {};
-    (Array.isArray(currentGalleries) ? currentGalleries : []).forEach((gallery) => {
-      (Array.isArray(gallery?.tiles) ? gallery.tiles : []).forEach((tile) => {
-        const value = String(tile?.meta?.client || '').trim();
-        if (!value) return;
-        const id = value.toLowerCase().replace(/[^a-z0-9֐-׿]+/g, '-').replace(/^-+|-+$/g, '') || `client-${Object.keys(items).length + 1}`;
-        if (!items[id]) items[id] = { clientId: id, title: value, linkedBrandIds: [] };
-      });
-    });
-    return ensureClientsState({ items, order: Object.keys(items) });
-  }
-
-  function ensureBrandsState(brands = {}) {
-    return {
-      family: 'brands',
-      title: String(brands?.title || ''),
-      desc: String(brands?.desc || ''),
-      items: Array.isArray(brands?.items) ? brands.items.map((item, idx) => ({
-        brandId: String(item?.brandId || item?.id || `brand-${idx + 1}`),
-        title: String(item?.title || ''),
-        clientId: String(item?.clientId || ''),
-        logoSrc: String(item?.logoSrc || item?.src || ''),
-        storageBucket: String(item?.storageBucket || ''),
-        storagePath: String(item?.storagePath || ''),
-        attachedWorkRefs: Array.isArray(item?.attachedWorkRefs) ? item.attachedWorkRefs.map((ref) => ({ galleryId: String(ref?.galleryId || ''), tileId: String(ref?.tileId || '') })).filter((ref) => ref.galleryId || ref.tileId) : []
-      })) : [],
-      meta: brands && typeof brands.meta === 'object' ? { ...brands.meta } : {}
-    };
-  }
-
-  function extractBrandsState(currentGalleries) {
-    const brandsGallery = (Array.isArray(currentGalleries) ? currentGalleries : []).find((gallery) => String(gallery?.galleryId || '').toLowerCase() === 'brands-gallery' || String(gallery?.meta?.label || '').toLowerCase() === 'our-brands');
-    if (!brandsGallery) return ensureBrandsState({ items: [] });
-    const items = (Array.isArray(brandsGallery.tiles) ? brandsGallery.tiles : []).map((tile, idx) => {
-      const firstMedia = Array.isArray(tile?.media) ? tile.media.find((m) => m?.src) : null;
-      return {
-        brandId: String(tile?.tileId || `brand-${idx + 1}`),
-        title: String(tile?.meta?.brand || tile?.overlay?.title || ''),
-        clientId: String(tile?.meta?.client || ''),
-        logoSrc: String(firstMedia?.src || ''),
-        storageBucket: String(firstMedia?.storageBucket || ''),
-        storagePath: String(firstMedia?.storagePath || ''),
-        attachedWorkRefs: Array.isArray(tile?.brandConfig?.attachedWorkRefs) ? tile.brandConfig.attachedWorkRefs.map((ref) => {
-          const galleryRef = currentGalleries?.[Number(ref?.galleryIndex || 0)]?.galleryId || '';
-          const tileRef = currentGalleries?.[Number(ref?.galleryIndex || 0)]?.tiles?.[Number(ref?.tileIndex || 0)]?.tileId || '';
-          return { galleryId: String(galleryRef || ''), tileId: String(tileRef || '') };
-        }).filter((ref) => ref.galleryId || ref.tileId) : []
-      };
-    }).filter((item) => item.logoSrc || item.title);
-    return ensureBrandsState({
-      title: String(brandsGallery?.meta?.title || ''),
-      desc: String(brandsGallery?.meta?.desc || ''),
-      items,
-      meta: { galleryId: String(brandsGallery?.galleryId || 'brands-gallery') }
-    });
-  }
-
-  function ensureRoutesState(routes = {}) {
-    const items = routes && typeof routes.items === 'object' ? routes.items : {};
-    return {
-      items: { ...items },
-      galleryOnlySectionOrder: Array.isArray(routes?.galleryOnlySectionOrder) ? routes.galleryOnlySectionOrder.slice() : ['header','contact','footer']
-    };
-  }
-
-  function extractRoutesState(currentGalleries) {
-    const items = {};
-    (Array.isArray(currentGalleries) ? currentGalleries : []).forEach((gallery) => {
-      const type = getGalleryType(gallery);
-      if (type === 'brands') return;
-      const slug = String(gallery?.meta?.label || gallery?.galleryId || '').trim();
-      if (!slug) return;
-      items[slug] = {
-        routeId: slug,
-        slug,
-        galleryId: String(gallery?.galleryId || ''),
-        galleryType: type,
-        enabled: gallery?.meta?.expandedEnabled === true || (Array.isArray(gallery?.tiles) && gallery.tiles.length >= 12),
-        mode: 'gallery-only',
-        minExpandedItems: 12
-      };
-    });
-    return ensureRoutesState({ items });
-  }
-
-  function buildStructuredGalleryState(currentGalleries) {
-    const source = ensureAllGalleries(currentGalleries);
-    const order = [];
-    const items = {};
-    source.forEach((gallery, galleryIndex) => {
-      const id = String(gallery?.galleryId || `gallery-${galleryIndex + 1}`);
-      const type = getGalleryType(gallery);
-      if (type === 'brands') return;
-      order.push(id);
-      items[id] = {
-        galleryId: id,
-        type,
-        parentId: getGalleryParentId(gallery),
-        title: String(gallery?.meta?.title || ''),
-        desc: String(gallery?.meta?.desc || ''),
-        label: String(gallery?.meta?.label || ''),
-        titleMobile: String(gallery?.meta?.titleMobile || ''),
-        titleDesktop: String(gallery?.meta?.titleDesktop || ''),
-        titleExpanded: String(gallery?.meta?.titleExpanded || ''),
-        descMobile: String(gallery?.meta?.descMobile || ''),
-        descDesktop: String(gallery?.meta?.descDesktop || ''),
-        descExpanded: String(gallery?.meta?.descExpanded || ''),
-        visible: gallery?.meta?.visible !== false,
-        visibleMobile: gallery?.meta?.visibleMobile !== false,
-        expandedEnabled: gallery?.meta?.expandedEnabled === true,
-        expandedCount: Number(gallery?.meta?.expandedCount || 9),
-        routeSlug: String(gallery?.meta?.label || id),
-        tileOrder: (Array.isArray(gallery?.tiles) ? gallery.tiles : []).map((tile) => String(tile?.tileId || '')),
-        mediaFamily: 'galleries'
-      };
-    });
-    return { order, items };
-  }
-
-  function buildStructuredTilesState(currentGalleries) {
-    const items = {};
-    ensureAllGalleries(currentGalleries).forEach((gallery) => {
-      const galleryId = String(gallery?.galleryId || '');
-      (Array.isArray(gallery?.tiles) ? gallery.tiles : []).forEach((tile, tileIndex) => {
-        const tileId = String(tile?.tileId || `${galleryId}-tile-${tileIndex + 1}`);
-        items[tileId] = {
-          tileId,
-          galleryId,
-          order: tileIndex,
-          clientId: String(tile?.meta?.client || ''),
-          brandId: String(tile?.meta?.brand || ''),
-          title: String(tile?.overlay?.title || ''),
-          shortDescription: String(tile?.overlay?.desc || ''),
-          link: String(tile?.overlay?.link || ''),
-          visible: true,
-          cover: String((Array.isArray(tile?.media) ? tile.media[0]?.src : '') || ''),
-          files: Array.isArray(tile?.media) ? tile.media.map((media) => String(media?.src || '')).filter(Boolean) : [],
-          filesMeta: Array.isArray(tile?.media) ? tile.media.map((media, mediaIndex) => ({
-            id: String(media?.id || `${tileId}-media-${mediaIndex + 1}`),
-            src: String(media?.src || ''),
-            type: String(media?.type || 'image'),
-            title: String(media?.title || ''),
-            desc: String(media?.desc || ''),
-            storageBucket: String(media?.storageBucket || ''),
-            storagePath: String(media?.storagePath || ''),
-            isVisible: media?.isVisible !== false
-          })) : [],
-          display: tile?.display && typeof tile.display === 'object' ? { ...tile.display } : {}
-        };
-      });
-    });
-    return { items };
-  }
-
-  function hydrateWrapperShape(raw) {
-    if (!raw || typeof raw !== 'object') return null;
-    const site = ensureSiteState(raw.site || {});
-    const legacyGalleries = Array.isArray(raw.galleries) ? raw.galleries : null;
-    const structuredGalleries = (!legacyGalleries && raw.galleries && typeof raw.galleries === 'object' && raw.galleries.items) ? raw.galleries : null;
-    let nextGalleries = [];
-    if (legacyGalleries) {
-      nextGalleries = ensureAllGalleries(legacyGalleries);
-    } else if (structuredGalleries) {
-      const orderedIds = Array.isArray(structuredGalleries.order) ? structuredGalleries.order : Object.keys(structuredGalleries.items || {});
-      const mapped = orderedIds.map((id, galleryIndex) => {
-        const item = structuredGalleries.items?.[id] || {};
-        return normalizeGallery({
-          galleryId: item.galleryId || id,
-          meta: {
-            title: item.title || '',
-            desc: item.desc || '',
-            label: item.label || id,
-            titleMobile: item.titleMobile || item.title || '',
-            titleDesktop: item.titleDesktop || item.title || '',
-            titleExpanded: item.titleExpanded || item.title || '',
-            descMobile: item.descMobile || item.desc || '',
-            descDesktop: item.descDesktop || item.desc || '',
-            descExpanded: item.descExpanded || item.desc || '',
-            expandedEnabled: item.expandedEnabled === true,
-            expandedCount: item.expandedCount || 9,
-            visible: item.visible !== false,
-            visibleMobile: item.visibleMobile !== false
-          },
-          tiles: []
-        }, galleryIndex);
-      });
-      nextGalleries = ensureAllGalleries(mapped);
-    } else {
-      nextGalleries = ensureAllGalleries(emptyGalleries());
-    }
-    return {
-      schema: raw.schema || CLOUD_SCHEMA,
-      version: raw.version || VERSION,
-      updatedAt: raw.updatedAt || '',
-      source: raw.source || 'local',
-      savedBy: raw.savedBy || '',
-      syncMode: raw.syncMode || 'cloud-primary-local-fallback',
-      site,
-      aboutSection: site.about,
-      contactSection: site.contact,
-      footerSection: site.footer,
-      accessibilitySection: site.accessibility,
-      privacySection: site.privacy,
-      galleries: nextGalleries,
-      galleriesState: buildStructuredGalleryState(nextGalleries),
-      tilesState: buildStructuredTilesState(nextGalleries),
-      brandsState: ensureBrandsState(raw.brands || extractBrandsState(nextGalleries)),
-      clientsState: ensureClientsState(raw.clients || extractClientsState(nextGalleries)),
-      routesState: ensureRoutesState(raw.routes || extractRoutesState(nextGalleries))
-    };
-  }
+  const emptyGalleries = () => ensureBrandsFirst(Array.from({length:GALLERY_COUNT - 1}, (_, galleryIndex) => makeGallery(galleryIndex)));
 
   function loadLocalWrapper() {
     try {
       const keys = [STORAGE_KEY].concat(Array.isArray(LEGACY_STORAGE_KEYS) ? LEGACY_STORAGE_KEYS : []);
       for (const key of keys) {
         const raw = JSON.parse(localStorage.getItem(key) || 'null');
-        const hydrated = hydrateWrapperShape(raw);
-        if (!hydrated || !Array.isArray(hydrated.galleries)) continue;
-        return hydrated;
+        if (!raw || !Array.isArray(raw.galleries)) continue;
+        return {
+          schema: raw.schema || CLOUD_SCHEMA,
+          version: raw.version || VERSION,
+          updatedAt: raw.updatedAt || '',
+          source: raw.source || 'local',
+          savedBy: raw.savedBy || '',
+          syncMode: raw.syncMode || 'cloud-primary-local-fallback',
+          aboutSection: ensureAboutSection(raw.aboutSection || {}),
+          contactSection: ensureContactSection(raw.contactSection || {}),
+          footerSection: ensureFooterSection(raw.footerSection || {}),
+          accessibilitySection: ensureAccessibilitySection(raw.accessibilitySection || {}),
+          privacySection: ensurePrivacySection(raw.privacySection || {}),
+          galleries: ensureAllGalleries(raw.galleries)
+        };
       }
       return null;
     } catch (_) {
@@ -6667,16 +6309,12 @@ window.CRMOForceOpenAuthModal = function(event){
   }
 
   let localWrapper = loadLocalWrapper();
-  let siteState = ensureSiteState(localWrapper?.site || {});
   let galleries = localWrapper?.galleries?.length ? ensureAllGalleries(localWrapper.galleries) : ensureAllGalleries(emptyGalleries());
-  let aboutSection = ensureAboutSection(localWrapper?.aboutSection || siteState.about || {});
-  let contactSection = ensureContactSection(localWrapper?.contactSection || siteState.contact || {});
-  let footerSection = ensureFooterSection(localWrapper?.footerSection || siteState.footer || {});
-  let accessibilitySection = ensureAccessibilitySection(localWrapper?.accessibilitySection || siteState.accessibility || {});
-  let privacySection = ensurePrivacySection(localWrapper?.privacySection || siteState.privacy || {});
-  let brandsState = ensureBrandsState(localWrapper?.brandsState || extractBrandsState(galleries));
-  let clientsState = ensureClientsState(localWrapper?.clientsState || extractClientsState(galleries));
-  let routesState = ensureRoutesState(localWrapper?.routesState || extractRoutesState(galleries));
+  let aboutSection = ensureAboutSection(localWrapper?.aboutSection || {});
+  let contactSection = ensureContactSection(localWrapper?.contactSection || {});
+  let footerSection = ensureFooterSection(localWrapper?.footerSection || {});
+  let accessibilitySection = ensureAccessibilitySection(localWrapper?.accessibilitySection || {});
+  let privacySection = ensurePrivacySection(localWrapper?.privacySection || {});
   let activeGalleryIndex = 0;
   let activeSuperGalleryId = galleries.find((gallery) => isSuperSubGallery(gallery))?.galleryId || '';
   let activeTileIndex = 0;
@@ -6695,18 +6333,6 @@ window.CRMOForceOpenAuthModal = function(event){
   let privacyEditorDraft = null;
 
   function makePayload(currentGalleries) {
-    const normalizedGalleries = ensureAllGalleries(currentGalleries);
-    const nextSite = ensureSiteState({
-      ...siteState,
-      about: aboutSection,
-      contact: contactSection,
-      footer: footerSection,
-      accessibility: accessibilitySection,
-      privacy: privacySection
-    });
-    const nextBrandsState = extractBrandsState(normalizedGalleries);
-    const nextClientsState = extractClientsState(normalizedGalleries);
-    const nextRoutesState = extractRoutesState(normalizedGalleries);
     return {
       schema: CLOUD_SCHEMA,
       version: VERSION,
@@ -6714,26 +6340,17 @@ window.CRMOForceOpenAuthModal = function(event){
       source: isLoggedIn() ? 'cloud' : 'local',
       savedBy: getSession()?.user?.email || 'anonymous',
       syncMode: 'cloud-primary-local-fallback',
-      site: nextSite,
-      galleries: normalizedGalleries,
-      tiles: buildStructuredTilesState(normalizedGalleries),
-      brands: nextBrandsState,
-      clients: nextClientsState,
-      routes: nextRoutesState,
-      galleriesState: buildStructuredGalleryState(normalizedGalleries),
-      brandsState: nextBrandsState,
-      clientsState: nextClientsState,
-      routesState: nextRoutesState,
-      aboutSection: nextSite.about,
-      contactSection: nextSite.contact,
-      footerSection: nextSite.footer,
-      accessibilitySection: nextSite.accessibility,
-      privacySection: nextSite.privacy
+      aboutSection: ensureAboutSection(aboutSection),
+      contactSection: ensureContactSection(contactSection),
+      footerSection: ensureFooterSection(footerSection),
+      accessibilitySection: ensureAccessibilitySection(accessibilitySection),
+      privacySection: ensurePrivacySection(privacySection),
+      galleries: ensureAllGalleries(currentGalleries)
     };
   }
 
   function persistLocal(payload = makePayload(galleries)) {
-    localWrapper = hydrateWrapperShape(payload) || payload;
+    localWrapper = payload;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   }
 
@@ -6752,12 +6369,8 @@ window.CRMOForceOpenAuthModal = function(event){
   function syncVersionLabels() {
     document.title = isIndexRuntime() ? 'CRMO | sales oriented design' : VERSION;
     applyFaviconLaw();
-    const isAdminLike = document.body.classList.contains('role-admin') || document.body.classList.contains('role-master');
     const footer = document.getElementById('footerVersionLabel');
-    if (footer) {
-      footer.textContent = `${VERSION} · tile component rebuild test area`;
-      footer.hidden = !isAdminLike;
-    }
+    if (footer) footer.textContent = `${VERSION} · tile component rebuild test area`;
     const footerVersion = document.getElementById('crmo-footer-version');
     if (footerVersion) footerVersion.textContent = VERSION.replace(/^CRMO_/, '');
     const admin = document.getElementById('adminVersionPill');
@@ -7097,7 +6710,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving contact section to cloud + local' : 'saving contact section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן צור קשר נשמר לענן.' : 'סקשן צור קשר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3240] contact save failed', err);
+      console.error('[CRMO_v3190] contact save failed', err);
       setStatus(`Cloud: contact section saved locally only · ${err.message || err}`);
     }
     closeContactEditor();
@@ -7149,7 +6762,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving footer section to cloud + local' : 'saving footer section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'הפוטר נשמר לענן.' : 'הפוטר נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3240] footer save failed', err);
+      console.error('[CRMO_v3196] footer save failed', err);
       setStatus(`Cloud: footer section saved locally only · ${err.message || err}`);
     }
     closeFooterEditor();
@@ -7210,7 +6823,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving accessibility section to cloud + local' : 'saving accessibility section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'הצהרת הנגישות נשמרה לענן.' : 'הצהרת הנגישות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3240] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3196] accessibility save failed', err); setStatus(`Cloud: accessibility section saved locally only · ${err.message || err}`); }
     closeAccessibilityEditor();
   }
 
@@ -7245,7 +6858,7 @@ window.CRMOForceOpenAuthModal = function(event){
     renderGalleryStack();
     persistLocal(makePayload(galleries));
     try { await runWithSyncLock(isLoggedIn() ? 'saving privacy section to cloud + local' : 'saving privacy section to local cache', async () => saveGalleriesToCloud()); setStatus(isLoggedIn() ? 'מדיניות הפרטיות נשמרה לענן.' : 'מדיניות הפרטיות נשמרה מקומית.'); }
-    catch (err) { console.error('[CRMO_v3240] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
+    catch (err) { console.error('[CRMO_v3196] privacy save failed', err); setStatus(`Cloud: privacy section saved locally only · ${err.message || err}`); }
     closePrivacyEditor();
   }
 
@@ -7263,7 +6876,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const privState = (privacyDialog && privacyDialog.open && privacyEditorDraft) ? ensurePrivacySection(privacyEditorDraft) : ensurePrivacySection(privacySection);
     const section = document.createElement('section');
     section.className = 'crmo3047-legal accessibility-statement';
-    section.id = 'accessibility';
+    section.id = 'accessibility-statement';
     section.innerHTML = `
       <div class="crmo3047-legal-inner">
         <div class="crmo3047-legal-head">
@@ -7311,8 +6924,7 @@ window.CRMOForceOpenAuthModal = function(event){
     const showMedia = !!showMediaMap[mode] && !!logoSrc;
     const section = document.createElement('section');
     section.className = 'crmo3047-gallery crmo3047-about-section';
-    section.dataset.sectionId = 'about';
-    section.id = 'about';
+    section.dataset.sectionId = 'about-studio';
     const logoHtml = showMedia ? `<div class="crmo3047-about-logo"><img src="${escape(logoSrc)}" alt="" loading="lazy"></div>` : '';
     section.innerHTML = `
       ${editEnabled ? `<button class="crmo3045-pencil" type="button" data-about-editor aria-label="עריכת סקשן על הסטודיו">✎</button>` : ''}
@@ -7338,7 +6950,6 @@ window.CRMOForceOpenAuthModal = function(event){
     const activeGalleryIndex = galleries.findIndex((gallery) => gallery.galleryId === activeGallery.galleryId);
     const section = document.createElement('section');
     section.className = 'crmo3047-gallery is-super-gallery';
-    section.id = 'pos';
     section.dataset.galleryIndex = 'super';
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
@@ -7362,7 +6973,7 @@ window.CRMOForceOpenAuthModal = function(event){
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `crmo3047-super-btn${gallery.galleryId === activeSuperGalleryId ? ' is-active' : ''}`;
-      btn.textContent = getSuperSubButtonLabel(slotIndex);
+      btn.textContent = String(gallery.meta.title || `תת-גלריה ${slotIndex + 1}`);
       btn.addEventListener('click', () => {
         activeSuperGalleryId = gallery.galleryId;
         renderGalleryStack();
@@ -7371,76 +6982,68 @@ window.CRMOForceOpenAuthModal = function(event){
     });
     if (activeGalleryIndex >= 0) {
       const grid = section.querySelector('[data-super-grid]');
-      let visibleRendered = 0;
-      activeGallery.tiles.forEach((tile, tileIndex) => {
-        if (visibleRendered >= STACK_TILE_LIMIT) return;
-        if (tile?.isVisible === false) return;
+      activeGallery.tiles.slice(0, STACK_TILE_LIMIT).forEach((tile, tileIndex) => {
         grid.appendChild(createGalleryCard(activeGallery, activeGalleryIndex, tile, tileIndex, editEnabled));
-        visibleRendered += 1;
       });
       section.querySelector('[data-super-gallery-editor]')?.addEventListener('click', () => openGalleryEditor(activeGalleryIndex));
     }
     galleryStack.appendChild(section);
   }
 
-  function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
-    if (!gallery || isSuperSubGallery(gallery)) return;
-    const section = document.createElement('section');
-    const isBrandsGallery = gallery.galleryId === 'our-brands' || gallery.meta?.label === 'our-brands';
-    const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
-    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
-    section.dataset.galleryIndex = String(galleryIndex);
-    section.id = String(gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`);
-    section.innerHTML = `
-      <div class="crmo3047-gallery-head">
-        <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(STACK_TILE_LIMIT, visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
-          <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
-          <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
-        </div>
-        <div class="crmo3047-gallery-tools">
-          ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
-        </div>
-      </div>
-      <div class="crmo3045-grid" data-gallery-grid></div>
-    `;
-    const grid = section.querySelector('[data-gallery-grid]');
-    let visibleRendered = 0;
-    gallery.tiles.forEach((tile, tileIndex) => {
-      if (visibleRendered >= STACK_TILE_LIMIT) return;
-      if (tile?.isVisible === false) return;
-      grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
-      visibleRendered += 1;
-    });
-    const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
-    galleryEditorBtn?.addEventListener('click', () => openGalleryEditor(galleryIndex));
-    galleryStack.appendChild(section);
-  }
-
   function renderGalleryStack() {
     galleryStack.innerHTML = '';
-    let firstRenderedSection = true;
     const editEnabled = canEdit();
-    const galleryByLabel = (label) => {
-      const idx = galleries.findIndex((gallery) => !isSuperSubGallery(gallery) && String(gallery?.meta?.label || gallery?.galleryId || '') === label);
-      return idx >= 0 ? [galleries[idx], idx] : [null, -1];
-    };
-    ['intro','our-brands','intro-more','stores'].forEach((label) => {
-      const [gallery, idx] = galleryByLabel(label);
-      if (gallery) { renderSingleGallerySection(gallery, idx, editEnabled); if (firstRenderedSection && galleryStack.lastElementChild) { galleryStack.lastElementChild.classList.add('is-first-stack-section'); firstRenderedSection = false; } }
-    });
-    renderSuperGallerySection(editEnabled);
-    if (firstRenderedSection && galleryStack.lastElementChild) { galleryStack.lastElementChild.classList.add('is-first-stack-section'); firstRenderedSection = false; }
-    ['branding','product-design','exhibitions','packaging','small-business'].forEach((label) => {
-      const [gallery, idx] = galleryByLabel(label);
-      if (gallery) { renderSingleGallerySection(gallery, idx, editEnabled); if (firstRenderedSection && galleryStack.lastElementChild) { galleryStack.lastElementChild.classList.add('is-first-stack-section'); firstRenderedSection = false; } }
-    });
     renderAboutSection(editEnabled);
-    if (firstRenderedSection && galleryStack.lastElementChild) { galleryStack.lastElementChild.classList.add('is-first-stack-section'); firstRenderedSection = false; }
     renderContactSection(editEnabled);
+    renderSuperGallerySection(editEnabled);
+    galleries.forEach((gallery, galleryIndex) => {
+      if (isSuperSubGallery(gallery)) return;
+      const section = document.createElement('section');
+      const isBrandsGallery = gallery.galleryId === 'brands-gallery';
+      section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
+      section.dataset.galleryIndex = String(galleryIndex);
+      section.innerHTML = `
+        <div class="crmo3047-gallery-head">
+          <div class="crmo3047-gallery-copy">
+            <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'brands-gallery' : gallery.galleryId)} · ${Math.min(STACK_TILE_LIMIT, gallery.tiles.length)} shown · ${gallery.tiles.length} total</div>
+            <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
+            <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
+          </div>
+          <div class="crmo3047-gallery-tools">
+            ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
+          </div>
+        </div>
+        <div class="crmo3045-grid" data-gallery-grid></div>
+      `;
+      const grid = section.querySelector('[data-gallery-grid]');
+      gallery.tiles.slice(0, STACK_TILE_LIMIT).forEach((tile, tileIndex) => {
+        grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
+      });
+
+      const toggleBtn = section.querySelector('[data-gallery-toggle]');
+      toggleBtn?.addEventListener('click', async () => {
+        if (!canEdit()) {
+          setStatus('Viewer mode only. Login to enable gallery editing.');
+          try { window.CRMOAuthModal?.open('login'); } catch (_) {}
+          return;
+        }
+        galleries[galleryIndex].ui.editMode = !galleries[galleryIndex].ui.editMode;
+        renderGalleryStack();
+        persistLocal(makePayload(galleries));
+        try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); } catch (err) {
+          console.error('[CRMO_v3185] gallery mode save failed', err);
+          setStatus(`Cloud: gallery mode saved locally only · ${err.message || err}`);
+        }
+      });
+
+      const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
+      galleryEditorBtn?.addEventListener('click', () => openGalleryEditor(galleryIndex));
+      galleryStack.appendChild(section);
+    });
     renderFooterSection(editEnabled);
     renderLegalSection(editEnabled);
   }
+
 
   function getLightboxMedia(tile) {
     const source = Array.isArray(tile?.media) ? tile.media.filter((item) => item && item.src) : [];
@@ -7512,22 +7115,8 @@ window.CRMOForceOpenAuthModal = function(event){
     byId('crmo3047NextTile').hidden = !showTileNav;
   }
 
-  function getNavigableTileIndexes(galleryIndex) {
-    const gallery = galleries[galleryIndex];
-    const tiles = Array.isArray(gallery?.tiles) ? gallery.tiles : [];
-    const brandGallery = isBrandGalleryIndex(galleryIndex);
-    const indexes = [];
-    tiles.forEach((tile, tileIndex) => {
-      if (tile?.isVisible === false) return;
-      if (brandGallery && !isBrandTileInteractive(tile)) return;
-      indexes.push(tileIndex);
-    });
-    return indexes;
-  }
-
   function openLightbox(galleryIndex, tileIndex, mediaIndex) {
     const tile = galleries[galleryIndex].tiles[tileIndex];
-    if (tile?.isVisible === false) return;
     if (isBrandGalleryIndex(galleryIndex) && !isBrandTileInteractive(tile)) return;
     activeGalleryIndex = galleryIndex;
     activeTileIndex = tileIndex;
@@ -7539,11 +7128,8 @@ window.CRMOForceOpenAuthModal = function(event){
   }
 
   function shiftTile(delta) {
-    const tileIndexes = getNavigableTileIndexes(activeGalleryIndex);
-    if (!tileIndexes.length) return;
-    const currentPos = Math.max(0, tileIndexes.indexOf(activeTileIndex));
-    const nextPos = (currentPos + delta + tileIndexes.length) % tileIndexes.length;
-    activeTileIndex = tileIndexes[nextPos];
+    const tileCount = galleries[activeGalleryIndex].tiles.length;
+    activeTileIndex = (activeTileIndex + delta + tileCount) % tileCount;
     activeMediaIndex = 0;
     renderLightbox();
   }
@@ -7613,25 +7199,6 @@ window.CRMOForceOpenAuthModal = function(event){
     byId('crmo3047GalleryNote').textContent = `Gallery ${galleryEditorIndex + 1} tile order updated. Save will commit the new order.`;
   }
 
-  function getGalleryEditorEyeIcon(isVisible) {
-    return isVisible !== false
-      ? '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 5c5.23 0 9.27 3.11 11 7-1.73 3.89-5.77 7-11 7S2.73 15.89 1 12c1.73-3.89 5.77-7 11-7Zm0 2C8.18 7 5.12 9.06 3.35 12 5.12 14.94 8.18 17 12 17s6.88-2.06 8.65-5C18.88 9.06 15.82 7 12 7Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>'
-      : '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m3.28 2.22 18.5 18.5-1.06 1.06-3.08-3.08A12.84 12.84 0 0 1 12 20c-5.23 0-9.27-3.11-11-7a13.9 13.9 0 0 1 4.2-4.86L2.22 3.28l1.06-1.06Zm4.1 7.22A4.49 4.49 0 0 0 7.5 12a4.5 4.5 0 0 0 6.06 4.2l-1.63-1.63A2.5 2.5 0 0 1 9.43 12c0-.35.07-.68.19-.99L7.38 9.44Zm4.46-3.42.16-.01c5.23 0 9.27 3.11 11 7a13.95 13.95 0 0 1-4.22 4.88l-2.91-2.91a4.5 4.5 0 0 0-5.85-5.85L8.03 7.14A13.16 13.16 0 0 1 12 6.02Zm0 3a2.5 2.5 0 0 1 2.5 2.5c0 .36-.07.69-.21 1l-3.29-3.29c.3-.13.64-.21 1-.21Z"></path></svg>';
-  }
-
-  function getGalleryEditorLayersIcon() {
-    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3 3 7.5 12 12l9-4.5L12 3Zm-9 9 9 4.5 9-4.5v3L12 19.5 3 15v-3Zm0 5 9 4.5 9-4.5"/></svg>';
-  }
-
-  function galleryEditorTileHasLayers(tile) {
-    if (isBrandGalleryIndex(galleryEditorIndex)) {
-      const direct = Array.isArray(tile?.brandConfig?.attachedWorkRefs) ? tile.brandConfig.attachedWorkRefs.length : 0;
-      const resolved = Array.isArray(getBrandAttachedWorkOptions(tile)) ? getBrandAttachedWorkOptions(tile).length : 0;
-      return Math.max(direct, resolved) > 1;
-    }
-    return Array.isArray(tile?.media) && tile.media.length > 1;
-  }
-
   function renderGalleryEditorTiles() {
     const grid = byId('crmo3047GalleryTiles');
     const tilesNote = byId('crmo3047GalleryTilesNote');
@@ -7652,19 +7219,13 @@ window.CRMOForceOpenAuthModal = function(event){
     const label = galleryEditorDraft.meta.label || `G${galleryEditorIndex + 1}`;
     galleryEditorDraft.tiles.forEach((tile, tileIndex) => {
       const card = document.createElement('div');
-      const tileVisible = tile?.isVisible !== false;
-      const hasLayers = galleryEditorTileHasLayers(tile);
-      card.className = `crmo3045-tile-wrap${tileVisible ? '' : ' is-hidden-tile'}`;
+      card.className = 'crmo3045-tile-wrap';
       card.draggable = galleryEditorDraft.tiles.length > 1;
       card.dataset.tileIndex = String(tileIndex);
       const first = tile.media[0] || null;
       const meta = [label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
       card.innerHTML = `
-        <div class="crmo3047-card-tools">
-          <button class="crmo3047-icon-btn crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery editor">✎</button>
-          ${hasLayers ? `<span class="crmo3047-icon-indicator" aria-label="לאריח יש שכבות נוספות" title="לאריח יש שכבות נוספות">${getGalleryEditorLayersIcon()}</span>` : ''}
-          <button class="crmo3047-icon-btn crmo3047-visibility-btn${tileVisible ? '' : ' is-off'}" type="button" aria-label="${tileVisible ? 'הסתר אריח מהגלריה' : 'הצג אריח בגלריה'}" title="${tileVisible ? 'הסתר אריח מהגלריה' : 'הצג אריח בגלריה'}">${getGalleryEditorEyeIcon(tileVisible)}</button>
-        </div>
+        <button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery editor">✎</button>
         <article class="crmo3045-tile" tabindex="0" aria-label="Gallery editor tile ${tileIndex + 1}">
           ${first ? '' : '<div class="crmo3045-fallback">CRMO TILE<br>16:9</div>'}
           <div class="crmo3045-hover">
@@ -7685,23 +7246,9 @@ window.CRMOForceOpenAuthModal = function(event){
       article.draggable = false;
       const pencilBtn = card.querySelector('.crmo3045-pencil');
       if (pencilBtn) pencilBtn.draggable = false;
-      const visibilityBtn = card.querySelector('.crmo3047-visibility-btn');
-      if (visibilityBtn) visibilityBtn.draggable = false;
       card.querySelector('.crmo3045-pencil')?.addEventListener('click', (e) => {
         e.stopPropagation();
         openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' });
-      });
-      card.querySelector('.crmo3047-visibility-btn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const draftTile = galleryEditorDraft?.tiles?.[tileIndex];
-        if (!draftTile) return;
-        draftTile.isVisible = draftTile.isVisible === false ? true : false;
-        renderGalleryEditorTiles();
-        updateGalleryEditorUiState();
-        byId('crmo3047GalleryNote').textContent = draftTile.isVisible === false
-          ? `אריח ${tileIndex + 1} הוסתר מהתצוגה בגלריה. השינוי יישמר אחרי שמירה.`
-          : `אריח ${tileIndex + 1} חזר לתצוגה בגלריה. השינוי יישמר אחרי שמירה.`;
       });
       article.addEventListener('click', () => openTileEditor(galleryEditorIndex, tileIndex, { source: 'gallery-draft' }));
       article.addEventListener('keydown', (e) => {
@@ -7840,7 +7387,7 @@ window.CRMOForceOpenAuthModal = function(event){
       await runWithSyncLock(isLoggedIn() ? 'saving about section to cloud + local' : 'saving about section to local cache', async () => saveGalleriesToCloud());
       setStatus(isLoggedIn() ? 'סקשן על הסטודיו נשמר לענן.' : 'סקשן על הסטודיו נשמר מקומית.');
     } catch (err) {
-      console.error('[CRMO_v3240] about save failed', err);
+      console.error('[CRMO_v3185] about save failed', err);
       setStatus(`Cloud: about section saved locally only · ${err.message || err}`);
     }
     closeAboutEditor();
@@ -8565,11 +8112,18 @@ window.CRMOForceOpenAuthModal = function(event){
     if (result?.error) throw result.error;
     const data = result?.data;
     const payload = data ? data[payloadCol] : null;
-    const hydrated = hydrateWrapperShape(payload);
-    if (!hydrated || !Array.isArray(hydrated.galleries)) return null;
-    hydrated.updatedAt = hydrated.updatedAt || data?.updated_at || '';
-    hydrated.source = 'cloud';
-    return hydrated;
+    if (!payload || !Array.isArray(payload.galleries)) return null;
+    return {
+      schema: payload.schema || CLOUD_SCHEMA,
+      version: payload.version || VERSION,
+      updatedAt: payload.updatedAt || data?.updated_at || '',
+      source: payload.source || 'cloud',
+      savedBy: payload.savedBy || '',
+      syncMode: payload.syncMode || 'cloud-primary-local-fallback',
+      aboutSection: ensureAboutSection(payload.aboutSection || {}),
+      contactSection: ensureContactSection(payload.contactSection || {}),
+      galleries: ensureBrandsFirst(payload.galleries)
+    };
   }
 
   function clampActivePointers() {
@@ -8605,16 +8159,9 @@ window.CRMOForceOpenAuthModal = function(event){
   function applyWrapper(wrapper, sourceLabel, opts = {}) {
     const { closeDrafts = false, draftCloseReason = 'Incoming state applied. Open editors were closed to avoid draft/committed mismatch.' } = opts || {};
     if (closeDrafts) closeDraftEditorsForIncomingState(draftCloseReason);
-    const next = hydrateWrapperShape(wrapper) || hydrateWrapperShape(makePayload(emptyGalleries()));
-    siteState = ensureSiteState(next.site || {});
-    aboutSection = ensureAboutSection(next.aboutSection || siteState.about || {});
-    contactSection = ensureContactSection(next.contactSection || siteState.contact || {});
-    footerSection = ensureFooterSection(next.footerSection || siteState.footer || {});
-    accessibilitySection = ensureAccessibilitySection(next.accessibilitySection || siteState.accessibility || {});
-    privacySection = ensurePrivacySection(next.privacySection || siteState.privacy || {});
-    brandsState = ensureBrandsState(next.brandsState || next.brands || extractBrandsState(next.galleries));
-    clientsState = ensureClientsState(next.clientsState || next.clients || extractClientsState(next.galleries));
-    routesState = ensureRoutesState(next.routesState || next.routes || extractRoutesState(next.galleries));
+    const next = wrapper && Array.isArray(wrapper.galleries) ? wrapper : makePayload(emptyGalleries());
+    aboutSection = ensureAboutSection(next.aboutSection || {});
+    contactSection = ensureContactSection(next.contactSection || {});
     galleries = ensureAllGalleries(next.galleries?.length ? next.galleries : emptyGalleries());
     clampActivePointers();
     persistLocal(next);
@@ -8707,7 +8254,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeGalleryEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving gallery to cloud + local' : 'saving gallery to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3240] gallery save failed', err);
+      console.error('[CRMO_v3185] gallery save failed', err);
       setStatus(`Cloud: gallery save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8752,7 +8299,7 @@ window.CRMOForceOpenAuthModal = function(event){
     closeTileEditor();
     try { await runWithSyncLock(isLoggedIn() ? 'saving tile to cloud + local' : 'saving tile to local cache', async () => saveGalleriesToCloud()); }
     catch (err) {
-      console.error('[CRMO_v3240] tile save failed', err);
+      console.error('[CRMO_v3185] tile save failed', err);
       setStatus(`Cloud: tile save failed, local commit kept · ${err.message || err}`);
     }
   }
@@ -8903,7 +8450,7 @@ window.CRMOForceOpenAuthModal = function(event){
         renderGalleryStack();
         byId('crmo3047AboutNote').textContent = '';
       } catch (err) {
-        console.error('[CRMO_v3240] about media load failed', err);
+        console.error('[CRMO_v3185] about media load failed', err);
         byId('crmo3047AboutNote').textContent = 'טעינת המדיה נכשלה.';
       }
       event.target.value = '';
@@ -8998,7 +8545,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await handleGalleryDraftFiles(files, 'גרירה');
       } catch (err) {
-        console.error('[CRMO_v3240] gallery drop import failed', err);
+        console.error('[CRMO_v3185] gallery drop import failed', err);
         byId('crmo3047GalleryNote').textContent = `ייבוא בגרירה נכשל · ${err?.message || err}`;
       }
     });
@@ -9019,7 +8566,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await handleGalleryDraftFiles(files, 'בחירה');
     } catch (err) {
-      console.error('[CRMO_v3240] gallery picker import failed', err);
+      console.error('[CRMO_v3185] gallery picker import failed', err);
       byId('crmo3047GalleryNote').textContent = `ייבוא נכשל · ${err?.message || err}`;
     }
     e.target.value = '';
@@ -9161,7 +8708,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059ReloadCloud')) byId('crmo3059ReloadCloud').addEventListener('click', async () => {
     try { await runWithSyncLock('loading cloud state', async () => loadFromCloudAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3240] cloud load failed', err);
+      console.error('[CRMO_v3185] cloud load failed', err);
       setStatus(`Sync law: cloud load failed · ${err.message || err}`);
     }
   });
@@ -9170,7 +8717,7 @@ window.CRMOForceOpenAuthModal = function(event){
   if (byId('crmo3059LoadLocal')) byId('crmo3059LoadLocal').addEventListener('click', async () => {
     try { await runWithSyncLock('loading local cache', async () => loadFromLocalAndApply()); }
     catch (err) {
-      console.error('[CRMO_v3240] local load failed', err);
+      console.error('[CRMO_v3185] local load failed', err);
       setStatus(`Sync law: local load failed · ${err.message || err}`);
     }
   });
@@ -9179,7 +8726,7 @@ window.CRMOForceOpenAuthModal = function(event){
     try {
       await runWithSyncLock(isLoggedIn() ? 'saving local cache + cloud' : 'saving local cache', async () => saveGalleriesToCloud());
     } catch (err) {
-      console.error('[CRMO_v3240] save now failed', err);
+      console.error('[CRMO_v3185] save now failed', err);
       setStatus(`Sync law: save failed · ${err.message || err}`);
     }
   });
@@ -9237,7 +8784,7 @@ window.CRMOForceOpenAuthModal = function(event){
       try {
         await loadFromCloudAndApply();
       } catch (err) {
-        console.error('[CRMO_v3240] post-auth cloud load failed', err);
+        console.error('[CRMO_v3185] post-auth cloud load failed', err);
         setStatus(`Sync law: post-auth cloud load failed · ${err.message || err}`);
       }
     } else if (!editable && lastAuthEditable && !preserveStatus) {
@@ -9301,7 +8848,7 @@ window.CRMOForceOpenAuthModal = function(event){
   applyWrapper(preferred, isLoggedIn() ? 'cloud active' : 'local fallback', { closeDrafts: true, draftCloseReason: 'Boot state applied.' });
   if (isLoggedIn()) {
     loadFromCloudAndApply().catch((err) => {
-      console.error('[CRMO_v3240] initial cloud load failed', err);
+      console.error('[CRMO_v3185] initial cloud load failed', err);
       setStatus(`Sync law: initial cloud load failed · ${err.message || err}`);
     });
   } else {
@@ -9312,424 +8859,6 @@ window.CRMOForceOpenAuthModal = function(event){
 
 
 
-
-<style id="crmo-account-popups-v3229">
-.crmo-auth-modal__edit,
-.crmo-profile-modal__edit{
-  position:absolute;
-  top:12px;
-  left:54px;
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,.14);
-  background:#fff;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:16px;
-  line-height:1;
-}
-.crmo-auth-modal.can-edit .crmo-auth-modal__edit,
-.crmo-profile-modal.can-edit .crmo-profile-modal__edit{ display:flex; }
-.crmo-user-popover{
-  position:fixed;
-  z-index:100020;
-  width:min(360px,calc(100vw - 32px));
-  background:#f7f7f7;
-  border:1px solid #d9d9d9;
-  border-radius:22px;
-  box-shadow:0 18px 44px rgba(0,0,0,.16);
-  padding:18px;
-}
-.crmo-user-popover[hidden]{display:none;}
-.crmo-user-popover__btn{
-  width:100%;
-  min-height:92px;
-  border-radius:24px;
-  border:1px solid #d8d8d8;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  font:inherit;
-  font-size:18px;
-  cursor:pointer;
-  margin:0 0 16px 0;
-}
-.crmo-user-popover__btn:last-child{ margin-bottom:0; }
-.crmo-user-popover__btn.danger{
-  color:#c73021;
-  border-color:#f0a19a;
-  background:#fff;
-}
-.crmo-user-popover__icon{ font-size:28px; line-height:1; }
-.crmo-profile-modal,
-.crmo-popup-editor-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.58);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-.crmo-profile-modal{ z-index:2147483645; }
-.crmo-popup-editor-modal{ z-index:2147483647; }
-.crmo-profile-modal[hidden],
-.crmo-popup-editor-modal[hidden]{display:none;}
-.crmo-profile-modal__panel,
-.crmo-popup-editor-modal__panel{
-  position:relative;
-  width:min(820px,94vw);
-  max-height:90vh;
-  overflow:auto;
-  background:#fff;
-  border-radius:28px;
-  box-shadow:0 22px 70px rgba(0,0,0,.24);
-}
-.crmo-profile-modal__close,
-.crmo-popup-editor-modal__close{
-  position:absolute;
-  top:12px;
-  left:12px;
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,.14);
-  background:#fff;
-  cursor:pointer;
-  font-size:24px;
-  line-height:1;
-}
-.crmo-profile-modal__header{
-  padding:44px 20px 16px;
-  border-bottom:1px solid #eee;
-}
-.crmo-profile-modal__head-grid{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 140px;
-  gap:18px;
-  align-items:center;
-}
-.crmo-profile-modal__title{
-  margin:0;
-  font-size:32px;
-  line-height:1.15;
-  font-weight:500;
-}
-.crmo-profile-modal__mascot img,
-.crmo-popup-editor-modal__preview img{
-  max-width:100%;
-  max-height:140px;
-  display:block;
-  object-fit:contain;
-}
-.crmo-profile-modal__body,
-.crmo-popup-editor-modal__body{ padding:16px 20px 20px; }
-.crmo-profile-formgrid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-.crmo-profile-formgrid .full{ grid-column:1 / -1; }
-.crmo-profile-modal input,
-.crmo-profile-modal textarea,
-.crmo-popup-editor-modal input,
-.crmo-popup-editor-modal textarea{
-  width:100%;
-  min-height:46px;
-  border:1px solid #ddd;
-  border-radius:14px;
-  padding:12px 14px;
-  font:inherit;
-  background:#fff;
-}
-.crmo-profile-modal textarea,
-.crmo-popup-editor-modal textarea{ min-height:110px; resize:vertical; }
-.crmo-profile-modal__actions,
-.crmo-popup-editor-modal__actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:14px;
-}
-.crmo-profile-modal__actions button,
-.crmo-popup-editor-modal__actions button{
-  min-height:44px;
-  border-radius:14px;
-  border:1px solid #ddd;
-  background:#fff;
-  padding:10px 16px;
-  font:inherit;
-  cursor:pointer;
-}
-.crmo-profile-modal__actions .primary,
-.crmo-popup-editor-modal__actions .primary{ background:#111; color:#fff; border-color:#111; }
-.crmo-popup-editor-modal__sub{ color:#666; margin:8px 0 14px; }
-.crmo-popup-editor-modal__preview{ margin-top:8px; margin-bottom:14px; }
-@media (max-width: 720px){
-  .crmo-profile-modal__head-grid,
-  .crmo-profile-formgrid{ grid-template-columns:1fr; }
-}
-</style>
-<script id="crmo-account-popups-inline-js-v3229">
-(function(){
-  if(window.CRMOAccountPopups) return;
-  function bridge(){ return window.CRMOAuthBridge || null; }
-  function asset(path){
-    const b = bridge();
-    const base = b?.getAssetBase?.() || window.CRMO_PUBLIC_ASSET_BASE || (window.CRMO_SUPABASE_URL ? String(window.CRMO_SUPABASE_URL).replace(/\/$/, '') + '/storage/v1/object/public/assets/' : 'assets/');
-    return (/\/$/.test(base) ? base : base + '/') + String(path || '').replace(/^\//,'');
-  }
-  const AUTH_KEY='CRMO_v3240_AUTH_POPUP_COPY';
-  const PROFILE_KEY='CRMO_v3240_PROFILE_POPUP_COPY';
-  const PROFILE_DATA_KEY='CRMO_v3240_PROFILE_DATA';
-  const authDefaults={
-    loginText:'שמחים לראות אותך שוב! הכנס את הפרטים שלך כדי להמשיך.\n(ואם זה נראה מוכר—כנראה שלא סימנת "זכור אותי" במחשב הזה 😉)',
-    registerText:'כיף שהגעתנו! נבקש רק כמה פרטים קטנים כדי לפתוח לך גישה. בלי ספאם, בלי דרמות. יאללה מתחילים 🙂',
-    mascotPath:'branding/creamo_characters/creamo_login_tumbnail.png',
-    mascotSrc:''
-  };
-  const profileDefaults={
-    title:'הפרופיל שלי',
-    subtitle:'כאן אפשר להשלים פרטים, לאסוף ידע על הלקוח ולשמור מידע שימושי להמשך.',
-    mascotPath:'branding/creamo_characters/creamo_login_tumbnail.png',
-    mascotSrc:''
-  };
-  function safeRead(key, defaults){
-    try{ const raw=localStorage.getItem(key); if(!raw) return Object.assign({}, defaults); return Object.assign({}, defaults, JSON.parse(raw)); }catch(e){ return Object.assign({}, defaults); }
-  }
-  function safeWrite(key, value){ try{ localStorage.setItem(key, JSON.stringify(value||{})); }catch(e){} }
-  let authCopy=safeRead(AUTH_KEY, authDefaults);
-  let profileCopy=safeRead(PROFILE_KEY, profileDefaults);
-  function canEdit(){ try{ return !!bridge()?.isLoggedIn?.(); }catch(e){ return false; } }
-  function getProfileData(){
-    const email = bridge()?.getUserEmail?.() || '';
-    const base={ firstName:'', lastName:'', company:'', sector:'', service:'', phone:'', note:'', email: email };
-    try{ return Object.assign(base, JSON.parse(localStorage.getItem(PROFILE_DATA_KEY)||'{}'), { email }); }catch(e){ return base; }
-  }
-  function setProfileData(data){ safeWrite(PROFILE_DATA_KEY, Object.assign({}, getProfileData(), data||{})); }
-  function authMascotSrc(){ return authCopy.mascotSrc || asset(authCopy.mascotPath); }
-  function profileMascotSrc(){ return profileCopy.mascotSrc || asset(profileCopy.mascotPath); }
-  function ensureAuthEditButton(){
-    const wrap=document.getElementById('crmoAuthModal');
-    if(!wrap) return null;
-    wrap.classList.toggle('can-edit', canEdit());
-    let btn=wrap.querySelector('.crmo-auth-modal__edit');
-    if(!btn){
-      btn=document.createElement('button');
-      btn.type='button'; btn.className='crmo-auth-modal__edit'; btn.setAttribute('aria-label','עריכת פופ-אפ כניסה/הרשמה'); btn.title='עריכת פופ-אפ'; btn.textContent='✎';
-      const panel=wrap.querySelector('.crmo-auth-modal__panel');
-      panel && panel.appendChild(btn);
-      btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); openAuthEditor(); });
-    }
-    return btn;
-  }
-  function refreshAuthCopy(){
-    const wrap=document.getElementById('crmoAuthModal'); if(!wrap) return;
-    wrap.classList.toggle('can-edit', canEdit());
-    ensureAuthEditButton();
-    const title=wrap.querySelector('#crmoAuthModalTitle');
-    const mascot=wrap.querySelector('.crmo-auth-modal__mascot img');
-    const registerActive=!!wrap.querySelector('[data-auth-mode="register"].is-active');
-    if(title) title.innerHTML=String(registerActive ? authCopy.registerText : authCopy.loginText).replace(/\n/g,'<br>');
-    if(mascot) mascot.src=authMascotSrc();
-  }
-  const userMenu=document.createElement('div');
-  userMenu.className='crmo-user-popover'; userMenu.id='crmoUserPopover'; userMenu.hidden=true;
-  userMenu.innerHTML='<button type="button" class="crmo-user-popover__btn" id="crmoUserPopoverProfile"><span>הפרופיל שלי</span><span class="crmo-user-popover__icon">👤</span></button><button type="button" class="crmo-user-popover__btn danger" id="crmoUserPopoverLogout"><span>התנתקות</span><span class="crmo-user-popover__icon">⊘</span></button>';
-  document.body.appendChild(userMenu);
-  function placeMenu(anchor){
-    const rect=anchor.getBoundingClientRect();
-    const w=Math.min(360, window.innerWidth-32);
-    const left=Math.max(16, Math.min(window.innerWidth - w - 16, rect.left + rect.width/2 - w/2));
-    userMenu.style.left=left+'px';
-    userMenu.style.top=(rect.bottom + 12)+'px';
-  }
-  function openUserMenu(anchor){ placeMenu(anchor); userMenu.hidden=false; }
-  function closeUserMenu(){ userMenu.hidden=true; }
-  const profileWrap=document.createElement('div');
-  profileWrap.className='crmo-profile-modal'; profileWrap.id='crmoProfileModal'; profileWrap.hidden=true;
-  profileWrap.innerHTML='\
-    <div class="crmo-profile-modal__panel">\
-      <button type="button" class="crmo-profile-modal__close" aria-label="סגור">×</button>\
-      <button type="button" class="crmo-profile-modal__edit" aria-label="עריכת פופ-אפ פרופיל" title="עריכת פופ-אפ">✎</button>\
-      <div class="crmo-profile-modal__header">\
-        <div class="crmo-profile-modal__head-grid">\
-          <div>\
-            <h2 class="crmo-profile-modal__title" id="crmoProfileTitle"></h2>\
-            <p id="crmoProfileSubtitle" style="margin:10px 0 0;color:#666;"></p>\
-          </div>\
-          <div class="crmo-profile-modal__mascot"><img id="crmoProfileMascot" alt="CREAMO"></div>\
-        </div>\
-      </div>\
-      <div class="crmo-profile-modal__body">\
-        <form id="crmoProfileForm" onsubmit="return false;">\
-          <div class="crmo-profile-formgrid">\
-            <input id="crmoProfileFirst" placeholder="שם פרטי (בעברית)">\
-            <input id="crmoProfileLast" placeholder="שם משפחה (בעברית)">\
-            <input id="crmoProfileCompany" placeholder="שם העסק">\
-            <input id="crmoProfileSector" placeholder="מה תחום העיסוק שלכם?">\
-            <input id="crmoProfileService" placeholder="באיזה שירות אתם מעוניינים?">\
-            <input id="crmoProfilePhone" placeholder="טלפון" dir="ltr" inputmode="tel">\
-            <input id="crmoProfileEmail" class="full" placeholder="מייל" disabled>\
-            <textarea id="crmoProfileNote" class="full" placeholder="כתבו כאן בקצרה על העסק, האתגר והחזון הנקודתי שלכם."></textarea>\
-          </div>\
-          <div class="crmo-profile-modal__actions">\
-            <button type="button" id="crmoProfileClose">סגור</button>\
-            <button type="button" class="primary" id="crmoProfileSave">שמירה</button>\
-          </div>\
-        </form>\
-      </div>\
-    </div>';
-  document.body.appendChild(profileWrap);
-  const profileEditor=document.createElement('div');
-  profileEditor.className='crmo-popup-editor-modal'; profileEditor.id='crmoProfilePopupEditor'; profileEditor.hidden=true;
-  profileEditor.innerHTML='\
-    <div class="crmo-popup-editor-modal__panel">\
-      <button type="button" class="crmo-popup-editor-modal__close" aria-label="סגור">×</button>\
-      <div class="crmo-popup-editor-modal__body">\
-        <h3 style="margin:0 0 8px;">עריכת פופ-אפ הפרופיל</h3>\
-        <div class="crmo-popup-editor-modal__sub">עדכון הטקסט והדמות של חלון הפרופיל.</div>\
-        <label>כותרת<textarea id="crmoProfilePopupTitle"></textarea></label>\
-        <label style="display:block;margin-top:12px;">תיאור<textarea id="crmoProfilePopupSubtitle"></textarea></label>\
-        <div class="crmo-popup-editor-modal__preview"><img id="crmoProfilePopupPreview" alt="preview"></div>\
-        <input type="file" id="crmoProfilePopupImage" accept="image/*">\
-        <div class="crmo-popup-editor-modal__actions">\
-          <button type="button" id="crmoProfilePopupCancel">סגור</button>\
-          <button type="button" class="primary" id="crmoProfilePopupSave">שמירה</button>\
-        </div>\
-      </div>\
-    </div>';
-  document.body.appendChild(profileEditor);
-  const authEditor=document.createElement('div');
-  authEditor.className='crmo-popup-editor-modal'; authEditor.id='crmoAuthPopupEditor'; authEditor.hidden=true;
-  authEditor.innerHTML='\
-    <div class="crmo-popup-editor-modal__panel">\
-      <button type="button" class="crmo-popup-editor-modal__close" aria-label="סגור">×</button>\
-      <div class="crmo-popup-editor-modal__body">\
-        <h3 style="margin:0 0 8px;">עריכת פופ-אפ כניסה / הרשמה</h3>\
-        <div class="crmo-popup-editor-modal__sub">עדכון הטקסטים של חלון הכניסה וההרשמה, יחד עם הדמות.</div>\
-        <label>טקסט כניסה<textarea id="crmoAuthPopupLoginText"></textarea></label>\
-        <label style="display:block;margin-top:12px;">טקסט הרשמה<textarea id="crmoAuthPopupRegisterText"></textarea></label>\
-        <div class="crmo-popup-editor-modal__preview"><img id="crmoAuthPopupPreview" alt="preview"></div>\
-        <input type="file" id="crmoAuthPopupImage" accept="image/*">\
-        <div class="crmo-popup-editor-modal__actions">\
-          <button type="button" id="crmoAuthPopupCancel">סגור</button>\
-          <button type="button" class="primary" id="crmoAuthPopupSave">שמירה</button>\
-        </div>\
-      </div>\
-    </div>';
-  document.body.appendChild(authEditor);
-  function refreshProfileCopy(){
-    profileWrap.classList.toggle('can-edit', canEdit());
-    const d=getProfileData();
-    profileWrap.querySelector('#crmoProfileTitle').textContent=profileCopy.title;
-    profileWrap.querySelector('#crmoProfileSubtitle').textContent=profileCopy.subtitle;
-    profileWrap.querySelector('#crmoProfileMascot').src=profileMascotSrc();
-    profileWrap.querySelector('#crmoProfileFirst').value=d.firstName||'';
-    profileWrap.querySelector('#crmoProfileLast').value=d.lastName||'';
-    profileWrap.querySelector('#crmoProfileCompany').value=d.company||'';
-    profileWrap.querySelector('#crmoProfileSector').value=d.sector||'';
-    profileWrap.querySelector('#crmoProfileService').value=d.service||'';
-    profileWrap.querySelector('#crmoProfilePhone').value=d.phone||'';
-    profileWrap.querySelector('#crmoProfileEmail').value=d.email||'';
-    profileWrap.querySelector('#crmoProfileNote').value=d.note||'';
-  }
-  function openProfile(){ refreshProfileCopy(); closeUserMenu(); profileWrap.hidden=false; document.body.classList.add('crmo-auth-modal-open'); }
-  function closeProfile(){ profileWrap.hidden=true; document.body.classList.remove('crmo-auth-modal-open'); }
-  function openProfileEditor(){
-    if(!canEdit()) return;
-    profileEditor.querySelector('#crmoProfilePopupTitle').value=profileCopy.title||'';
-    profileEditor.querySelector('#crmoProfilePopupSubtitle').value=profileCopy.subtitle||'';
-    profileEditor.querySelector('#crmoProfilePopupPreview').src=profileMascotSrc();
-    profileEditor.hidden=false;
-  }
-  function openAuthEditor(){
-    if(!canEdit()) return;
-    authEditor.querySelector('#crmoAuthPopupLoginText').value=authCopy.loginText||'';
-    authEditor.querySelector('#crmoAuthPopupRegisterText').value=authCopy.registerText||'';
-    authEditor.querySelector('#crmoAuthPopupPreview').src=authMascotSrc();
-    authEditor.hidden=false;
-  }
-  function closeEditor(modal){ modal.hidden=true; }
-  profileWrap.querySelector('.crmo-profile-modal__close').addEventListener('click', closeProfile);
-  profileWrap.querySelector('#crmoProfileClose').addEventListener('click', closeProfile);
-  profileWrap.querySelector('.crmo-profile-modal__edit').addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); openProfileEditor(); });
-  profileWrap.querySelector('#crmoProfileSave').addEventListener('click', function(){
-    setProfileData({
-      firstName: profileWrap.querySelector('#crmoProfileFirst').value.trim(),
-      lastName: profileWrap.querySelector('#crmoProfileLast').value.trim(),
-      company: profileWrap.querySelector('#crmoProfileCompany').value.trim(),
-      sector: profileWrap.querySelector('#crmoProfileSector').value.trim(),
-      service: profileWrap.querySelector('#crmoProfileService').value.trim(),
-      phone: profileWrap.querySelector('#crmoProfilePhone').value.trim(),
-      note: profileWrap.querySelector('#crmoProfileNote').value.trim()
-    });
-    closeProfile();
-  });
-  profileEditor.querySelector('.crmo-popup-editor-modal__close').addEventListener('click', function(){ closeEditor(profileEditor); });
-  profileEditor.querySelector('#crmoProfilePopupCancel').addEventListener('click', function(){ closeEditor(profileEditor); });
-  profileEditor.querySelector('#crmoProfilePopupImage').addEventListener('change', function(){
-    const file=this.files&&this.files[0]; if(!file) return; const fr=new FileReader(); fr.onload=function(){ profileEditor.querySelector('#crmoProfilePopupPreview').src=String(fr.result||''); profileEditor.querySelector('#crmoProfilePopupPreview').dataset.newsrc=String(fr.result||''); }; fr.readAsDataURL(file);
-  });
-  profileEditor.querySelector('#crmoProfilePopupSave').addEventListener('click', function(){
-    profileCopy.title=profileEditor.querySelector('#crmoProfilePopupTitle').value.trim() || profileDefaults.title;
-    profileCopy.subtitle=profileEditor.querySelector('#crmoProfilePopupSubtitle').value.trim() || profileDefaults.subtitle;
-    const img=profileEditor.querySelector('#crmoProfilePopupPreview').dataset.newsrc; if(img) profileCopy.mascotSrc=img;
-    safeWrite(PROFILE_KEY, profileCopy); refreshProfileCopy(); closeEditor(profileEditor);
-  });
-  authEditor.querySelector('.crmo-popup-editor-modal__close').addEventListener('click', function(){ closeEditor(authEditor); });
-  authEditor.querySelector('#crmoAuthPopupCancel').addEventListener('click', function(){ closeEditor(authEditor); });
-  authEditor.querySelector('#crmoAuthPopupImage').addEventListener('change', function(){
-    const file=this.files&&this.files[0]; if(!file) return; const fr=new FileReader(); fr.onload=function(){ authEditor.querySelector('#crmoAuthPopupPreview').src=String(fr.result||''); authEditor.querySelector('#crmoAuthPopupPreview').dataset.newsrc=String(fr.result||''); }; fr.readAsDataURL(file);
-  });
-  authEditor.querySelector('#crmoAuthPopupSave').addEventListener('click', function(){
-    authCopy.loginText=authEditor.querySelector('#crmoAuthPopupLoginText').value.trim() || authDefaults.loginText;
-    authCopy.registerText=authEditor.querySelector('#crmoAuthPopupRegisterText').value.trim() || authDefaults.registerText;
-    const img=authEditor.querySelector('#crmoAuthPopupPreview').dataset.newsrc; if(img) authCopy.mascotSrc=img;
-    safeWrite(AUTH_KEY, authCopy); refreshAuthCopy(); closeEditor(authEditor);
-  });
-  userMenu.querySelector('#crmoUserPopoverProfile').addEventListener('click', openProfile);
-  userMenu.querySelector('#crmoUserPopoverLogout').addEventListener('click', function(){ closeUserMenu(); const btn=document.getElementById('logoutBtn'); if(btn) btn.click(); });
-  document.addEventListener('click', function(ev){
-    const indicator=document.getElementById('crmo-user-indicator');
-    if(userMenu.hidden) return;
-    if(userMenu.contains(ev.target)) return;
-    if(indicator && indicator.contains(ev.target)) return;
-    closeUserMenu();
-  });
-  const indicator=document.getElementById('crmo-user-indicator');
-  if(indicator){
-    indicator.addEventListener('click', function(ev){
-      const logged=!!bridge()?.isLoggedIn?.();
-      if(!logged) return;
-      ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
-      if(userMenu.hidden) openUserMenu(indicator); else closeUserMenu();
-    }, true);
-  }
-  document.addEventListener('keydown', function(ev){
-    if(ev.key!=='Escape') return;
-    closeUserMenu();
-    if(!authEditor.hidden){ ev.preventDefault(); ev.stopPropagation(); closeEditor(authEditor); return; }
-    if(!profileEditor.hidden){ ev.preventDefault(); ev.stopPropagation(); closeEditor(profileEditor); return; }
-    if(!profileWrap.hidden){ closeProfile(); }
-  });
-  setTimeout(function(){
-    ensureAuthEditButton(); refreshAuthCopy();
-    const wrap=document.getElementById('crmoAuthModal');
-    if(wrap){
-      wrap.querySelectorAll('[data-auth-mode]').forEach(function(btn){ btn.addEventListener('click', function(){ setTimeout(refreshAuthCopy,0); }); });
-      const obs=new MutationObserver(function(){ refreshAuthCopy(); });
-      obs.observe(wrap, { attributes:true, attributeFilter:['hidden','class'] });
-    }
-  },0);
-  window.CRMOAccountPopups={ openProfile:openProfile, refreshAuthCopy:refreshAuthCopy, refreshProfileCopy:refreshProfileCopy };
-})();
-</script>
 <script id="crmo-header-auth-bridge-v3182">
 (function(){
   function bind(){
