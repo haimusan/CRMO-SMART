@@ -1,6 +1,6 @@
 (()=>{
 "use strict";
-const VERSION='CRMO_v3285';
+const VERSION='CRMO_v3286';
 
 const CLOUD_SCHEMA = 'crmo-structured-content-v1';
 
