@@ -4,11 +4,13 @@ Public `index.html` loads only the display renderer. `admin/index.html` retains 
 
 Both file:// and HTTPS use `public/config.js`, the same Supabase preview row, the same asset resolver. Preview writes target `preview_v3285` and `preview_v3285__multi_gallery_demo`, never the live `main` rows. Existing media URLs remain valid; no media has been relocated or deleted.
 
-## Prepared, not yet activated
+## Activated in Supabase
 
 `database/activate-roles.sql` defines the six intended roles and own-role reads, editor-only content INSERT/UPDATE, public media reads, private admin media reads, and editor-only media INSERT/UPDATE. It removes the legacy broad storage policies; it does not grant DELETE access. Owner assignments must be provisioned separately using the two accounts explicitly confirmed by the owner in the setup conversation. No emails, user IDs, passwords, sessions or service-role keys are committed.
 
-Automatic approval review rejected the initial production policy bundle. The revised SQL is staged for review only; role/storage schema and policy changes have NOT been applied. Until activation, admin fails closed and cannot edit even for the owner. Existing production policies remain in effect and still need to be corrected. Preview content copies were created separately.
+The production roles/storage migration was applied on October 17 after explicit owner approval. Both existing accounts confirmed in the setup conversation now have the owner role. Anonymous and ordinary authenticated INSERT/UPDATE denial, own-role visibility and UPDATE success for both owners were tested with database role impersonation inside a transaction that was rolled back. Live content is unchanged. The four buckets now exist; admin is private.
+
+The admin includes `studio-assets.js`: a folder picker that uploads only SVG/PNG/WebP under studio/ using the current owner's session and Storage RLS. Existing files are never overwritten. Automatic review rejected a proposed temporary service-role upload function; that endpoint was NOT deployed. The safer client-side folder uploader is provided instead. The existing studio files have not yet been uploaded.
 
 ## Completed backups
 
@@ -18,7 +20,7 @@ Git branch `backup/pre-3285-2026-10-17` retains the live 3268 source commit. Sup
 
 Run `node tests/viewer.cjs /path/to/private-exported-payload.json` and `node tests/permissions.cjs` with Node 24. These run the actual extracted renderer in a DOM test harness and mock the role API. They cover file/HTTPS content parity (with an external local test fixture), all 17 galleries and 106 tile slots, exact order, read-only public network use, no editor DOM, role gating, user-metadata privilege escalation and failure-closed behavior.
 
-All inline admin/public JavaScript is syntax checked. These checks are not a real-browser visual or authentication test. Real owner login, cloud upload/save/read-back, mobile/desktop visual comparison, brand lightboxes, expanded galleries and existing asset URLs still require browser verification after role activation. No production publishing has occurred.
+All inline admin/public JavaScript is syntax checked. These checks are not a real-browser visual or authentication test. Real owner login, actual browser-driven cloud upload/save/read-back, mobile/desktop visual comparison, brand lightboxes, expanded galleries and existing asset URLs still require browser verification after connecting with the owner account. No production publishing has occurred.
 
 ## Local review
 
@@ -34,9 +36,11 @@ The display test fixture is kept outside this repository. The builder uses Node'
 
 ## Activation checklist
 
-1. Review/apply the SQL, assign the two confirmed owners server-side, and verify anonymous/ordinary-user write denial and owner INSERT/UPDATE success in rollback-only database tests.
-2. Supply the studio assets at `assets/studio/` in Supabase; the current live storage has no `studio/` objects. Existing local assets can be uploaded after the authenticated storage path is available. Preserve old URLs until copy/reference verification completes.
+1. Completed: apply the reviewed roles/storage migration, provision both confirmed owners, verify anonymous/ordinary-user denial and owner UPDATE success with rollback-only database tests.
+2. Supply the studio assets at `assets/studio/` in Supabase; the current live storage has no `studio/` objects. Use the folder uploader in admin/index.html after owner login to upload the existing local studio directory. Preserve old URLs until copy/reference verification completes.
 3. Perform real-browser tests listed above and compare 3284 with the separated viewer.
 4. Review the preview changes, then promote config row keys and merge only after owner approval. Keep the backup branch and database snapshot for rollback.
 
 No old bucket, row, image, user or project is deleted by this release.
+
+Existing unrelated security-advisor notices: [trigger function search_path](https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable) and [password breach protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). The private backup table intentionally has no RLS allow policies.

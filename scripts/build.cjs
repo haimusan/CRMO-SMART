@@ -104,7 +104,7 @@ admin=admin.replace("let localWrapper = loadLocalWrapper();","let localWrapper =
 admin=admin.replace('async function saveToCloud(', 'async function saveToCloud('); // guard inserted at function bodies below
 admin=admin.replace(/(async function (?:saveGalleriesToCloud|uploadMediaItem|uploadAboutLogoAsset)\([^)]*\) \{)/g,'$1\n if(!window.CRMOPermissions?.canEdit())throw Error("אין הרשאת עריכה");');
 admin=admin.replace(/(async function saveToCloud\([^)]*\) \{)/g,'$1\n if(!window.CRMOPermissions?.canEdit())throw Error("אין הרשאת עריכה");');
-admin=admin.replace('<head>','<head>\n<script src="../public/config.js"></script><script src="permissions.js"></script>\n<style>body:not(.crmo-authorized) .dashboard-shell,body:not(.crmo-authorized) .tile-edit-btn,body:not(.crmo-authorized) .crmo3045-pencil{display:none!important}</style>');
+admin=admin.replace('<head>','<head>\n<script src="../public/config.js"></script><script src="permissions.js"></script><script src="studio-assets.js" defer></script>\n<style>body:not(.crmo-authorized) .dashboard-shell,body:not(.crmo-authorized) .tile-edit-btn,body:not(.crmo-authorized) .crmo3045-pencil{display:none!important}</style>');
 admin=admin.replace('<body>','<body><div style="background:#fff4cd;padding:8px;text-align:center;font:14px Arial">גרסת בדיקה 3285 — השמירה מעדכנת תוכן בדיקה בלבד. <a href="../index.html">לתצוגה הציבורית</a></div>');
 const rootFn=map.get('getSiteRootUrl');admin=admin.replace(source.slice(rootFn.start,rootFn.end),replacements.getSiteRootUrl);
 fs.writeFileSync(path.join(root,'admin/index.html'),admin);
