@@ -1,0 +1,6 @@
+const vm=require('vm'),fs=require('fs'),path=require('path'),assert=require('node:assert/strict');const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'admin/CRMO_v3286.html'),'utf8');const script=html.match(/<script>(if\(location.protocol[\s\S]*?)<\/script>/)[1];let base;
+vm.runInNewContext(script,{location:new URL('https://www.crmo.co.il/preview/v3286/admin/CRMO_v3286.html'),window:{CRMO_ROOT_URL:'https://www.crmo.co.il/preview/v3286/'},document:{createElement:()=>({}),head:{appendChild:n=>base=n.href}},URL});assert.equal(base,'https://www.crmo.co.il/preview/v3286/admin/CRMO_v3286.html');
+let fallback;const context={window:{CRMO_ROOT_URL:'https://www.crmo.co.il/preview/v3286/',addEventListener:(event,fn)=>fallback=fn},WeakSet,URL};vm.runInNewContext(fs.readFileSync(path.join(root,'public/studio-fallback.js'),'utf8'),context);
+let src='https://example.supabase.co/storage/v1/object/public/assets/studio/logo/logo.svg';const img={tagName:'IMG',getAttribute:()=>src,setAttribute:(_,v)=>src=v};fallback({target:img});assert.equal(src,'https://www.crmo.co.il/preview/v3286/assets/studio/logo/logo.svg');fallback({target:img});assert.ok(src.includes('/preview/v3286/assets/'));
+console.log('PASS: nested online admin base path and bounded cloud-to-packaged studio fallback');
