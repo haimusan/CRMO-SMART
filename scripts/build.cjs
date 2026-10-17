@@ -3,6 +3,7 @@ const fs=require('fs'),path=require('path');
 // Node embeds Acorn. Keep the extracted parser in scratch, not in the project.
 const vm=require('vm'),parser={exports:{}};vm.runInNewContext(process.binding('natives')['internal/deps/acorn/acorn/dist/acorn'],{module:parser,exports:parser.exports});const acorn=parser.exports;
 const root=path.resolve(__dirname,'..');
+const RELEASE='3286';
 if(!process.argv[2])throw Error('Usage: node scripts/build.cjs /path/to/CRMO_v3284.html');
 const input=fs.readFileSync(path.resolve(process.argv[2]),'utf8');
 const scripts=[...input.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
@@ -34,7 +35,7 @@ const replacements={
  document.getElementById('crmo-loading')?.remove();renderGalleryStack();applyFaviconLaw();return {galleries,site:siteState};
  }`,
  STORAGE_KEY:"const STORAGE_KEY='CRMO_3285_VIEWER';",
- VERSION:"const VERSION='CRMO_v3285';"
+ VERSION:"const VERSION='CRMO_v3286';"
 };
 const forbidden=new Set([...map.keys()].filter(n=>/^(open.*Editor|close.*Editor|render.*Editor|save.*Editor|collect.*Editor|sync.*Draft|installGalleryManagerButton|openGalleryManager|closeGalleryManager|saveGalleryManager|showStoragePlan)/.test(n)));
 const walk=(n,fn,parent=null,key=null)=>{if(!n||typeof n!=='object')return; if(n.type)fn(n,parent,key);for(const [k,v]of Object.entries(n)){if(k==='start'||k==='end')continue;if(Array.isArray(v))v.forEach(x=>walk(x,fn,n,k));else if(v&&typeof v==='object')walk(v,fn,n,k);}};
@@ -75,16 +76,17 @@ fs.writeFileSync(path.join(root,'public/viewer.css'),[...input.matchAll(/<style\
 // Config is public; no secret/service-role key is present.
 const defaults=input.match(/const APP_CONNECTION_DEFAULTS = Object.freeze\(\{([\s\S]*?)\}\);/);
 if(!defaults)throw Error('Missing connection defaults');
-const cfg=Function('return ({'+defaults[1]+'})')();cfg.rowKey='preview_v3285';cfg.contentRow='preview_v3285__multi_gallery_demo';cfg.release='3285';cfg.roles=['viewer','social','registered','client','admin','owner'];
+const cfg=Function('return ({'+defaults[1]+'})')();cfg.rowKey='preview_v3285';cfg.contentRow='preview_v3285__multi_gallery_demo';cfg.release=RELEASE;cfg.roles=['viewer','social','registered','client','admin','owner'];
 fs.writeFileSync(path.join(root,'public/config.js'),'window.CRMO_ROOT_URL=new URL("../",document.currentScript?.src || new URL("public/config.js",location.href)).href;window.CRMO_CONFIG=Object.freeze('+JSON.stringify(cfg)+');\n');
 let layout=scripts.find(x=>x[1].includes('crmo3281-storage-layout'))[2];
  layout=layout.slice(0,layout.indexOf('  function destination('))+`window.CRMOStorage3281=Object.freeze({prepare,remapReferences});})();`;
  const assets=scripts[0][2].replace("if (isLocal()) return 'assets/';",'').replace('conn.url || window.CRMO_SUPABASE_URL','conn.url || window.CRMO_CONFIG?.url');
  layout=assets+'\n'+layout;
 fs.writeFileSync(path.join(root,'public/content-layout.js'),layout);
+fs.writeFileSync(path.join(root,'public/auth-modal.js'),scripts.find(m=>m[1].includes('crmo-auth-modal-inline-js'))[2]);
 const header=input.match(/<header\b[\s\S]*?<\/header>/)[0];
-fs.writeFileSync(path.join(root,'index.html'),`<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRMO | sales oriented design</title><link rel="stylesheet" href="public/viewer.css"><script src="public/config.js"></script><script src="public/content-layout.js"></script></head><body>${header}<main class="stage"><p id="crmo-loading" role="status">טוען את האתר…</p></main><script src="public/viewer.js"></script><script>document.getElementById('crmo-user-indicator')?.addEventListener('click',()=>location.href=new URL('admin/index.html',location.href).href);</script></body></html>`);
-let admin=input.replace(/CRMO_v3284/g,'CRMO_v3285').replace("rowKey: 'main'","rowKey: 'preview_v3285'");
+fs.writeFileSync(path.join(root,'index.html'),`<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRMO | sales oriented design</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&display=swap" rel="stylesheet"><link rel="stylesheet" href="public/viewer.css"><script src="public/config.js"></script><script src="public/content-layout.js"></script></head><body><div class="app">${header}<main class="stage"><p id="crmo-loading" role="status">טוען את האתר…</p></main></div><script src="public/viewer.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="public/auth-client.js"></script><script src="public/auth-modal.js"></script></body></html>`);
+let admin=input.replace(/CRMO_v3284/g,'CRMO_v'+RELEASE).replace(/<title>CRMO_v[0-9]+<\/title>/,'<title>CRMO_v'+RELEASE+'</title>').replace("rowKey: 'main'","rowKey: 'preview_v3285'");
 admin=admin.replace("const LOCAL_CONN_KEY =", "const LOCAL_CONN_KEY =");
 // Studio assets share the exact same cloud URL in both file: and HTTPS runtimes.
 admin=admin.replace("if (isLocal()) return 'assets/';",'');
@@ -105,8 +107,10 @@ admin=admin.replace('async function saveToCloud(', 'async function saveToCloud('
 admin=admin.replace(/(async function (?:saveGalleriesToCloud|uploadMediaItem|uploadAboutLogoAsset)\([^)]*\) \{)/g,'$1\n if(!window.CRMOPermissions?.canEdit())throw Error("אין הרשאת עריכה");');
 admin=admin.replace(/(async function saveToCloud\([^)]*\) \{)/g,'$1\n if(!window.CRMOPermissions?.canEdit())throw Error("אין הרשאת עריכה");');
 admin=admin.replace('<head>','<head>\n<script src="../public/config.js"></script><script src="permissions.js"></script><script src="studio-assets.js" defer></script>\n<style>body:not(.crmo-authorized) .dashboard-shell,body:not(.crmo-authorized) .tile-edit-btn,body:not(.crmo-authorized) .crmo3045-pencil{display:none!important}</style>');
-admin=admin.replace('<body>','<body><div style="background:#fff4cd;padding:8px;text-align:center;font:14px Arial">גרסת בדיקה 3285 — השמירה מעדכנת תוכן בדיקה בלבד. <a href="../index.html">לתצוגה הציבורית</a></div>');
+admin=admin.replace('<body>','<body><div style="background:#fff4cd;padding:8px;text-align:center;font:14px Arial">גרסת בדיקה 3286 — השמירה מעדכנת תוכן בדיקה בלבד. <a href="../index.html">לתצוגה הציבורית</a></div>');
 const rootFn=map.get('getSiteRootUrl');admin=admin.replace(source.slice(rootFn.start,rootFn.end),replacements.getSiteRootUrl);
-fs.writeFileSync(path.join(root,'admin/index.html'),admin);
+// Keep the public index name stable and continue the established numbered editor filenames.
+fs.writeFileSync(path.join(root,'admin/CRMO_v'+RELEASE+'.html'),admin);
+if(fs.existsSync(path.join(root,'admin/index.html')))fs.unlinkSync(path.join(root,'admin/index.html'));
 fs.writeFileSync(path.join(root,'scripts/viewer-functions.json'),JSON.stringify([...needed].sort(),null,2));
 console.log('Retained display bindings:',needed.size,'Viewer bytes:',viewer.length,'Admin bytes:',admin.length);
