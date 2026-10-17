@@ -3,7 +3,7 @@
 
 <html dir="rtl" lang="he">
 <head>
-<script src="../public/config.js"></script><script src="permissions.js"></script><script src="studio-assets.js" defer></script>
+<script src="../public/config.js"></script><script src="../public/studio-fallback.js"></script><script src="permissions.js"></script><script src="studio-assets.js" defer></script>
 <style>body:not(.crmo-authorized) .dashboard-shell,body:not(.crmo-authorized) .tile-edit-btn,body:not(.crmo-authorized) .crmo3045-pencil{display:none!important}</style>
 <script id="crmo3283-studio-assets">
 (() => {
@@ -52,22 +52,7 @@
 </script>
 
 <meta charset="utf-8"/>
-<script>
-  // Deep links load the same document from nested paths; keep images and CSS assets rooted at the site.
-  if (location.protocol === 'http:' || location.protocol === 'https:') {
-    const parameters = new URLSearchParams(location.search);
-    const prettyRoute = parameters.get('prettyRoute');
-    if (/^index\.html$/i.test(location.pathname.split('/').pop() || '') &&
-        prettyRoute && /^[a-z0-9-]+(?:\/[a-z0-9-]+)?$/.test(prettyRoute)) {
-      const prefix = location.pathname.replace(/index\.html$/i, '');
-      history.replaceState(history.state, '', prefix + prettyRoute);
-    }
-    const root = location.pathname.split('/').filter(Boolean)[0] === 'crmo-smart' ? '/crmo-smart/' : '/';
-    const base = document.createElement('base');
-    base.href = location.origin + root;
-    document.head.appendChild(base);
-  }
-</script>
+<script>if(location.protocol==='http:'||location.protocol==='https:'){const base=document.createElement('base');base.href=new URL('admin/CRMO_v3286.html',window.CRMO_ROOT_URL).href;document.head.appendChild(base);}</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>CRMO_v3286</title>
 <style>
