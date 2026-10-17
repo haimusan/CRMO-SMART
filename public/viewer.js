@@ -1,6 +1,6 @@
 (()=>{
 "use strict";
-const VERSION='CRMO_v3286';
+const VERSION='CRMO_v3287';
 
 const CLOUD_SCHEMA = 'crmo-structured-content-v1';
 
@@ -1003,7 +1003,17 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
       </div>
     `;
     const article = card.querySelector('.crmo3045-tile');
-    if (first) article.appendChild(mediaEl(first, 'crmo3045-tile-media'));
+    if (first) {
+      const preview = mediaEl(first, 'crmo3045-tile-media');
+      if (preview?.tagName === 'IMG') {
+        preview.loading = gallery.galleryId === 'intro' && tileIndex < 4 ? 'eager' : 'lazy';
+        preview.fetchPriority = gallery.galleryId === 'intro' && tileIndex < 2 ? 'high' : 'auto';
+      } else if (preview?.tagName === 'VIDEO') {
+        preview.preload = 'metadata';
+        preview.controls = false;
+      }
+      if (preview) article.appendChild(preview);
+    }
     article.classList.toggle('is-disabled', !brandInteractive);
     if (!brandInteractive) {
       article.setAttribute('aria-disabled', 'true');

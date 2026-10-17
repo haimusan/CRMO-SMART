@@ -1,0 +1,59 @@
+/* Shared display layer for the public site and the numbered editor. */
+.crmo-menu-toggle,.crmo-mobile-caption,.crmo-mobile-media-controls,.crmo-mobile-readmore{display:none}
+.crmo-mobile-menu{border:0;padding:0;background:#fff;color:#111;width:min(480px,100vw);max-width:100vw;max-height:100dvh;margin:0 0 0 auto;height:100dvh;overscroll-behavior:contain}
+.crmo-mobile-menu::backdrop{background:rgba(0,0,0,.45)}
+.crmo-mobile-menu-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #ddd}
+.crmo-mobile-menu-head button{width:44px;height:44px;border:0;background:transparent;font-size:30px;cursor:pointer}
+.crmo-mobile-links{display:grid;padding:8px 20px calc(24px + env(safe-area-inset-bottom));overflow:auto}
+.crmo-mobile-links a{display:flex;align-items:center;min-height:52px;padding:12px 0;color:inherit;text-decoration:none;border-bottom:1px solid #eee;font-size:19px}
+body.crmo-menu-open{overflow:hidden}
+@media(max-width:900px){
+ .app{width:calc(100% - 24px);padding:0 0 40px}
+ header{top:0;padding-top:env(safe-area-inset-top);margin-inline:-12px;width:calc(100% + 24px)}
+ header>.wrap{width:calc(100% - 24px)}
+ header .nav{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:64px;padding:0}
+ header .nav>a:not(.logo):not(#crmo-user-indicator){display:none}
+ header .nav .logo{display:flex;grid-column:2;grid-row:1;justify-content:center;padding:6px;min-width:0}
+ header .nav .logo img,header .nav .logo svg{height:30px!important;max-width:100%;object-fit:contain}
+ header .nav #crmo-user-indicator{position:static!important;grid-column:3;grid-row:1;width:44px;height:44px;margin:0;padding:10px;transform:none!important;justify-content:center}
+ header .nav .crmo-menu-toggle{display:grid;place-content:center;gap:5px;grid-column:1;grid-row:1;width:44px;height:44px;padding:10px;border:0;background:transparent;cursor:pointer}
+ .crmo-menu-toggle span{display:block;width:23px;height:2px;background:#111}
+ .crmo3045-shell{margin:18px auto 24px;gap:12px}
+ .crmo3047-gallery{padding:22px 0;scroll-margin-top:80px;gap:12px}
+ .crmo3047-gallery-head{margin:0;gap:6px}
+ .crmo3047-gallery-copy,.crmo3047-gallery.is-super-gallery .crmo3047-gallery-copy{width:100%;gap:8px}
+ .crmo3047-gallery-title{font-size:clamp(24px,6.5vw,30px);line-height:1.15;letter-spacing:0;overflow-wrap:anywhere}
+ .crmo3047-gallery-desc{font-size:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .crmo3047-gallery-desc.crmo-copy-expanded{display:block}
+ .crmo-mobile-readmore{display:block;justify-self:center;min-height:36px;padding:4px 12px;border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;color:#555;font-size:13px;cursor:pointer}
+ .crmo3047-stack .crmo3045-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px}
+ .crmo3047-stack .is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .crmo3047-stack .crmo3045-tile-wrap{min-width:0;align-content:start}
+ .crmo3047-stack .crmo3045-tile{border:0}
+ .crmo3047-stack .crmo3045-hover{display:none!important}
+ .crmo-mobile-caption{display:flex;align-items:start;justify-content:space-between;gap:6px;width:100%;text-align:start;border:0;background:transparent;color:#111;padding:7px 0 0;min-height:44px;cursor:pointer;font-size:12px;line-height:1.4}
+ .crmo-mobile-caption span:first-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .crmo-mobile-caption small{flex-shrink:0;color:#666;direction:ltr;font-size:11px;padding-top:1px}
+ .crmo3047-super-nav{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;width:100%;gap:8px;padding:2px 0 8px;overscroll-behavior-x:contain}
+ .crmo3047-super-btn{white-space:nowrap;flex-shrink:0;min-height:44px;padding:8px 12px;border:1px solid #ddd;border-radius:24px;font-size:14px}
+ .crmo3047-super-btn.is-active{background:#111;color:#fff;border-color:#111;text-decoration:none}
+ #crmo3047Lightbox.crmo3045-dialog{top:12px!important;inset:12px 0 auto!important;width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 24px)!important;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:none}
+ #crmo3047Lightbox .crmo3045-modal{max-height:none!important;border-radius:12px;padding-top:52px;position:relative}
+ #crmo3047Lightbox .crmo3045-x{position:absolute;top:4px;left:6px;width:44px;height:44px;box-shadow:none;border:0;background:transparent}
+ #crmo3047Lightbox .crmo3045-lb-view{touch-action:pan-y pinch-zoom}
+ #crmo3047Lightbox .crmo3045-lb-arrow{width:44px;height:44px}
+ #crmo3047Lightbox .crmo3045-lb-title{font-size:20px!important}
+ #crmo3047Lightbox .crmo3045-lb-desc{font-size:16px!important;line-height:1.5}
+ #crmo3047Lightbox .crmo3045-strip{display:flex;overflow-x:auto;gap:8px;padding:0 12px 12px;touch-action:pan-x}
+ #crmo3047Lightbox .crmo3045-strip[hidden]{display:none!important}
+ #crmo3047Lightbox .crmo3045-thumb{flex:0 0 72px}
+ .crmo-mobile-media-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 12px;direction:rtl}
+ .crmo-mobile-media-controls[hidden]{display:none}
+ .crmo-mobile-media-controls button{min-width:64px;min-height:44px;border:0;background:transparent;color:#111;font:inherit;font-size:14px;cursor:pointer}
+ .crmo-mobile-media-controls button:disabled{opacity:.35;cursor:default}
+ .crmo-mobile-media-controls output{font-size:13px;direction:ltr}
+ .crmo3047-about-section,.crmo3047-contact-section{scroll-margin-top:80px}
+ input,select,textarea{font-size:16px}
+}
+@media(hover:none),(pointer:coarse){.crmo3047-stack .crmo3045-hover{display:none!important}.crmo-mobile-caption{display:flex;align-items:start;justify-content:space-between;gap:6px;width:100%;text-align:start;border:0;background:transparent;color:#111;padding:7px 0 0;min-height:44px;cursor:pointer;font-size:12px;line-height:1.4}.crmo-mobile-caption small{color:#666;font-size:11px;direction:ltr}}
+@media(prefers-reduced-motion:reduce){.crmo3047-stack *{scroll-behavior:auto!important;transition:none!important}}
