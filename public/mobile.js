@@ -70,20 +70,7 @@
       caption.addEventListener('click', () => tile.click());
       card.append(caption);
     });
-    document.querySelectorAll('.crmo3047-gallery-desc').forEach(desc => {
-      if (desc.textContent.trim().length < 90 || desc.nextElementSibling?.classList.contains('crmo-mobile-readmore')) return;
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'crmo-mobile-readmore';
-      button.textContent = 'קראו עוד';
-      button.setAttribute('aria-expanded', 'false');
-      button.addEventListener('click', () => {
-        const expanded = desc.classList.toggle('crmo-copy-expanded');
-        button.setAttribute('aria-expanded', String(expanded));
-        button.textContent = expanded ? 'פחות טקסט' : 'קראו עוד';
-      });
-      desc.after(button);
-    });
+
   }
   let scheduled = false;
   const schedule = () => {

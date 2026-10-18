@@ -1,5 +1,5 @@
 /* Shared display layer for the public site and the numbered editor. */
-.crmo-menu-toggle,.crmo-mobile-caption,.crmo-mobile-media-controls,.crmo-mobile-readmore{display:none}
+.crmo-menu-toggle,.crmo-mobile-caption,.crmo-mobile-media-controls{display:none}
 .crmo-mobile-menu{border:0;padding:0;background:#fff;color:#111;width:min(480px,100vw);max-width:100vw;max-height:100dvh;margin:0 0 0 auto;height:100dvh;overscroll-behavior:contain}
 .crmo-mobile-menu::backdrop{background:rgba(0,0,0,.45)}
 .crmo-mobile-menu-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #ddd}
@@ -19,13 +19,11 @@ body.crmo-menu-open{overflow:hidden}
  header .nav .crmo-menu-toggle{display:grid;place-content:center;gap:5px;grid-column:1;grid-row:1;width:44px;height:44px;padding:10px;border:0;background:transparent;cursor:pointer}
  .crmo-menu-toggle span{display:block;width:23px;height:2px;background:#111}
  .crmo3045-shell{margin:18px auto 24px;gap:12px}
- .crmo3047-gallery{padding:22px 0;scroll-margin-top:80px;gap:12px}
- .crmo3047-gallery-head{margin:0;gap:6px}
- .crmo3047-gallery-copy,.crmo3047-gallery.is-super-gallery .crmo3047-gallery-copy{width:100%;gap:8px}
+ .crmo3047-gallery{padding:14px 0;scroll-margin-top:80px;gap:8px}
+ .crmo3047-gallery-head{margin:0;gap:4px}
+ .crmo3047-gallery-copy,.crmo3047-gallery.is-super-gallery .crmo3047-gallery-copy{width:100%;gap:4px}
  .crmo3047-gallery-title{font-size:clamp(24px,6.5vw,30px);line-height:1.15;letter-spacing:0;overflow-wrap:anywhere}
- .crmo3047-gallery-desc{font-size:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
- .crmo3047-gallery-desc.crmo-copy-expanded{display:block}
- .crmo-mobile-readmore{display:block;justify-self:center;min-height:36px;padding:4px 12px;border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;color:#555;font-size:13px;cursor:pointer}
+ .crmo3047-gallery-desc{font-size:15px;line-height:1.4;display:block;overflow:visible}
  .crmo3047-stack .crmo3045-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 6px}
  .crmo3047-stack .is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
  .crmo3047-stack .crmo3045-tile-wrap{min-width:0;align-content:start}
