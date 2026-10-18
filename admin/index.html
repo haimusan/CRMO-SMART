@@ -8028,7 +8028,7 @@ select id, name, public from storage.buckets where id in ('galleries','our-brand
     if (grid.parentElement === parent) parent.insertBefore(row, grid.nextSibling);
     else parent.appendChild(row);
   }
-  function renderManagedMasterSection(masterGallery, managerId, editEnabled) { const children = getChildrenForMaster(managerId).filter((child) => isManagerItemVisible(getGalleryLookupId(child))); if (!children.length) return; let activeId = activeManagedMasterIds[managerId] || getGalleryLookupId(children[0]); let activeGallery = children.find((gallery) => getGalleryLookupId(gallery) === activeId) || children[0]; activeManagedMasterIds[managerId] = getGalleryLookupId(activeGallery); const activeGalleryIndex = galleries.findIndex((gallery) => gallery === activeGallery); const section = document.createElement('section'); section.className = 'crmo3047-gallery is-super-gallery'; section.id = managerId; section.dataset.galleryIndex = 'managed-master'; section.innerHTML = `<div class="crmo3047-gallery-head"><div class="crmo3047-gallery-copy"><div class="crmo3047-gallery-title">${escape(masterGallery?.meta?.title || getManagerDisplayName(managerId))}</div><div class="crmo3047-gallery-desc">${escape(masterGallery?.meta?.desc || '')}</div></div></div><div class="crmo3047-super-gap"><div class="crmo3047-super-nav" data-super-nav></div><div class="crmo3047-super-body"><div class="crmo3047-super-tools">${editEnabled && activeGalleryIndex >= 0 ? `<button class="crmo3045-btn" type="button" data-managed-gallery-editor>ניהול גלריה</button>` : ``}</div><div class="crmo3045-grid" data-super-grid></div></div></div>`; const nav = section.querySelector('[data-super-nav]'); children.forEach((gallery) => { const gid = getGalleryLookupId(gallery); const btn = document.createElement('button'); btn.type = 'button'; btn.className = `crmo3047-super-btn${gid === activeManagedMasterIds[managerId] ? ' is-active' : ''}`; btn.textContent = String(gallery?.meta?.adminLabelHe || gallery?.meta?.title || gid); btn.addEventListener('click', () => { activeManagedMasterIds[managerId] = gid; renderGalleryStack(); }); nav.appendChild(btn); }); const grid = section.querySelector('[data-super-grid]'); let visibleRendered = 0; const renderLimit = getExpandedTileLimitFor(managerId, activeGallery); (activeGallery.tiles || []).forEach((tile, tileIndex) => { if (visibleRendered >= renderLimit) return; if (tile?.isVisible === false) return; grid.appendChild(createGalleryCard(activeGallery, activeGalleryIndex, tile, tileIndex, editEnabled)); visibleRendered += 1; }); section.querySelector('[data-managed-gallery-editor]')?.addEventListener('click', () => openGalleryEditor(activeGalleryIndex)); addExpandedLinkIfNeeded(section, managerId); galleryStack.appendChild(section); }
+  function renderManagedMasterSection(masterGallery, managerId, editEnabled) { const children = getChildrenForMaster(managerId).filter((child) => isManagerItemVisible(getGalleryLookupId(child))); if (!children.length) return; let activeId = activeManagedMasterIds[managerId] || getGalleryLookupId(children[0]); let activeGallery = children.find((gallery) => getGalleryLookupId(gallery) === activeId) || children[0]; activeManagedMasterIds[managerId] = getGalleryLookupId(activeGallery); const activeGalleryIndex = galleries.findIndex((gallery) => gallery === activeGallery); const section = document.createElement('section'); section.className = 'crmo3047-gallery is-super-gallery'; section.id = managerId; section.dataset.galleryIndex = 'managed-master'; section.innerHTML = `<div class="crmo3047-gallery-head"><div class="crmo3047-gallery-copy"><div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(masterGallery).title || getManagerDisplayName(managerId))}</div><div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(masterGallery).desc)}</div></div></div><div class="crmo3047-super-gap"><div class="crmo3047-super-nav" data-super-nav></div><div class="crmo3047-super-body"><div class="crmo3047-super-tools">${editEnabled && activeGalleryIndex >= 0 ? `<button class="crmo3045-btn" type="button" data-managed-gallery-editor>ניהול גלריה</button>` : ``}</div><div class="crmo3045-grid" data-super-grid></div></div></div>`; const nav = section.querySelector('[data-super-nav]'); children.forEach((gallery) => { const gid = getGalleryLookupId(gallery); const btn = document.createElement('button'); btn.type = 'button'; btn.className = `crmo3047-super-btn${gid === activeManagedMasterIds[managerId] ? ' is-active' : ''}`; btn.textContent = String(gallery?.meta?.adminLabelHe || gallery?.meta?.title || gid); btn.addEventListener('click', () => { activeManagedMasterIds[managerId] = gid; renderGalleryStack(); }); nav.appendChild(btn); }); const grid = section.querySelector('[data-super-grid]'); let visibleRendered = 0; const renderLimit = getExpandedTileLimitFor(managerId, activeGallery); (activeGallery.tiles || []).forEach((tile, tileIndex) => { if (visibleRendered >= renderLimit) return; if (tile?.isVisible === false) return; grid.appendChild(createGalleryCard(activeGallery, activeGalleryIndex, tile, tileIndex, editEnabled)); visibleRendered += 1; }); section.querySelector('[data-managed-gallery-editor]')?.addEventListener('click', () => openGalleryEditor(activeGalleryIndex)); addExpandedLinkIfNeeded(section, managerId); galleryStack.appendChild(section); }
   function getOrderedGalleryIndexesForEditor() { const ordered = []; const pushIndex = (idx) => { if (idx >= 0 && !ordered.includes(idx)) ordered.push(idx); }; getManagerRenderOrder().forEach((id) => { if (id === SUPER_GALLERY_ID) { getSuperSubGalleries().forEach((g) => pushIndex(galleries.indexOf(g))); return; } const g = findGalleryByManagerId(id); if (!g) return; pushIndex(galleries.indexOf(g)); if (isManagedMasterGallery(g)) getChildrenForMaster(getGalleryLookupId(g)).forEach((child) => pushIndex(galleries.indexOf(child))); }); galleries.forEach((_, idx) => pushIndex(idx)); return ordered; }
   async function copyDedicatedGalleryLink(id) {
     const link = makeDedicatedGalleryUrl(id);
@@ -8058,15 +8058,7 @@ select id, name, public from storage.buckets where id in ('galleries','our-brand
   function renderSuperGallerySection(editEnabled) {
     const superSubs = getSuperSubGalleries();
     if (!superSubs.length) return;
-    const displayCopy = (gallery) => {
-      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement?.clientWidth || 0);
-      const mode = viewportWidth <= 700 ? 'mobile' : getAboutDisplayMode();
-      const suffix = mode.charAt(0).toUpperCase() + mode.slice(1);
-      return {
-        title: gallery.meta[`title${suffix}`] || gallery.meta.title || 'שם הגלריה',
-        desc: gallery.meta[`desc${suffix}`] || gallery.meta.desc || ''
-      };
-    };
+    const displayCopy = getGalleryDisplayCopy;
     let activeGallery = superSubs.find((gallery) => gallery.galleryId === activeSuperGalleryId) || null;
     if (!activeGallery) {
       activeGallery = superSubs[0] || null;
@@ -8150,7 +8142,18 @@ select id, name, public from storage.buckets where id in ('galleries','our-brand
     galleryStack.appendChild(section);
   }
 
-  function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
+  function getGalleryDisplayCopy(gallery) {
+    const meta = gallery?.meta || {};
+    const width = Math.max(window.innerWidth || 0, document.documentElement?.clientWidth || 0);
+    const mode = width <= 900 ? 'mobile' : getAboutDisplayMode();
+    const suffix = mode.charAt(0).toUpperCase() + mode.slice(1);
+    return {
+      title: meta[`title${suffix}`] || meta.title || '',
+      desc: meta[`desc${suffix}`] || meta.desc || ''
+    };
+  }
+
+function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     if (!gallery || isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) return;
     const section = document.createElement('section');
     const isBrandsGallery = isBrandGalleryObject(gallery);
@@ -8162,8 +8165,8 @@ select id, name, public from storage.buckets where id in ('galleries','our-brand
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
           <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(STACK_TILE_LIMIT, visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
-          <div class="crmo3047-gallery-title">${escape(gallery.meta.title || `Gallery ${galleryIndex + 1}`)}</div>
-          <div class="crmo3047-gallery-desc">${escape(gallery.meta.desc || 'No committed gallery description yet')}</div>
+          <div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(gallery).title || `Gallery ${galleryIndex + 1}`)}</div>
+          <div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(gallery).desc)}</div>
         </div>
         <div class="crmo3047-gallery-tools">
           ${editEnabled ? `<button class="crmo3045-btn" type="button" data-gallery-editor>ניהול גלריה</button>` : ``}
@@ -10760,5 +10763,5 @@ select id, name, public from storage.buckets where id in ('galleries','our-brand
   else bind();
 })();
 </script>
-<link rel="stylesheet" href="../public/mobile.css?v=3287"><script src="../public/mobile.js?v=3287"></script></body>
+<link rel="stylesheet" href="../public/mobile.css?v=3287.2"><script src="../public/mobile.js?v=3287.2"></script></body>
 </html>
