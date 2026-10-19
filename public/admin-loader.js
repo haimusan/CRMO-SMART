@@ -42,7 +42,7 @@
     body.role-admin section,body.role-master section{scroll-margin-top:96px!important}
   `;
   editorDocument.head.append(headerStyle);
-  const editorHTML='<!DOCTYPE html>\\n'+editorDocument.documentElement.outerHTML;
+  const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   bridge.dispose();delete window.CRMOAuthBridge;
   document.open();document.write(editorHTML);document.close();
  }catch(error){status.textContent=error.message||'לא ניתן לפתוח את ממשק הניהול.';status.setAttribute('role','alert');}
