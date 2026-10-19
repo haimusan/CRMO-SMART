@@ -24,8 +24,8 @@
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
-  const legacyNotice=editorDocument.body.firstElementChild;
-  if(legacyNotice?.tagName==='DIV'&&legacyNotice.textContent.trim().startsWith('מערכת ניהול ·')&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
+  const legacyNotice=editorDocument.querySelector('div[style*="#fff4cd"]');
+  if(legacyNotice&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
   const headerStyle=editorDocument.createElement('style');
   headerStyle.id='crmo-admin-header-layout';
   headerStyle.textContent=`
