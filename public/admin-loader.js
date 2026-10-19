@@ -20,7 +20,30 @@
   if(file.error)throw Error('טעינת ממשק הניהול נכשלה. נסה לרענן.');
   const html=await file.data.text();
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
+
+  // Release files can contain obsolete admin chrome. Normalize it on every load.
+  const editorDocument=new DOMParser().parseFromString(html,'text/html');
+  const legacyNotice=editorDocument.body.firstElementChild;
+  if(legacyNotice?.tagName==='DIV'&&legacyNotice.textContent.trim().startsWith('מערכת ניהול ·')&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
+  const headerStyle=editorDocument.createElement('style');
+  headerStyle.id='crmo-admin-header-layout';
+  headerStyle.textContent=`
+    body header,body.role-admin header,body.role-master header{
+      position:sticky!important;top:0!important;z-index:9999;
+      background:#fff!important;isolation:isolate;
+    }
+    body header::before{
+      content:"";position:absolute;top:0;bottom:0;
+      left:calc((100% - 100vw)/2);right:calc((100% - 100vw)/2);
+      background:#fff;z-index:-1;pointer-events:none;
+      border-bottom:1px solid #e6e6e6;
+    }
+    body.role-admin main,body.role-master main{padding-top:0!important}
+    body.role-admin section,body.role-master section{scroll-margin-top:96px!important}
+  `;
+  editorDocument.head.append(headerStyle);
+  const editorHTML='<!DOCTYPE html>\\n'+editorDocument.documentElement.outerHTML;
   bridge.dispose();delete window.CRMOAuthBridge;
-  document.open();document.write(html);document.close();
+  document.open();document.write(editorHTML);document.close();
  }catch(error){status.textContent=error.message||'לא ניתן לפתוח את ממשק הניהול.';status.setAttribute('role','alert');}
 })();
