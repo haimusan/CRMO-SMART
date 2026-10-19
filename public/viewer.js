@@ -1156,7 +1156,7 @@ function renderFooterSection(editEnabled) {
         <div class="crmo3047-footer-bottom" dir="ltr">
           <img class="crmo3047-footer-favicon" src="${escape(sectionState.iconSrc)}" alt="Creative Monster favicon">
           <span class="crmo3047-footer-credit" id="crmo-footer-credit-text">${escape(sectionState.creditText)}</span>
-          <span class="crmo3047-footer-version" id="crmo-footer-version"></span>
+          <span class="crmo3047-footer-version" id="crmo-footer-version">${escape(`CRMO_v${window.CRMO_CONFIG?.release || "3288"}`)}</span>
         </div>
       </div>`;
     footer.querySelector('[data-footer-editor]')?.addEventListener('click', () => void 0);
