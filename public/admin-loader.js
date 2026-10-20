@@ -44,8 +44,12 @@
   `;
   headerStyle.textContent += ".crmo3045-hover{background:rgba(255,255,255,.90);padding:8px 12px}.crmo3045-hover-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crmo3045-hover-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:normal;line-height:1.25;max-height:3.75em}";
   editorDocument.head.append(headerStyle);
+  // Carry the central release configuration into the private editor document.
+  const releaseConfig=editorDocument.createElement('script');
+  releaseConfig.textContent='window.CRMO_CONFIG=Object.freeze('+JSON.stringify(window.CRMO_CONFIG)+');';
+  editorDocument.head.prepend(releaseConfig);
   const releaseGuard=editorDocument.createElement('script');
-  releaseGuard.textContent="(()=>{const title=\"CRMO | sales oriented design\";const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==\"CRMO_v3289\")el.textContent=\"CRMO_v3289\";});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
+  releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   bridge.dispose();delete window.CRMOAuthBridge;
