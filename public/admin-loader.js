@@ -42,6 +42,7 @@
     body.role-admin main,body.role-master main{padding-top:0!important}
     body.role-admin section,body.role-master section{scroll-margin-top:96px!important}
   `;
+  headerStyle.textContent += ".crmo3045-hover{background:rgba(255,255,255,.90);padding:8px 12px}.crmo3045-hover-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crmo3045-hover-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:normal;line-height:1.25;max-height:3.75em}";
   editorDocument.head.append(headerStyle);
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   bridge.dispose();delete window.CRMOAuthBridge;
