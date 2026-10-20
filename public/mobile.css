@@ -55,3 +55,8 @@ body.crmo-menu-open{overflow:hidden}
 }
 @media(hover:none),(pointer:coarse){.crmo3047-stack .crmo3045-hover{display:none!important}.crmo-mobile-caption{display:flex;align-items:start;justify-content:space-between;gap:6px;width:100%;text-align:start;border:0;background:transparent;color:#111;padding:4px 0 0;min-height:26px;cursor:pointer;font-size:12px;line-height:1.4}.crmo-mobile-caption small{color:#666;font-size:11px;direction:ltr}}
 @media(prefers-reduced-motion:reduce){.crmo3047-stack *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Portfolio presentation — owner approved 2026-10-20. */
+.crmo3045-hover{background:rgba(255,255,255,.90);padding:8px 12px;}
+.crmo3045-hover-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.crmo3045-hover-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:normal;line-height:1.25;max-height:3.75em;}
