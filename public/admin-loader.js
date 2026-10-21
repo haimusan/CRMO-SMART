@@ -18,8 +18,27 @@
   if(!/^releases\/CRMO_v\d+\.html$/.test(release.path))throw Error('כתובת גרסת הניהול אינה תקינה.');
   const file=await client.storage.from('admin').download(release.path);
   if(file.error)throw Error('טעינת ממשק הניהול נכשלה. נסה לרענן.');
-  const html=await file.data.text();
+  let html=await file.data.text();
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
+
+  // Patch the private legacy editor before execution. Never clear existing drafts.
+  const persistPattern = /function persistLocal\(payload = makePayload\(galleries\)\)\s*\{\s*localWrapper = hydrateWrapperShape\(payload\) \|\| payload;\s*localStorage\.setItem\(STORAGE_KEY, JSON\.stringify\(payload\)\);\s*\}/;
+  const safePersist = `function persistLocal(payload = makePayload(galleries)) {
+    localWrapper = hydrateWrapperShape(payload) || payload;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      window.CRMO_LOCAL_CACHE_FULL = false;
+    } catch (error) {
+      const quota = error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED');
+      // Offline saves must still fail honestly; connected saves continue to cloud verification.
+      if (!quota || !isLoggedIn() || !getSupabaseClient() || !getConnection()) throw error;
+      window.CRMO_LOCAL_CACHE_FULL = true;
+      console.warn('[CRMO] Local cache full; keeping changes in memory and continuing cloud save.');
+    }
+  }`;
+  if (!persistPattern.test(html)) throw Error('מבנה מנגנון השמירה השתנה. טעינת העורך נעצרה כדי להגן על התוכן.');
+  html = html.replace(persistPattern, () => safePersist);
+  html = html.replace('if (!editable) closeAboutEditor();', 'if (!canEdit()) closeAboutEditor();');
 
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
