@@ -1383,6 +1383,10 @@ function getExpandedTileCountForManagerId(id) {
   }
 
 function isExpandedButtonEligible(id, item = getManagerItem(id)) {
+    // Stores can expose a seventh published project while keeping six cards in the main grid.
+    if (id === 'stores' && item?.showExpandedButton === true) {
+      return getExpandedTileCountForManagerId(id) > STACK_TILE_LIMIT;
+    }
     const min = Math.max(MIN_EXPANDED_FULL_TILES, Number(item?.expandedCount || item?.minExpandedItems || MIN_EXPANDED_FULL_TILES) || MIN_EXPANDED_FULL_TILES);
     return getExpandedTileCountForManagerId(id) >= min;
   }
