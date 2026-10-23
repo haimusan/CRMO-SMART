@@ -1901,6 +1901,8 @@ async function refreshPublicContent(){
  const r=await fetch(c.url+'/rest/v1/'+c.table+'?'+query,{headers:{apikey:c.anonKey,Authorization:'Bearer '+c.anonKey},cache:'no-store',signal:ctl.signal});
  if(!r.ok)throw Error('Content HTTP '+r.status);const data=await r.json();if(data[0]?.payload)applyWrapper(data[0].payload);
  }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';}finally{clearTimeout(timer);}}
-refreshPublicContent();window.addEventListener('focus',refreshPublicContent);
+// Load content on navigation or an explicit page refresh. Rebuilding the gallery
+// on window focus collapses the page and resets the visitor's scroll position.
+refreshPublicContent();
 
 })();
