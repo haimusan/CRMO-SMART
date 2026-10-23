@@ -16,3 +16,9 @@
 - Apply reviewed framing consistently to project tiles, lightbox images and thumbnail previews, on desktop and mobile.
 - Before processing or uploading, compare existing project media and prepared assets. Reuse matching assets and avoid duplicate uploads or repeat processing.
 - Preserve source assets and keep framing changes reversible.
+
+# Content synchronization
+
+- The current public viewer hydrates the legacy `payload.galleries` array before the structured `payload.tiles.items` representation. Updating only tiles.items does not update the public gallery.
+- For every project addition, media reorder, caption change or visibility change, keep the matching legacy gallery tile (`overlay`, `meta`, `media`, `display`, `isVisible`) and structured tile (`title`, `shortDescription`, `files`, `filesMeta`, `visible`) synchronized.
+- Verify the legacy gallery media count, order, caption and visibility as well as the structured record before reporting a publication. Scope updates to the requested projects and preserve unrelated content.
