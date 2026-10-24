@@ -25,7 +25,7 @@
   if(!/^releases\/CRMO_v\d+\.html$/.test(release.path))throw Error('כתובת גרסת הניהול אינה תקינה.');
   const file=await client.storage.from('admin').download(release.path);
   if(file.error)throw Error('טעינת ממשק הניהול נכשלה. נסה לרענן.');
-  let html=await file.data.text();
+  let html=(await file.data.text()).replace(/\r\n/g,'\n');
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
 
   // Patch the private legacy editor before execution. Never clear existing drafts.
