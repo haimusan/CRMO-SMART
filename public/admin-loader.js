@@ -12,9 +12,16 @@
   if(!bridge.canManage())throw Error('לחשבון המחובר אין הרשאת ניהול.');
   status.textContent='טוען את גרסת הניהול האחרונה…';
   const client=bridge.getSupabaseClient();
-  const manifest=await client.storage.from('admin').download('latest.json');
-  if(manifest.error)throw Error('לא ניתן לטעון את גרסת הניהול. נסה לרענן.');
-  const release=JSON.parse(await manifest.data.text());
+  // The mutable manifest must not be served from a previous browser/CDN cache.
+  const sessionResult=await client.auth.getSession();
+  const token=sessionResult.data?.session?.access_token;
+  if(!token)throw Error('נדרשת התחברות מחדש לממשק הניהול.');
+  const manifestUrl=new URL('/storage/v1/object/authenticated/admin/latest.json',window.CRMO_CONFIG.url);
+  manifestUrl.searchParams.set('release',window.CRMO_CONFIG.release);
+  manifestUrl.searchParams.set('fresh',String(Date.now()));
+  const manifest=await fetch(manifestUrl,{headers:{apikey:window.CRMO_CONFIG.anonKey,Authorization:'Bearer '+token},cache:'no-store'});
+  if(!manifest.ok)throw Error('לא ניתן לטעון את גרסת הניהול. נסה לרענן.');
+  const release=await manifest.json();
   if(!/^releases\/CRMO_v\d+\.html$/.test(release.path))throw Error('כתובת גרסת הניהול אינה תקינה.');
   const file=await client.storage.from('admin').download(release.path);
   if(file.error)throw Error('טעינת ממשק הניהול נכשלה. נסה לרענן.');
