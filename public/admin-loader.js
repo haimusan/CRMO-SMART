@@ -121,6 +121,13 @@ ${bootMarker}`);
   const releaseGuard=editorDocument.createElement('script');
   releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);
+  // Mirror public reviewed framing in the privately loaded editor.
+  if (!editorDocument.querySelector('script[src*="crmo-smart-framing.js"]')) {
+    const framingScript=editorDocument.createElement('script');
+    framingScript.defer=true;
+    framingScript.src=new URL('public/crmo-smart-framing.js?v=3293',window.CRMO_ROOT_URL).href;
+    editorDocument.body.append(framingScript);
+  }
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   bridge.dispose();delete window.CRMOAuthBridge;
   document.open();document.write(editorHTML);document.close();
