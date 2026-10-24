@@ -86,6 +86,11 @@ ${bootMarker}`);
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
+  // Private release files still contain an unversioned config.js. A cached copy
+  // overwrites the freshly injected release and can point at a different content row.
+  editorDocument.querySelectorAll('script[src]').forEach(script=>{
+    if(new URL(script.getAttribute('src'),window.CRMO_ROOT_URL).pathname.endsWith('/public/config.js'))script.remove();
+  });
   const legacyNotice=editorDocument.querySelector('div[style*="#fff4cd"]');
   if(legacyNotice&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
   const headerStyle=editorDocument.createElement('style');
