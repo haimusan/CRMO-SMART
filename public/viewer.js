@@ -11,6 +11,7 @@ const TILES_PER_GALLERY = 6;
 const MAX_TILES_PER_GALLERY = 24;
 
 const STACK_TILE_LIMIT = 6;
+const BRANDS_STACK_TILE_LIMIT = 18;
 
 const BRANDS_GALLERY_BLUEPRINT = Object.freeze({
     galleryId: 'our-brands',
@@ -1356,11 +1357,12 @@ function isExpandedTarget(id) {
 
 function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
     const inlineKey = getInlineExpandedKey(id, gallery);
-    if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return STACK_TILE_LIMIT;
+    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT;
+    if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return compactLimit;
     const fullCount = getFullTileCountForExpanded(gallery?.tiles || []);
-    if (fullCount <= STACK_TILE_LIMIT) return STACK_TILE_LIMIT;
+    if (fullCount <= compactLimit) return compactLimit;
     const requested = Number(gallery?.meta?.expandedCount || item?.expandedCount || 0);
-    if (requested > STACK_TILE_LIMIT) return Math.min(requested, fullCount, MAX_TILES_PER_GALLERY);
+    if (requested > compactLimit) return Math.min(requested, fullCount, MAX_TILES_PER_GALLERY);
     return Math.min(fullCount, MAX_TILES_PER_GALLERY);
   }
 
@@ -1549,13 +1551,15 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     const section = document.createElement('section');
     const isBrandsGallery = isBrandGalleryObject(gallery);
     const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
-    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
+    const brandLogoCount = isBrandsGallery ? (gallery.tiles || []).filter((tile) => tile?.isVisible !== false && ((Array.isArray(tile?.media) && tile.media.some((media) => media?.src && media?.isVisible !== false)) || tile?.logoSrc || tile?.brandConfig?.logoSrc)).length : 0;
+    const brandWallReady = isBrandsGallery && visibleTileCount >= 18 && brandLogoCount >= 15;
+    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}${brandWallReady ? ' is-brand-wall-ready' : ''}`;
     section.dataset.galleryIndex = String(galleryIndex);
     section.id = String(gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`);
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(STACK_TILE_LIMIT, visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
+          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT, visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
           <div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(gallery).title || `Gallery ${galleryIndex + 1}`)}</div>
           <div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(gallery).desc)}</div>
         </div>
