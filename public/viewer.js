@@ -1551,7 +1551,9 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     const section = document.createElement('section');
     const isBrandsGallery = isBrandGalleryObject(gallery);
     const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
-    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}`;
+    const brandLogoCount = isBrandsGallery ? (gallery.tiles || []).filter((tile) => tile?.isVisible !== false && ((Array.isArray(tile?.media) && tile.media.some((media) => media?.src && media?.isVisible !== false)) || tile?.logoSrc || tile?.brandConfig?.logoSrc)).length : 0;
+    const brandWallReady = isBrandsGallery && visibleTileCount >= 18 && brandLogoCount >= 15;
+    section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}${brandWallReady ? ' is-brand-wall-ready' : ''}`;
     section.dataset.galleryIndex = String(galleryIndex);
     section.id = String(gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`);
     section.innerHTML = `
