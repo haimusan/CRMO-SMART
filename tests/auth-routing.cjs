@@ -20,7 +20,9 @@ async function scenario(role,options={}){
  }
  for(const role of ['admin','owner']){
   assert.equal((await scenario(role)).redirect(),'https://www.crmo.co.il/admin/');
-  const a=await scenario(role,{admin:true});assert.deepEqual(a.downloads,['latest.json','releases/CRMO_v3288.html']);assert(a.written().includes('CRMO_v3288'));
+  const a=await scenario(role,{admin:true});assert.deepEqual(a.downloads,['latest.json','releases/CRMO_v3288.html']);
+  // Permission permits the download; the loader still rejects an unknown editor.
+  assert.equal(a.written(),'');assert.equal(a.nodes.get('admin-status').attributes.role,'alert');
  }
  for(const options of [{expired:true},{roleError:true},{storageError:true},{badManifest:true}]){
   const a=await scenario('owner',{...options,admin:true});assert.equal(a.written(),'');

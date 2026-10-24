@@ -1895,12 +1895,14 @@ privacyPanel.addEventListener('click',e=>{if(e.target.closest('[data-close-priva
 window.addEventListener('keydown',e=>{if(lb.open&&e.key==='ArrowLeft')shiftTile(-1);if(lb.open&&e.key==='ArrowRight')shiftTile(1);});
 window.CRMO_VIEW = {apply:applyWrapper,summary:()=>({galleryIds:galleries.map(g=>g.galleryId),order:getManagerRenderOrder(),tiles:galleries.map(g=>g.tiles.length)})};
 if(window.CRMO_RELEASE_SNAPSHOT)applyWrapper(window.CRMO_RELEASE_SNAPSHOT);
-async function refreshPublicContent(){
+const contentSync = window.CRMOContentSync?.start({refresh:refreshPublicContent});
+async function refreshPublicContent(canApply = () => true){
  const c=window.CRMO_CONFIG;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),10000);
- try{const query=new URLSearchParams({select:'payload',key:'eq.'+c.contentRow});
+ try{const query=new URLSearchParams({select:'payload,updated_at',key:'eq.'+c.contentRow});
  const r=await fetch(c.url+'/rest/v1/'+c.table+'?'+query,{headers:{apikey:c.anonKey,Authorization:'Bearer '+c.anonKey},cache:'no-store',signal:ctl.signal});
- if(!r.ok)throw Error('Content HTTP '+r.status);const data=await r.json();if(data[0]?.payload)applyWrapper(data[0].payload);
- }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';}finally{clearTimeout(timer);}}
+ if(!r.ok)throw Error('Content HTTP '+r.status);const data=await r.json();if(!data[0]?.payload||!canApply())return false;
+ applyWrapper(data[0].payload);contentSync?.accept(data[0].updated_at);return true;
+ }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';return false;}finally{clearTimeout(timer);}}
 // Load content on navigation or an explicit page refresh. Rebuilding the gallery
 // on window focus collapses the page and resets the visitor's scroll position.
 refreshPublicContent();

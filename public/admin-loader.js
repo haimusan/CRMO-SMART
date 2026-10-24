@@ -40,6 +40,49 @@
   html = html.replace(persistPattern, () => safePersist);
   html = html.replace('if (!editable) closeAboutEditor();', 'if (!canEdit()) closeAboutEditor();');
 
+  // Public and admin always read the central content row, including old cached editors.
+  const rowMarker = 'function getCloudRowKey() {';
+  const revisionMarker = "    hydrated.source = 'cloud';";
+  const applyMarker = '  function applyWrapper(wrapper, sourceLabel, opts = {}) {';
+  const bootMarker = '  loadFromCloudAndApply()\n    .then(() => {';
+  for (const marker of [rowMarker, revisionMarker, applyMarker, bootMarker]) {
+    if (html.split(marker).length !== 2) throw Error('מבנה סנכרון התוכן השתנה. טעינת העורך נעצרה כדי להגן על התוכן.');
+  }
+  html = html.replace(rowMarker, rowMarker + '\n    if (window.CRMO_CONFIG?.contentRow) return window.CRMO_CONFIG.contentRow;');
+  html = html.replace(revisionMarker, revisionMarker + '\n    hydrated.__cloudRevision = data?.updated_at || "";');
+  html = html.replace(applyMarker, `  let cloudContentBaseline = '';
+  let cloudContentSync;
+  function contentFingerprint() {
+    const payload = makePayload(galleries);
+    return JSON.stringify([payload.site, payload.galleries, payload.brands, payload.clients, payload.routes]);
+  }
+${applyMarker}`);
+  const applyStart = html.indexOf(applyMarker);
+  const applyEnd = html.indexOf('\n  function getPreferredWrapper(', applyStart);
+  if (applyEnd < 0) throw Error('לא ניתן לחבר בדיקת עדכניות לתוכן.');
+  const applyBody = html.slice(applyStart, applyEnd);
+  if (applyBody.split('    return next;').length !== 2) throw Error('מבנה החלת התוכן השתנה.');
+  html = html.slice(0, applyStart) + applyBody.replace('    return next;', `    if (next.__cloudRevision && String(sourceLabel || '').startsWith('cloud')) {
+      cloudContentBaseline = contentFingerprint();
+      cloudContentSync?.accept(next.__cloudRevision);
+    } else if (!cloudContentBaseline && String(sourceLabel || '').startsWith('local')) {
+      // Retry an initial cloud failure, provided this fallback has not been edited.
+      cloudContentBaseline = contentFingerprint();
+    }
+    return next;`) + html.slice(applyEnd);
+  html = html.replace(bootMarker, `  cloudContentSync = window.CRMOContentSync.start({
+    canApply: () => !syncBusy && !galleryFilePickerActive &&
+      !document.querySelector('.crmo3047-gallery.is-editing') &&
+      !!cloudContentBaseline && contentFingerprint() === cloudContentBaseline,
+    refresh: async (canApply) => {
+      const cloud = await readCloudPayload();
+      if (!cloud || !canApply()) return false;
+      applyWrapper(cloud, 'cloud active');
+      return true;
+    }
+  });
+${bootMarker}`);
+
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
@@ -67,6 +110,9 @@
   const releaseConfig=editorDocument.createElement('script');
   releaseConfig.textContent='window.CRMO_CONFIG=Object.freeze('+JSON.stringify(window.CRMO_CONFIG)+');';
   editorDocument.head.prepend(releaseConfig);
+  const contentSyncScript=editorDocument.createElement('script');
+  contentSyncScript.src=new URL('public/content-sync.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  releaseConfig.after(contentSyncScript);
   const releaseGuard=editorDocument.createElement('script');
   releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);
