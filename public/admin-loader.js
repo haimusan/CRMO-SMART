@@ -117,6 +117,8 @@ ${bootMarker}`);
     body.role-admin section,body.role-master section{scroll-margin-top:96px!important}
   `;
   headerStyle.textContent += ".crmo3045-hover{background:rgba(255,255,255,.90);padding:8px 12px}.crmo3045-hover-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crmo3045-hover-desc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:normal;line-height:1.25;max-height:3.75em}";
+  // Reserve thumbnail geometry before image decoding, so drag targets never collapse.
+  headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
   // Carry the central release configuration into the private editor document.
   const releaseConfig=editorDocument.createElement('script');
