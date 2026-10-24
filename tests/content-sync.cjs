@@ -40,5 +40,10 @@ function editorPatch() {
     new vm.Script(match[1]);count++;
   }
   assert(count>5,'patched legacy script syntax checked');
+  const removed=[];
+  const scriptPaths=['../public/config.js','https://www.crmo.co.il/public/config.js?v=old','../public/mobile.js','../admin/permissions.js'];
+  const configPatch=loader.slice(loader.indexOf("  editorDocument.querySelectorAll('script[src]')"),loader.indexOf('  const legacyNotice'));
+  vm.runInNewContext(configPatch,{URL,window:{CRMO_ROOT_URL:'https://www.crmo.co.il/'},editorDocument:{querySelectorAll:()=>scriptPaths.map(path=>({getAttribute:()=>path,remove:()=>removed.push(path)}))}});
+  assert.deepEqual(removed,scriptPaths.slice(0,2),'cached private config is removed; unrelated scripts remain');
 }
 (async()=>{await scenario();editorPatch();console.log('PASS: shared cloud revisions, retry, no-change stability, protected edits/dialogs, in-flight guard, scroll preservation, editor patch syntax.');})().catch(e=>{console.error(e);process.exit(1);});
