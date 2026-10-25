@@ -140,9 +140,10 @@ ${bootMarker}`);
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
-  // This one-time studio-assets uploader duplicates the existing edit icons.
-  // Remove only its UI scripts; existing cloud assets are left untouched.
-  editorDocument.querySelectorAll('script[src*="/admin/studio-assets.js"],script#crmo3283-studio-assets').forEach(script=>script.remove());
+  // Replace the bundled resolver below with the shared resolver before editor boot.
+  // The external folder uploader is obsolete; existing cloud assets remain untouched.
+  editorDocument.querySelectorAll('script[src*="studio-assets.js"],script#crmo3283-studio-assets').forEach(script=>script.remove());
+  editorDocument.querySelectorAll('#galleryTestSections').forEach(node=>node.remove());
   editorDocument.querySelectorAll('#adminDashboard button').forEach(button=>{
     if(/^באקטים\s*[·-]\s*V\d+/i.test(button.textContent.trim())) button.textContent='באקטים';
   });
@@ -377,9 +378,14 @@ ${bootMarker}`);
   const releaseConfig=editorDocument.createElement('script');
   releaseConfig.textContent='window.CRMO_CONFIG=Object.freeze('+JSON.stringify(window.CRMO_CONFIG)+');';
   editorDocument.head.prepend(releaseConfig);
+  // applyFaviconLaw and auth UI call this synchronously, before the first cloud read.
+  editorDocument.querySelectorAll('script[src*="studio-fallback.js"]').forEach(script=>script.remove());
+  const studioAssetsScript=editorDocument.createElement('script');
+  studioAssetsScript.src=new URL('public/studio-fallback.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  releaseConfig.after(studioAssetsScript);
   const contentSyncScript=editorDocument.createElement('script');
   contentSyncScript.src=new URL('public/content-sync.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
-  releaseConfig.after(contentSyncScript);
+  studioAssetsScript.after(contentSyncScript);
   const releaseGuard=editorDocument.createElement('script');
   releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);
@@ -395,3 +401,4 @@ ${bootMarker}`);
   document.open();document.write(editorHTML);document.close();
  }catch(error){status.textContent=error.message||'לא ניתן לפתוח את ממשק הניהול.';status.setAttribute('role','alert');}
 })();
+
