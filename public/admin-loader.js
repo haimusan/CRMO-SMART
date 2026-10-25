@@ -177,7 +177,7 @@ ${bootMarker}`);
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
   const uxStyle=editorDocument.createElement('style');
-  uxStyle.id='crmo-ux-v3305';
+  uxStyle.id='crmo-ux-v3306';
   uxStyle.textContent=`
     #adminDashboard {
       position:sticky!important;top:0!important;z-index:10020!important;
@@ -188,6 +188,18 @@ ${bootMarker}`);
     body.role-admin header,body.role-master header {
       position:sticky!important;top:var(--crmo-admin-dashboard-h,0px)!important;
       z-index:10010!important;
+    }
+    html body #crmo3047Lightbox.crmo3045-dialog {
+      position:fixed!important;inset:50% auto auto 50%!important;
+      top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
+      transform:translate(-50%,-50%)!important;margin:0!important;
+      width:min(920px,calc(100vw - 32px))!important;
+      max-width:min(920px,calc(100vw - 32px))!important;
+      max-height:calc(100dvh - 32px)!important;overflow:visible!important;
+    }
+    html body #crmo3047Lightbox .crmo3045-modal {
+      max-height:calc(100dvh - 32px)!important;
+      overflow-y:auto!important;overscroll-behavior:contain;
     }
     #adminDashboard button,#adminDashboard input,#adminDashboard select,
     #adminDashboard .dashboard-pill { font-size:11px!important; }
@@ -234,7 +246,7 @@ ${bootMarker}`);
   `;
   editorDocument.head.append(uxStyle);
   const uxScript=editorDocument.createElement('script');
-  uxScript.id='crmo-ux-v3305-script';
+  uxScript.id='crmo-ux-v3306-script';
   uxScript.textContent=`(function(){
     const marker='\\u2063';
     let observedDashboard=null;
