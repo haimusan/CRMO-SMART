@@ -1482,14 +1482,16 @@ function renderSuperGallerySection(editEnabled) {
     `;
     const nav = section.querySelector('[data-super-nav]');
     superSubs.forEach((gallery, slotIndex) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
+      const btn = document.createElement('a');
       btn.className = `crmo3047-super-btn${gallery.galleryId === activeSuperGalleryId ? ' is-active' : ''}`;
       btn.textContent = getSuperSubButtonLabel(slotIndex);
       btn.dataset.galleryId = gallery.galleryId;
-      btn.addEventListener('click', () => {
-        if (activeSuperGalleryId !== gallery.galleryId) showSuperGallery(gallery);
-      });
+      const slug = getPosBlueprint(slotIndex).label;
+      const destination = new URL(slug === 'all-works' ? 'pos/' : `pos/${slug}/`, getSiteRootUrl());
+      if (new URLSearchParams(location.search).get('view') === 'public') destination.searchParams.set('view', 'public');
+      btn.href = destination.href;
+      btn.style.textDecoration = 'none';
+      btn.style.display = 'inline-block';
       nav.appendChild(btn);
     });
     const grid = section.querySelector('[data-super-grid]');
@@ -1512,7 +1514,8 @@ function renderSuperGallerySection(editEnabled) {
       nav.querySelectorAll('.crmo3047-super-btn').forEach((button) => {
         const selected = button.dataset.galleryId === activeSuperGalleryId;
         button.classList.toggle('is-active', selected);
-        button.setAttribute('aria-pressed', String(selected));
+        if (selected) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
       });
       grid.replaceChildren();
       const galleryIndex = galleries.findIndex((item) => item.galleryId === gallery.galleryId);
