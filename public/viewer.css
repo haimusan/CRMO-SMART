@@ -2568,3 +2568,20 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 }
 
 #crmo-user-indicator{cursor:pointer}
+/* Original Israel Star 2013 award mark: Vodka Berlin project only. */
+.crmo3045-tile.crmo-berlin-award::after,
+.crmo3045-lb-view.crmo-berlin-award::after {
+  content: '';
+  position: absolute;
+  top: clamp(8px, 2%, 20px);
+  right: clamp(8px, 2%, 20px);
+  width: clamp(90px, 24%, 190px);
+  aspect-ratio: 467 / 154;
+  background: #fff url('../assets/vodka-berlin-award-2013.jpg') center / contain no-repeat;
+  box-shadow: 0 2px 12px rgba(0,0,0,.22);
+  z-index: 30;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .crmo3045-tile.crmo-berlin-award::after { width: 28%; min-width: 76px; }
+}

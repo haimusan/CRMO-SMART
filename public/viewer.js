@@ -1004,6 +1004,8 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
       </div>
     `;
     const article = card.querySelector('.crmo3045-tile');
+    article.classList.toggle('crmo-berlin-award',
+      /vodka-berlin/i.test(String(first?.src || '')) || /vodka-berlin/i.test(String(tile.tileId || '')));
     if (first) {
       const preview = mediaEl(first, 'crmo3045-tile-media');
       if (preview?.tagName === 'IMG') {
@@ -1687,6 +1689,8 @@ function renderLightbox() {
     const activeMedia = isBrandTile ? brandItems.map((item) => item.media).filter(Boolean) : getLightboxMedia(tile);
     if (activeMediaIndex < 0 || activeMediaIndex >= activeMedia.length) activeMediaIndex = 0;
     const item = activeMedia[activeMediaIndex] || null;
+    view.classList.toggle('crmo-berlin-award',
+      /vodka-berlin/i.test(String(item?.src || '')) || /vodka-berlin/i.test(String(tile.tileId || '')));
     const brandItem = isBrandTile ? brandItems[activeMediaIndex] || null : null;
     view.classList.toggle('has-strip', activeMedia.length > 1);
     view.querySelectorAll('img,video,.crmo3045-fallback').forEach((n) => n.remove());
