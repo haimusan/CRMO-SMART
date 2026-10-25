@@ -266,6 +266,9 @@ ${bootMarker}`);
       }
     });
     function setup(){
+      document.querySelectorAll('#adminDashboard button').forEach(button=>{
+        if(/^באקטים[\\s]*[·-][\\s]*V[0-9]+/i.test(button.textContent.trim()))button.textContent='באקטים';
+      });
       document.querySelectorAll('section > strong').forEach(title=>{
         if(title.textContent.trim()==='נכסי הסטודיו' &&
            title.parentElement?.querySelector('input[type="file"][webkitdirectory]')){
