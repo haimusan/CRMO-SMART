@@ -1527,9 +1527,13 @@ function getGalleryDisplayCopy(gallery) {
     const width = Math.max(window.innerWidth || 0, document.documentElement?.clientWidth || 0);
     const mode = width <= 900 ? 'mobile' : getAboutDisplayMode();
     const suffix = mode.charAt(0).toUpperCase() + mode.slice(1);
+    const mobileDesc = meta[`desc${suffix}`] || '';
+    // U+2063 is a reversible per-gallery mobile display toggle, carried by
+    // the existing mobile-description field without changing the cloud schema.
+    const hideMobileDesc = mode === 'mobile' && mobileDesc.startsWith('\u2063');
     return {
       title: meta[`title${suffix}`] || meta.title || '',
-      desc: meta[`desc${suffix}`] || meta.desc || ''
+      desc: hideMobileDesc ? '' : (mobileDesc || meta.desc || '')
     };
   }
 
@@ -1559,28 +1563,45 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   const isBrandWall = isBrandGalleryObject(gallery);
   const inlineKey = getInlineExpandedKey(managerId, gallery);
   const expanded = !!getExpandedRequestedManagerId() || inlineExpandedGalleryIds.has(inlineKey);
-  const limit = getExpandedTileLimitFor(managerId, gallery);
+  const limit = isBrandWall ? getExpandedTileLimitFor(managerId, gallery) : MAX_TILES_PER_GALLERY;
   const alreadyShown = new Set(
     Array.from(galleryStack.querySelectorAll('.crmo3045-tile-wrap[data-crmo-project-key]'))
       .filter(card => !section.contains(card))
       .map(card => card.dataset.crmoProjectKey)
   );
   const visibleIndexes = [];
+  const candidates = [];
+  const candidateKeys = new Set();
   let suppressed = 0;
   grid.replaceChildren();
   (gallery.tiles || []).forEach((tile, tileIndex) => {
-    if (visibleIndexes.length >= limit || tile?.isVisible === false) return;
+    if (candidates.length >= limit || tile?.isVisible === false) return;
     if (!isBrandWall && !tileHasMeaningfulContent(tile)) return;
     const key = crmoProjectKey(tile);
-    if (!expanded && !isBrandWall && alreadyShown.has(key)) { suppressed += 1; return; }
+    if (!expanded && !isBrandWall && (alreadyShown.has(key) || candidateKeys.has(key))) { suppressed += 1; return; }
+    candidates.push({tile,tileIndex,key});
+    if (!isBrandWall) candidateKeys.add(key);
+  });
+  const mobile = window.matchMedia('(max-width: 900px)').matches;
+  const columns = mobile ? 2 : 3;
+  const minimum = mobile ? 4 : 6;
+  const count = isBrandWall
+    ? candidates.length
+    : Math.min(limit, Math.max(minimum, Math.floor(candidates.length / columns) * columns));
+  candidates.slice(0,count).forEach(({tile,tileIndex,key})=>{
     const card = createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled);
-    if (!isBrandWall) {
-      card.dataset.crmoProjectKey = key;
-      alreadyShown.add(key);
-    }
+    if (!isBrandWall) { card.dataset.crmoProjectKey = key; alreadyShown.add(key); }
     grid.appendChild(card);
     visibleIndexes.push(tileIndex);
   });
+  if (!isBrandWall) {
+    for (let i=visibleIndexes.length;i<minimum;i++) {
+      const blank=document.createElement('div');
+      blank.className='crmo3045-tile-wrap crmo-ux-empty-tile';
+      blank.setAttribute('aria-hidden','true');
+      grid.appendChild(blank);
+    }
+  }
   grid.dataset.crmoHomeSuppressed = String(suppressed);
   crmoHomeTileIndexes.set(galleryIndex, visibleIndexes);
   return visibleIndexes.length;
@@ -1936,6 +1957,9 @@ lb.addEventListener('close',()=>document.body.classList.remove('lightbox-open'))
 privacyPanel.addEventListener('click',e=>{if(e.target.closest('[data-close-privacy-panel]'))closePrivacyPanel();});
 window.addEventListener('keydown',e=>{if(lb.open&&e.key==='ArrowLeft')shiftTile(-1);if(lb.open&&e.key==='ArrowRight')shiftTile(1);});
 window.CRMO_VIEW = {apply:applyWrapper,summary:()=>({galleryIds:galleries.map(g=>g.galleryId),order:getManagerRenderOrder(),tiles:galleries.map(g=>g.tiles.length)})};
+// A viewport crossing the mobile breakpoint changes the number of tiles per row.
+// Rebuild only at that breakpoint; ordinary scrolling/resizing never resets the grid.
+window.matchMedia('(max-width: 900px)').addEventListener('change',()=>renderGalleryStack());
 if(window.CRMO_RELEASE_SNAPSHOT)applyWrapper(window.CRMO_RELEASE_SNAPSHOT);
 const contentSync = window.CRMOContentSync?.start({refresh:refreshPublicContent});
 async function refreshPublicContent(canApply = () => true){
