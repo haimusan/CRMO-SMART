@@ -1410,11 +1410,11 @@ function addExpandedLinkIfNeeded(section, id) {
     if (getExpandedRequestedManagerId()) return;
     const item = getManagerItem(id);
     const gallery = id === SUPER_GALLERY_ID ? null : findGalleryByManagerId(id);
-    const enabled = item.showExpandedButton === true || gallery?.meta?.expandedEnabled === true;
-    if (!enabled) return;
-    if (!isExpandedButtonEligible(id, item)) return;
     const grid = section.querySelector('[data-gallery-grid], [data-super-grid]');
     if (!grid) return;
+    const suppressed = Number(grid.dataset.crmoHomeSuppressed || 0) > 0;
+    const enabled = item.showExpandedButton === true || gallery?.meta?.expandedEnabled === true;
+    if (!suppressed && (!enabled || !isExpandedButtonEligible(id, item))) return;
     const row = document.createElement('div');
     row.className = 'crmo3263-expanded-link-row';
     const button = document.createElement('button');
@@ -1430,14 +1430,7 @@ function addExpandedLinkIfNeeded(section, id) {
       if (inlineExpandedGalleryIds.has(selectedKey)) inlineExpandedGalleryIds.delete(selectedKey);
       else inlineExpandedGalleryIds.add(selectedKey);
       const galleryIndex = galleries.indexOf(selected);
-      grid.replaceChildren();
-      let rendered = 0;
-      const limit = getExpandedTileLimitFor(id, selected, item);
-      (selected.tiles || []).forEach((tile, tileIndex) => {
-        if (rendered >= limit || tile?.isVisible === false) return;
-        grid.appendChild(createGalleryCard(selected, galleryIndex, tile, tileIndex, canEdit()));
-        rendered += 1;
-      });
+      crmoRenderCuratedGrid(grid, section, selected, galleryIndex, canEdit(), id);
       button.textContent = inlineExpandedGalleryIds.has(selectedKey) ? 'הצג פחות' : 'עבודות נוספות';
     });
     row.appendChild(button);
@@ -1446,7 +1439,7 @@ function addExpandedLinkIfNeeded(section, id) {
     else parent.appendChild(row);
   }
 
-function renderManagedMasterSection(masterGallery, managerId, editEnabled) { const children = getChildrenForMaster(managerId).filter((child) => isManagerItemVisible(getGalleryLookupId(child))); if (!children.length) return; let activeId = activeManagedMasterIds[managerId] || getGalleryLookupId(children[0]); let activeGallery = children.find((gallery) => getGalleryLookupId(gallery) === activeId) || children[0]; activeManagedMasterIds[managerId] = getGalleryLookupId(activeGallery); const activeGalleryIndex = galleries.findIndex((gallery) => gallery === activeGallery); const section = document.createElement('section'); section.className = 'crmo3047-gallery is-super-gallery'; section.id = managerId; section.dataset.galleryIndex = 'managed-master'; section.innerHTML = `<div class="crmo3047-gallery-head"><div class="crmo3047-gallery-copy"><div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(masterGallery).title || getManagerDisplayName(managerId))}</div><div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(masterGallery).desc)}</div></div></div><div class="crmo3047-super-gap"><div class="crmo3047-super-nav" data-super-nav></div><div class="crmo3047-super-body"><div class="crmo3047-super-tools">${editEnabled && activeGalleryIndex >= 0 ? `<button class="crmo3045-btn" type="button" data-managed-gallery-editor>ניהול גלריה</button>` : ``}</div><div class="crmo3045-grid" data-super-grid></div></div></div>`; const nav = section.querySelector('[data-super-nav]'); children.forEach((gallery) => { const gid = getGalleryLookupId(gallery); const btn = document.createElement('button'); btn.type = 'button'; btn.className = `crmo3047-super-btn${gid === activeManagedMasterIds[managerId] ? ' is-active' : ''}`; btn.textContent = String(gallery?.meta?.adminLabelHe || gallery?.meta?.title || gid); btn.addEventListener('click', () => { activeManagedMasterIds[managerId] = gid; renderGalleryStack(); }); nav.appendChild(btn); }); const grid = section.querySelector('[data-super-grid]'); let visibleRendered = 0; const renderLimit = getExpandedTileLimitFor(managerId, activeGallery); (activeGallery.tiles || []).forEach((tile, tileIndex) => { if (visibleRendered >= renderLimit) return; if (tile?.isVisible === false) return; grid.appendChild(createGalleryCard(activeGallery, activeGalleryIndex, tile, tileIndex, editEnabled)); visibleRendered += 1; }); section.querySelector('[data-managed-gallery-editor]')?.addEventListener('click', () => void 0); addExpandedLinkIfNeeded(section, managerId); galleryStack.appendChild(section); }
+function renderManagedMasterSection(masterGallery, managerId, editEnabled) { const children = getChildrenForMaster(managerId).filter((child) => isManagerItemVisible(getGalleryLookupId(child))); if (!children.length) return; let activeId = activeManagedMasterIds[managerId] || getGalleryLookupId(children[0]); let activeGallery = children.find((gallery) => getGalleryLookupId(gallery) === activeId) || children[0]; activeManagedMasterIds[managerId] = getGalleryLookupId(activeGallery); const activeGalleryIndex = galleries.findIndex((gallery) => gallery === activeGallery); const section = document.createElement('section'); section.className = 'crmo3047-gallery is-super-gallery'; section.id = managerId; section.dataset.galleryIndex = 'managed-master'; section.innerHTML = `<div class="crmo3047-gallery-head"><div class="crmo3047-gallery-copy"><div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(masterGallery).title || getManagerDisplayName(managerId))}</div><div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(masterGallery).desc)}</div></div></div><div class="crmo3047-super-gap"><div class="crmo3047-super-nav" data-super-nav></div><div class="crmo3047-super-body"><div class="crmo3047-super-tools">${editEnabled && activeGalleryIndex >= 0 ? `<button class="crmo3045-btn" type="button" data-managed-gallery-editor>ניהול גלריה</button>` : ``}</div><div class="crmo3045-grid" data-super-grid></div></div></div>`; const nav = section.querySelector('[data-super-nav]'); children.forEach((gallery) => { const gid = getGalleryLookupId(gallery); const btn = document.createElement('button'); btn.type = 'button'; btn.className = `crmo3047-super-btn${gid === activeManagedMasterIds[managerId] ? ' is-active' : ''}`; btn.textContent = String(gallery?.meta?.adminLabelHe || gallery?.meta?.title || gid); btn.addEventListener('click', () => { activeManagedMasterIds[managerId] = gid; renderGalleryStack(); }); nav.appendChild(btn); }); const grid = section.querySelector('[data-super-grid]'); crmoRenderCuratedGrid(grid, section, activeGallery, activeGalleryIndex, editEnabled, managerId); section.querySelector('[data-managed-gallery-editor]')?.addEventListener('click', () => void 0); addExpandedLinkIfNeeded(section, managerId); galleryStack.appendChild(section); }
 
 function renderSuperGallerySection(editEnabled) {
     const superSubs = getSuperSubGalleries();
@@ -1514,16 +1507,8 @@ function renderSuperGallerySection(editEnabled) {
         button.classList.toggle('is-active', selected);
         button.setAttribute('aria-pressed', String(selected));
       });
-      grid.replaceChildren();
       const galleryIndex = galleries.findIndex((item) => item.galleryId === gallery.galleryId);
-      let visibleRendered = 0;
-      const renderLimit = getExpandedTileLimitFor(SUPER_GALLERY_ID, gallery);
-      gallery.tiles.forEach((tile, tileIndex) => {
-        if (visibleRendered >= renderLimit) return;
-        if (tile?.isVisible === false) return;
-        grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
-        visibleRendered += 1;
-      });
+      crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled, SUPER_GALLERY_ID);
       section.querySelector('.crmo3263-expanded-link-row')?.remove();
       addExpandedLinkIfNeeded(section, SUPER_GALLERY_ID);
     }
@@ -1545,6 +1530,59 @@ function getGalleryDisplayCopy(gallery) {
       desc: meta[`desc${suffix}`] || meta.desc || ''
     };
   }
+
+
+/* CRMO homepage curation: one appearance per project until "עבודות נוספות".
+   All source tiles remain intact and accessible in expanded galleries. */
+const crmoHomeTileIndexes = new Map();
+function crmoProjectKey(tile) {
+  const rawTitle = String(tile?.overlay?.title || '');
+  const normalizedTitle = rawTitle.toLocaleLowerCase('he').replace(/[\u05f3\u05f4’‘"'\\|—–\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const identity = (normalizedTitle + ' ' + String(tile?.meta?.brand || '') + ' ' + String(tile?.tileId || '')).toLocaleLowerCase('he');
+  if (/מאפיות אריאל/.test(identity)) return 'ariel-bakery';
+  if (/אופטומטריה|optometry|מעקה שהפך למיתוג/.test(identity)) return 'mn-optometry';
+  if (/\bbella\b/.test(identity)) return 'bella-kitchenware';
+  if (/nuts.factory|nutsfactory/.test(identity)) return 'nuts-factory';
+  if (/babyland\s*2023/.test(identity)) return 'huggies-babyland-2023';
+  if (/huboost/.test(identity)) return 'huboost';
+  if (/מהתנור לנקודת המכירה/.test(identity)) return 'bonjour-bakery-pos';
+  if (/cube.?z|cubiez/.test(identity)) return 'cubez-cart';
+  if (/בר מזוודה|בר במזוודה/.test(identity)) return 'chivas-suitcase';
+  if (/מאפה לי/.test(identity)) return 'maafe-li';
+  if (/crossfit.petah.tikva|crossfit פתח תקווה/.test(identity)) return 'crossfit-pt';
+  if (/ים המלח כמרחב מותג/.test(identity)) return 'ahava-branded-space';
+  return 'title:' + (normalizedTitle || String(tile?.tileId || ''));
+}
+function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled, managerId) {
+  const isBrandWall = isBrandGalleryObject(gallery);
+  const inlineKey = getInlineExpandedKey(managerId, gallery);
+  const expanded = !!getExpandedRequestedManagerId() || inlineExpandedGalleryIds.has(inlineKey);
+  const limit = getExpandedTileLimitFor(managerId, gallery);
+  const alreadyShown = new Set(
+    Array.from(galleryStack.querySelectorAll('.crmo3045-tile-wrap[data-crmo-project-key]'))
+      .filter(card => !section.contains(card))
+      .map(card => card.dataset.crmoProjectKey)
+  );
+  const visibleIndexes = [];
+  let suppressed = 0;
+  grid.replaceChildren();
+  (gallery.tiles || []).forEach((tile, tileIndex) => {
+    if (visibleIndexes.length >= limit || tile?.isVisible === false) return;
+    if (!isBrandWall && !tileHasMeaningfulContent(tile)) return;
+    const key = crmoProjectKey(tile);
+    if (!expanded && !isBrandWall && alreadyShown.has(key)) { suppressed += 1; return; }
+    const card = createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled);
+    if (!isBrandWall) {
+      card.dataset.crmoProjectKey = key;
+      alreadyShown.add(key);
+    }
+    grid.appendChild(card);
+    visibleIndexes.push(tileIndex);
+  });
+  grid.dataset.crmoHomeSuppressed = String(suppressed);
+  crmoHomeTileIndexes.set(galleryIndex, visibleIndexes);
+  return visibleIndexes.length;
+}
 
 function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     if (!gallery || isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) return;
@@ -1570,14 +1608,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
       <div class="crmo3045-grid" data-gallery-grid></div>
     `;
     const grid = section.querySelector('[data-gallery-grid]');
-    let visibleRendered = 0;
-    const renderLimit = getExpandedTileLimitFor(getGalleryLookupId(gallery), gallery);
-    gallery.tiles.forEach((tile, tileIndex) => {
-      if (visibleRendered >= renderLimit) return;
-      if (tile?.isVisible === false) return;
-      grid.appendChild(createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled));
-      visibleRendered += 1;
-    });
+    crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled, getGalleryLookupId(gallery));
     const galleryEditorBtn = section.querySelector('[data-gallery-editor]');
     galleryEditorBtn?.addEventListener('click', () => void 0);
     addExpandedLinkIfNeeded(section, getGalleryLookupId(gallery));
@@ -1586,6 +1617,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
 
 function renderGalleryStack() {
     galleryStack.innerHTML = '';
+    crmoHomeTileIndexes.clear();
     let firstRenderedSection = true;
     const editEnabled = canEdit();
     const markFirst = () => {
@@ -1708,8 +1740,10 @@ function getNavigableTileIndexes(galleryIndex) {
     const tiles = Array.isArray(gallery?.tiles) ? gallery.tiles : [];
     const brandGallery = isBrandGalleryIndex(galleryIndex);
     const indexes = [];
+    const shownHome = getExpandedRequestedManagerId() ? null : crmoHomeTileIndexes.get(galleryIndex);
     tiles.forEach((tile, tileIndex) => {
       if (tile?.isVisible === false) return;
+      if (shownHome && !shownHome.includes(tileIndex)) return;
       if (brandGallery && !isBrandTileInteractive(tile)) return;
       indexes.push(tileIndex);
     });
