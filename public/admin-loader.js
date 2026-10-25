@@ -154,6 +154,14 @@ ${bootMarker}`);
       script.setAttribute('src',new URL('admin/permissions.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href);
     }
   });
+  // All first-party editor dependencies use the central release cache key.
+  editorDocument.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(node=>{
+    const attr=node.tagName==='SCRIPT'?'src':'href';
+    const url=new URL(node.getAttribute(attr),window.CRMO_ROOT_URL);
+    if(url.origin!==new URL(window.CRMO_ROOT_URL).origin||!/[.](js|css)$/.test(url.pathname))return;
+    url.searchParams.set('v',window.CRMO_CONFIG.release);
+    node.setAttribute(attr,url.href);
+  });
   const legacyNotice=editorDocument.querySelector('div[style*="#fff4cd"]');
   if(legacyNotice&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
   const headerStyle=editorDocument.createElement('style');
@@ -207,11 +215,11 @@ ${bootMarker}`);
     #adminDashboard.crmo-ux-collapsed {min-height:0!important;padding:4px 8px!important}
     #adminDashboard .crmo-ux-dashboard-toggle {
       display:flex;align-items:center;justify-content:flex-start;direction:ltr;
-      width:100%;height:24px;min-height:24px;
+      width:100%;height:32px;min-height:32px;
     }
     #crmo-ux-expand-admin {
-      width:24px;height:24px;padding:0;border:1px solid #111;border-radius:50%;
-      background:#111;color:#fff;cursor:pointer;font:17px/1 Arial,sans-serif;
+      width:auto;min-width:112px;height:32px;padding:0 12px;border:1px solid #111;border-radius:16px;
+      background:#111;color:#fff;cursor:pointer;font:13px/1 Arial,sans-serif;
     }
     .crmo3047-gallery-head {position:relative!important}
     .crmo3047-gallery-tools {position:absolute!important;top:0!important;left:0!important;
@@ -274,16 +282,16 @@ ${bootMarker}`);
         const row=document.createElement('div');
         row.className='crmo-ux-dashboard-toggle';
         const button=document.createElement('button');
-        button.id='crmo-ux-expand-admin';button.type='button';button.textContent='+';
+        button.id='crmo-ux-expand-admin';button.type='button';button.textContent='לוח ניהול +';
         button.setAttribute('aria-label','פתח או סגור לוח ניהול');
         button.setAttribute('aria-expanded','false');
         panel.classList.add('crmo-ux-collapsed');
         button.addEventListener('click',()=>{
           const closed=panel.classList.toggle('crmo-ux-collapsed');
-          button.textContent=closed?'+':'−';
+          button.textContent=closed?'לוח ניהול +':'סגור לוח ניהול −';
           button.setAttribute('aria-expanded',String(!closed));
         });
-        row.append(button);panel.prepend(row);
+        const releaseBadge=document.createElement('span');releaseBadge.className='crmo-admin-release-badge';releaseBadge.style.cssText='margin-inline:10px;font:11px Arial,sans-serif';releaseBadge.textContent='CRMO_v'+window.CRMO_CONFIG.release;row.append(button,releaseBadge);panel.prepend(row);
       }
       document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
         button.setAttribute('aria-label','עריכת הגלריה');

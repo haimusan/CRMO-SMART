@@ -20,7 +20,13 @@
  }
  async function update(next){
   if(disposed)return;
-  const current=++generation;session=next||null;role=session?'registered':'viewer';render();
+  const current=++generation;
+  const sameUser=!!next?.user?.id && next.user.id===session?.user?.id;
+  session=next||null;
+  // Retain the last server-verified role only while rechecking the same account.
+  // A new account or sign-out loses privileges immediately; failed verification still revokes.
+  if(!sameUser)role=session?'registered':'viewer';
+  render();
   try{
    if(session&&client){
     const verified=await client.auth.getUser();
