@@ -177,9 +177,18 @@ ${bootMarker}`);
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
   const uxStyle=editorDocument.createElement('style');
-  uxStyle.id='crmo-ux-v3303';
+  uxStyle.id='crmo-ux-v3305';
   uxStyle.textContent=`
-    #adminDashboard { font-size:11px!important; }
+    #adminDashboard {
+      position:sticky!important;top:0!important;z-index:10020!important;
+      margin:0!important;background:#fff!important;
+      font-size:11px!important;max-height:min(45dvh,320px);overflow-y:auto;
+      overscroll-behavior:contain;
+    }
+    body.role-admin header,body.role-master header {
+      position:sticky!important;top:var(--crmo-admin-dashboard-h,0px)!important;
+      z-index:10010!important;
+    }
     #adminDashboard button,#adminDashboard input,#adminDashboard select,
     #adminDashboard .dashboard-pill { font-size:11px!important; }
     #adminDashboard.crmo-ux-collapsed > :not(.crmo-ux-dashboard-toggle) {display:none!important}
@@ -225,9 +234,17 @@ ${bootMarker}`);
   `;
   editorDocument.head.append(uxStyle);
   const uxScript=editorDocument.createElement('script');
-  uxScript.id='crmo-ux-v3303-script';
+  uxScript.id='crmo-ux-v3305-script';
   uxScript.textContent=`(function(){
     const marker='\\u2063';
+    let observedDashboard=null;
+    const dashboardResizeObserver=new ResizeObserver(()=>{
+      if(observedDashboard){
+        const h=observedDashboard.classList.contains('visible')
+          ? observedDashboard.getBoundingClientRect().height : 0;
+        document.documentElement.style.setProperty('--crmo-admin-dashboard-h',h+'px');
+      }
+    });
     function setup(){
       document.querySelectorAll('section > strong').forEach(title=>{
         if(title.textContent.trim()==='נכסי הסטודיו' &&
@@ -236,6 +253,11 @@ ${bootMarker}`);
         }
       });
       const panel=document.getElementById('adminDashboard');
+      if(panel&&panel!==observedDashboard){
+        if(observedDashboard)dashboardResizeObserver.unobserve(observedDashboard);
+        observedDashboard=panel;
+        dashboardResizeObserver.observe(panel);
+      }
       if(panel&&!document.getElementById('crmo-ux-expand-admin')){
         const row=document.createElement('div');
         row.className='crmo-ux-dashboard-toggle';
