@@ -90,6 +90,53 @@ ${applyMarker}`);
   });
 ${bootMarker}`);
 
+  // Reuse the private editor's own validated manager state and cloud-save
+  // routine for inline visibility switches, rather than duplicating storage.
+  const quickManagerMarker='function renderGalleryManager() {';
+  if(html.split(quickManagerMarker).length!==2)throw Error('מבנה ניהול הגלריות השתנה. העדכון נעצר לשמירת התוכן.');
+  html=html.replace(quickManagerMarker,`window.CRMO_QUICK_MANAGER = {
+    get(id) {
+      const state=getGalleryManagerState();
+      if(!Object.prototype.hasOwnProperty.call(state?.items||{},id))return null;
+      const item=state?.items?.[id]||{};
+      return {
+        visible:item.visible!==false,
+        visibleMobile:item.visibleMobile!==false,
+        visibleDesktop:item.visibleDesktop!==false,
+        showExpandedButton:item.showExpandedButton===true,
+        expandedAllowed:isExpandedButtonEligible(id,item)
+      };
+    },
+    async set(id,flag,enabled) {
+      if(!canEdit() || !['visible','visibleMobile','visibleDesktop','showExpandedButton'].includes(flag))return false;
+      const state=structuredClone(getGalleryManagerState());
+      state.items=state.items||{};
+      state.items[id]=state.items[id]||{};
+      if(flag==='showExpandedButton' && enabled && !isExpandedButtonEligible(id,state.items[id]))return false;
+      state.items[id][flag]=!!enabled;
+      setGalleryManagerState(state);
+      if(flag==='showExpandedButton'){
+        const gallery=findGalleryByManagerId(id);
+        if(gallery?.meta){
+          gallery.meta.expandedEnabled=!!enabled;
+          gallery.meta.showExpandedButton=!!enabled;
+        }
+      }
+      renderGalleryStack();
+      populateGallerySelect();
+      persistLocal(makePayload(galleries));
+      try {
+        await runWithSyncLock('saving gallery visibility to cloud',async()=>saveGalleriesToCloud());
+        setStatus('נראות הגלריה נשמרה בענן.');
+        return true;
+      } catch(error) {
+        setStatus('הנראות נשמרה מקומית בלבד: '+(error?.message||error));
+        return false;
+      }
+    }
+  };
+  ${quickManagerMarker}`);
+
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
@@ -130,7 +177,7 @@ ${bootMarker}`);
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
   const uxStyle=editorDocument.createElement('style');
-  uxStyle.id='crmo-ux-v3301';
+  uxStyle.id='crmo-ux-v3302';
   uxStyle.textContent=`
     #adminDashboard { font-size:11px!important; }
     #adminDashboard button,#adminDashboard input,#adminDashboard select,
@@ -174,10 +221,16 @@ ${bootMarker}`);
   `;
   editorDocument.head.append(uxStyle);
   const uxScript=editorDocument.createElement('script');
-  uxScript.id='crmo-ux-v3301-script';
+  uxScript.id='crmo-ux-v3302-script';
   uxScript.textContent=`(function(){
     const marker='\\u2063';
     function setup(){
+      document.querySelectorAll('section > strong').forEach(title=>{
+        if(title.textContent.trim()==='נכסי הסטודיו' &&
+           title.parentElement?.querySelector('input[type="file"][webkitdirectory]')){
+          title.parentElement.remove();
+        }
+      });
       const panel=document.getElementById('adminDashboard');
       if(panel&&!document.getElementById('crmo-ux-expand-admin')){
         const row=document.createElement('div');
@@ -199,30 +252,29 @@ ${bootMarker}`);
         button.title='עריכת הגלריה';
       });
       document.querySelectorAll('section.crmo3047-gallery[id]').forEach(section=>{
-        const row=document.querySelector('.crmo3263-manager-row[data-manager-id="'+CSS.escape(section.id)+'"]');
+        const manager=window.CRMO_QUICK_MANAGER;
+        const state=manager?.get(section.id);
         const copy=section.querySelector('.crmo3047-gallery-copy');
-        if(!row||!copy)return;
+        if(!state||!copy)return;
         let quick=copy.querySelector('.crmo-ux-quick-flags');
-        if(quick&&quick.__managerRow!==row){quick.remove();quick=null;}
         if(quick)return;
         quick=document.createElement('div');quick.className='crmo-ux-quick-flags';
-        quick.__managerRow=row;
-        ['visible','visibleMobile','visibleDesktop','showExpandedButton'].forEach(flag=>{
-          const original=row.querySelector('input[data-flag="'+flag+'"]');
-          if(!original)return;
+        const names={visible:'כללי',visibleMobile:'מובייל',visibleDesktop:'דסקטופ',showExpandedButton:'עבודות נוספות'};
+        Object.keys(names).forEach(flag=>{
           const label=document.createElement('label');
           const proxy=document.createElement('input');
-          proxy.type='checkbox';proxy.checked=original.checked;proxy.disabled=original.disabled;
-          label.append(proxy,document.createTextNode(original.parentElement.textContent.trim()));
-          proxy.addEventListener('change',()=>{
-            if(!original.disabled){
-              original.click();
-              const save=document.getElementById('crmo3263SaveManager');
-              if(save)save.click();
+          proxy.type='checkbox';proxy.checked=state[flag];
+          proxy.disabled=flag==='showExpandedButton'&&!state.expandedAllowed;
+          label.append(proxy,document.createTextNode(names[flag]));
+          proxy.addEventListener('change',async()=>{
+            proxy.disabled=true;
+            try{await manager.set(section.id,flag,proxy.checked)}
+            finally {
+              const next=manager.get(section.id);
+              proxy.checked=!!next?.[flag];
+              proxy.disabled=flag==='showExpandedButton'&&!next?.expandedAllowed;
             }
-            proxy.checked=original.checked;
           });
-          original.addEventListener('change',()=>{proxy.checked=original.checked;proxy.disabled=original.disabled});
           quick.append(label);
         });
         copy.append(quick);
