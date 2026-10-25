@@ -162,6 +162,14 @@ ${bootMarker}`);
     url.searchParams.set('v',window.CRMO_CONFIG.release);
     node.setAttribute(attr,url.href);
   });
+  // A legacy <base href="/admin/"> makes #links drop the entry query and reload.
+  // Resolve section links against this exact document, preserving its release cache key.
+  editorDocument.querySelectorAll('nav a[href^="#"]').forEach(link=>{
+    const hash=link.getAttribute('href');
+    if(!hash||hash==='#')return;
+    const target=new URL(window.location.href);target.hash=hash;
+    link.setAttribute('href',target.href);
+  });
   const legacyNotice=editorDocument.querySelector('div[style*="#fff4cd"]');
   if(legacyNotice&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
   const headerStyle=editorDocument.createElement('style');
