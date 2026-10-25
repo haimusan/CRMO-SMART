@@ -157,7 +157,7 @@ ${bootMarker}`);
   // All first-party editor dependencies use the central release cache key.
   editorDocument.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(node=>{
     const attr=node.tagName==='SCRIPT'?'src':'href';
-    const url=new URL(node.getAttribute(attr),window.CRMO_ROOT_URL);
+    const url=new URL(node.getAttribute(attr),window.location.href);
     if(url.origin!==new URL(window.CRMO_ROOT_URL).origin||!/[.](js|css)$/.test(url.pathname))return;
     url.searchParams.set('v',window.CRMO_CONFIG.release);
     node.setAttribute(attr,url.href);
@@ -376,7 +376,7 @@ ${bootMarker}`);
   if (!editorDocument.querySelector('script[src*="crmo-smart-framing.js"]')) {
     const framingScript=editorDocument.createElement('script');
     framingScript.defer=true;
-    framingScript.src=new URL('public/crmo-smart-framing.js?v=3293',window.CRMO_ROOT_URL).href;
+    framingScript.src=new URL('public/crmo-smart-framing.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
     editorDocument.body.append(framingScript);
   }
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
