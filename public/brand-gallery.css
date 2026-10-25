@@ -1,0 +1,8 @@
+/* Shared by the public viewer and the private editor. Logos keep their full shape. */
+.is-brands-gallery .crmo3045-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.is-brands-gallery.is-brand-wall-ready .crmo3045-grid{grid-template-columns:repeat(9,minmax(0,1fr))}
+.is-brands-gallery .crmo3045-tile{aspect-ratio:1/1;background:#fff}
+.is-brands-gallery .crmo3045-tile-media,
+#crmo3047TileEditor.is-brand-editor #crmo3047EditorStage img{object-fit:contain;padding:8px;box-sizing:border-box}
+@media(max-width:900px){.is-brands-gallery .crmo3045-grid,.is-brands-gallery.is-brand-wall-ready .crmo3045-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:640px){.is-brands-gallery .crmo3045-grid,.is-brands-gallery.is-brand-wall-ready .crmo3045-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

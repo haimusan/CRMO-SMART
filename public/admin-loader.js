@@ -137,6 +137,20 @@ ${bootMarker}`);
   };
   ${quickManagerMarker}`);
 
+  // Match the public brand wall rather than the legacy six-project preview.
+  const brandLimitMarker = '  const STACK_TILE_LIMIT = 6;';
+  const limitFunctionStart = html.indexOf('  function getExpandedTileLimitFor(');
+  const limitFunctionEnd = html.indexOf('\n  function getExpandedTileCountForManagerId(', limitFunctionStart);
+  const brandClassMarker = "${isBrandsGallery ? ' is-brands-gallery' : ''}`;";
+  if (html.split(brandLimitMarker).length !== 2 || limitFunctionStart < 0 || limitFunctionEnd < 0 || html.split(brandClassMarker).length !== 2) {
+    throw Error('מבנה גלריית המותגים השתנה. טעינת העורך נעצרה להגנה על התוכן.');
+  }
+  const limitFunction = html.slice(limitFunctionStart, limitFunctionEnd);
+  html = html.slice(0, limitFunctionStart) + limitFunction.replace('    const inlineKey =', '    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT;\n    const inlineKey =').replaceAll('return STACK_TILE_LIMIT', 'return compactLimit').replaceAll('<= STACK_TILE_LIMIT', '<= compactLimit').replaceAll('> STACK_TILE_LIMIT', '> compactLimit') + html.slice(limitFunctionEnd);
+  html = html.replace(brandLimitMarker, brandLimitMarker + '\n  const BRANDS_STACK_TILE_LIMIT = 18;');
+  html = html.replace(brandClassMarker, "${isBrandsGallery ? ' is-brands-gallery' : ''}${isBrandsGallery && visibleTileCount >= 18 && (gallery.tiles || []).filter(tile => tile?.isVisible !== false && ((tile.media || []).some(media => media?.src && media?.isVisible !== false) || tile.logoSrc || tile.brandConfig?.logoSrc)).length >= 15 ? ' is-brand-wall-ready' : ''}`;");
+  html = html.replace('Math.min(STACK_TILE_LIMIT, visibleTileCount)', 'Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT, visibleTileCount)');
+
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
@@ -193,6 +207,10 @@ ${bootMarker}`);
   // Reserve thumbnail geometry before image decoding, so drag targets never collapse.
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
+  const brandStyles = editorDocument.createElement('link');
+  brandStyles.rel = 'stylesheet';
+  brandStyles.href = new URL('public/brand-gallery.css?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  editorDocument.head.append(brandStyles);
   const uxStyle=editorDocument.createElement('style');
   uxStyle.id='crmo-ux-v3306';
   uxStyle.textContent=`
