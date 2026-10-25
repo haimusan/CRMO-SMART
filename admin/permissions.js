@@ -11,11 +11,15 @@
   window.dispatchEvent(new CustomEvent('crmo:permissions',{detail:{role,editable}}));
  };
  async function refresh(client){
-  const seq=++request;role='viewer';apply();
+  // Do not briefly revoke a verified role on every token refresh: that made
+  // the editor chrome blink while Supabase checked the same logged-in user.
+  const seq=++request;
   const {data,error}=await client.auth.getUser();
   if(seq!==request)return;
-  userId=data?.user?.id||null;
-  if(error||!userId){role='viewer';apply();return;}
+  const nextUserId=data?.user?.id||null;
+  if(error||!nextUserId){userId=null;role='viewer';apply();return;}
+  if(userId && userId!==nextUserId){role='viewer';apply();}
+  userId=nextUserId;
   const result=await client.from('crmo_user_roles').select('role').eq('user_id',userId).maybeSingle();
   if(seq!==request)return;
   role=result.error?'registered':(result.data?.role||'registered');apply();
@@ -24,7 +28,10 @@
  const timer=setInterval(()=>{
   const client=window.CRMOAuthBridge?.getSupabaseClient?.();
   if(!client||bound)return;bound=true;clearInterval(timer);
-  client.auth.onAuthStateChange(()=>setTimeout(()=>refresh(client).catch(()=>{role='viewer';apply();}),0));
+  client.auth.onAuthStateChange(event=>{
+   if(event==='SIGNED_OUT'){userId=null;role='viewer';apply();}
+   setTimeout(()=>refresh(client).catch(()=>{role='viewer';apply();}),0);
+  });
   refresh(client).catch(()=>{role='viewer';apply();});
  },100);
 })();

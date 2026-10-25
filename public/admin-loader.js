@@ -93,10 +93,19 @@ ${bootMarker}`);
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
+  // This one-time studio-assets uploader duplicates the existing edit icons.
+  // Remove only its UI scripts; existing cloud assets are left untouched.
+  editorDocument.querySelectorAll('script[src*="/admin/studio-assets.js"],script#crmo3283-studio-assets').forEach(script=>script.remove());
+  editorDocument.querySelectorAll('#adminDashboard button').forEach(button=>{
+    if(/^באקטים\s*[·-]\s*V\d+/i.test(button.textContent.trim())) button.textContent='באקטים';
+  });
   // Private release files still contain an unversioned config.js. A cached copy
   // overwrites the freshly injected release and can point at a different content row.
   editorDocument.querySelectorAll('script[src]').forEach(script=>{
     if(new URL(script.getAttribute('src'),window.CRMO_ROOT_URL).pathname.endsWith('/public/config.js'))script.remove();
+    else if(new URL(script.getAttribute('src'),window.CRMO_ROOT_URL).pathname.endsWith('/admin/permissions.js')){
+      script.setAttribute('src',new URL('admin/permissions.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href);
+    }
   });
   const legacyNotice=editorDocument.querySelector('div[style*="#fff4cd"]');
   if(legacyNotice&&legacyNotice.querySelector('a[href="../index.html"]'))legacyNotice.remove();
@@ -120,6 +129,141 @@ ${bootMarker}`);
   // Reserve thumbnail geometry before image decoding, so drag targets never collapse.
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
+  const uxStyle=editorDocument.createElement('style');
+  uxStyle.id='crmo-ux-v3301';
+  uxStyle.textContent=`
+    #adminDashboard { font-size:11px!important; }
+    #adminDashboard button,#adminDashboard input,#adminDashboard select,
+    #adminDashboard .dashboard-pill { font-size:11px!important; }
+    #adminDashboard.crmo-ux-collapsed > :not(.crmo-ux-dashboard-toggle) {display:none!important}
+    #adminDashboard.crmo-ux-collapsed {min-height:0!important;padding:4px 8px!important}
+    #adminDashboard .crmo-ux-dashboard-toggle {
+      display:flex;align-items:center;justify-content:flex-start;direction:ltr;
+      width:100%;height:24px;min-height:24px;
+    }
+    #crmo-ux-expand-admin {
+      width:24px;height:24px;padding:0;border:1px solid #111;border-radius:50%;
+      background:#111;color:#fff;cursor:pointer;font:17px/1 Arial,sans-serif;
+    }
+    .crmo3047-gallery-head {position:relative!important}
+    .crmo3047-gallery-tools {position:absolute!important;top:0!important;left:0!important;
+      margin:0!important;padding:0!important;z-index:20!important}
+    button[data-gallery-editor],button[data-managed-gallery-editor] {
+      display:grid!important;place-items:center!important;width:28px!important;height:28px!important;
+      padding:0!important;min-width:28px!important;border:0!important;border-radius:50%!important;
+      background:#111!important;color:transparent!important;font-size:0!important;line-height:1!important;
+    }
+    button[data-gallery-editor]::before,button[data-managed-gallery-editor]::before {
+      content:"✎";color:#fff;font:20px/1 Arial,sans-serif;
+    }
+    .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
+      filter:grayscale(1);opacity:.56;
+    }
+    .crmo-ux-mobile-desc-choice {
+      display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 0;
+    }
+    .crmo-ux-quick-flags {
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+      font:11px/1.4 Rubik,Arial,sans-serif;color:#555;margin:3px 0 0;
+    }
+    .crmo-ux-quick-flags label {display:inline-flex;gap:3px;align-items:center;cursor:pointer}
+    .crmo-ux-quick-flags input {width:12px;height:12px;margin:0;accent-color:#111}
+    @media(max-width:900px) {
+      .crmo3047-gallery-desc.crmo-ux-mobile-desc-hidden {display:none!important}
+    }
+  `;
+  editorDocument.head.append(uxStyle);
+  const uxScript=editorDocument.createElement('script');
+  uxScript.id='crmo-ux-v3301-script';
+  uxScript.textContent=`(function(){
+    const marker='\\u2063';
+    function setup(){
+      const panel=document.getElementById('adminDashboard');
+      if(panel&&!document.getElementById('crmo-ux-expand-admin')){
+        const row=document.createElement('div');
+        row.className='crmo-ux-dashboard-toggle';
+        const button=document.createElement('button');
+        button.id='crmo-ux-expand-admin';button.type='button';button.textContent='+';
+        button.setAttribute('aria-label','פתח או סגור לוח ניהול');
+        button.setAttribute('aria-expanded','false');
+        panel.classList.add('crmo-ux-collapsed');
+        button.addEventListener('click',()=>{
+          const closed=panel.classList.toggle('crmo-ux-collapsed');
+          button.textContent=closed?'+':'−';
+          button.setAttribute('aria-expanded',String(!closed));
+        });
+        row.append(button);panel.prepend(row);
+      }
+      document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
+        button.setAttribute('aria-label','עריכת הגלריה');
+        button.title='עריכת הגלריה';
+      });
+      document.querySelectorAll('section.crmo3047-gallery[id]').forEach(section=>{
+        const row=document.querySelector('.crmo3263-manager-row[data-manager-id="'+CSS.escape(section.id)+'"]');
+        const copy=section.querySelector('.crmo3047-gallery-copy');
+        if(!row||!copy)return;
+        let quick=copy.querySelector('.crmo-ux-quick-flags');
+        if(quick&&quick.__managerRow!==row){quick.remove();quick=null;}
+        if(quick)return;
+        quick=document.createElement('div');quick.className='crmo-ux-quick-flags';
+        quick.__managerRow=row;
+        ['visible','visibleMobile','visibleDesktop','showExpandedButton'].forEach(flag=>{
+          const original=row.querySelector('input[data-flag="'+flag+'"]');
+          if(!original)return;
+          const label=document.createElement('label');
+          const proxy=document.createElement('input');
+          proxy.type='checkbox';proxy.checked=original.checked;proxy.disabled=original.disabled;
+          label.append(proxy,document.createTextNode(original.parentElement.textContent.trim()));
+          proxy.addEventListener('change',()=>{
+            if(!original.disabled){
+              original.click();
+              const save=document.getElementById('crmo3263SaveManager');
+              if(save)save.click();
+            }
+            proxy.checked=original.checked;
+          });
+          original.addEventListener('change',()=>{proxy.checked=original.checked;proxy.disabled=original.disabled});
+          quick.append(label);
+        });
+        copy.append(quick);
+      });
+      const mobile=document.getElementById('crmo3047GalleryDescMobile');
+      if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
+        const label=document.createElement('label');
+        label.className='crmo-ux-mobile-desc-choice';
+        const checkbox=document.createElement('input');
+        checkbox.type='checkbox';checkbox.id='crmo-ux-hide-desc-mobile';
+        label.append(checkbox,document.createTextNode('במובייל: כותרת בלבד, ללא הסבר'));
+        mobile.closest('label')?.after(label);
+        const sync=()=>{checkbox.checked=mobile.value.startsWith(marker)};
+        checkbox.addEventListener('change',()=>{
+          const original=mobile.value.startsWith(marker)?mobile.value.slice(1):mobile.value;
+          mobile.value=checkbox.checked?marker+original:original;
+          mobile.dispatchEvent(new Event('input',{bubbles:true}));
+        });
+        document.addEventListener('click',event=>{
+          if(event.target.closest?.('[data-gallery-editor],[data-managed-gallery-editor]'))setTimeout(sync,60);
+        },true);
+        sync();
+      }
+      if(window.innerWidth<=900){
+        document.querySelectorAll('.crmo3047-gallery-desc').forEach(el=>{
+          el.classList.toggle('crmo-ux-mobile-desc-hidden',el.textContent.startsWith(marker));
+        });
+      }
+    }
+    let scheduled=false;
+    function schedule(){
+      if(scheduled)return;scheduled=true;
+      requestAnimationFrame(()=>{scheduled=false;setup()});
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      setup();
+      new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
+    },{once:true});
+    window.addEventListener('resize',schedule,{passive:true});
+  })();`;
+  editorDocument.body.append(uxScript);
   // Carry the central release configuration into the private editor document.
   const releaseConfig=editorDocument.createElement('script');
   releaseConfig.textContent='window.CRMO_CONFIG=Object.freeze('+JSON.stringify(window.CRMO_CONFIG)+');';
