@@ -97,7 +97,7 @@ ${bootMarker}`);
   html=html.replace(quickManagerMarker,`window.CRMO_QUICK_MANAGER = {
     get(id) {
       const state=getGalleryManagerState();
-      if(!Object.prototype.hasOwnProperty.call(state?.items||{},id))return null;
+      if(!findGalleryByManagerId(id) && id!==SUPER_GALLERY_ID)return null;
       const item=state?.items?.[id]||{};
       return {
         visible:item.visible!==false,
@@ -177,7 +177,7 @@ ${bootMarker}`);
   headerStyle.textContent += "#crmo3047EditorStrip .crmo3045-thumb{display:block!important;width:100%!important;aspect-ratio:16/9!important;box-sizing:border-box}#crmo3047EditorStrip .crmo3045-thumb img,#crmo3047EditorStrip .crmo3045-thumb video{display:block;width:100%;height:100%;object-fit:cover}";
   editorDocument.head.append(headerStyle);
   const uxStyle=editorDocument.createElement('style');
-  uxStyle.id='crmo-ux-v3302';
+  uxStyle.id='crmo-ux-v3303';
   uxStyle.textContent=`
     #adminDashboard { font-size:11px!important; }
     #adminDashboard button,#adminDashboard input,#adminDashboard select,
@@ -206,6 +206,10 @@ ${bootMarker}`);
     .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
       filter:grayscale(1);opacity:.56;
     }
+    #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile,
+    #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile-media {
+      filter:grayscale(1)!important;opacity:.55!important;
+    }
     .crmo-ux-mobile-desc-choice {
       display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 0;
     }
@@ -221,7 +225,7 @@ ${bootMarker}`);
   `;
   editorDocument.head.append(uxStyle);
   const uxScript=editorDocument.createElement('script');
-  uxScript.id='crmo-ux-v3302-script';
+  uxScript.id='crmo-ux-v3303-script';
   uxScript.textContent=`(function(){
     const marker='\\u2063';
     function setup(){
