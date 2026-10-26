@@ -10,7 +10,7 @@ const TILES_PER_GALLERY = 6;
 
 const MAX_TILES_PER_GALLERY = 24;
 
-const STACK_TILE_LIMIT = 6;
+const STACK_TILE_LIMIT = 9;
 const BRANDS_STACK_TILE_LIMIT = 18;
 
 const BRANDS_GALLERY_BLUEPRINT = Object.freeze({
@@ -55,7 +55,7 @@ const POS_COPY = Object.freeze([
     { slug: 'custom-solutions', name: 'מיוחדים', title: 'כשהפתרון הרגיל לא מתאים, מתכננים אחר.', desc: 'מתקני תצוגה שנולדים מצורך, חלל או מוצר לא שגרתי — עם רעיון בולט ופתרון שאפשר לייצר ולהתקין.' }
   ]);
 
-const MAIN_RENDER_ORDER = Object.freeze(['intro','our-brands','intro-more','stores','pos','branding','product-design','exhibitions','packaging','small-business']);
+const MAIN_RENDER_ORDER = Object.freeze(['intro','intro-more','branding','stores','exhibitions','retail-pos','our-brands','pos','product-design','packaging','small-business']);
 
 const GALLERY_MANAGER_VERSION = 'v2-3272-expanded-single-control';
 
