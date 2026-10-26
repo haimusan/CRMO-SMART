@@ -57,7 +57,8 @@
   }
   html = html.replace(rowMarker, rowMarker + '\n    if (window.CRMO_CONFIG?.contentRow) return window.CRMO_CONFIG.contentRow;');
   html = html.replace(revisionMarker, revisionMarker + '\n    hydrated.__cloudRevision = data?.updated_at || "";');
-  html = html.replace(applyMarker, `  let cloudContentBaseline = '';
+  html = html.replace(applyMarker, `  let cloudContentRevision = '';
+  let cloudContentBaseline = '';
   let cloudContentSync;
   function contentFingerprint() {
     const payload = makePayload(galleries);
@@ -70,6 +71,7 @@ ${applyMarker}`);
   const applyBody = html.slice(applyStart, applyEnd);
   if (applyBody.split('    return next;').length !== 2) throw Error('מבנה החלת התוכן השתנה.');
   html = html.slice(0, applyStart) + applyBody.replace('    return next;', `    if (next.__cloudRevision && String(sourceLabel || '').startsWith('cloud')) {
+      cloudContentRevision = next.__cloudRevision;
       cloudContentBaseline = contentFingerprint();
       cloudContentSync?.accept(next.__cloudRevision);
     } else if (!cloudContentBaseline && String(sourceLabel || '').startsWith('local')) {
@@ -89,6 +91,38 @@ ${applyMarker}`);
     }
   });
 ${bootMarker}`);
+
+  // Keep the loaded revision until a successful cloud apply. Merely reading the
+  // latest row before saving must never bless an older in-memory draft.
+  const unsafeWrite = /    let result = await client\.from\(conn\.table\)\.upsert\(row, \{ onConflict: rowKeyCol \}\);\s*if \(result\?\.error && \/updated_at\/i\.test\(String\(result\.error\?\.message \|\| result\.error\?\.details \|\| ''\)\)\) \{\s*result = await client\.from\(conn\.table\)\.upsert\(\{ \[rowKeyCol\]: cloudRowKey, \[payloadCol\]: payload \}, \{ onConflict: rowKeyCol \}\);\s*\}\s*if \(result\?\.error\) throw result\.error;/;
+  if (!unsafeWrite.test(html)) throw Error('מבנה השמירה השתנה. העורך נעצר כדי להגן על התוכן.');
+  html = html.replace(unsafeWrite, `    await window.CRMOContentSync.updateIfCurrent({
+      client, table: conn.table, keyColumn: rowKeyCol, rowKey: cloudRowKey,
+      row, revision: cloudContentRevision
+    });`);
+
+  if(new URLSearchParams(window.location.search).get('dev')==='move-projects'){
+    const cardStart=html.indexOf('  function createGalleryCard(');
+    const cardEnd=html.indexOf('\n  function ',cardStart+5);
+    if(cardStart<0||cardEnd<0)throw Error('לא ניתן לחבר את תפריט העברת הפרויקט.');
+    const cardBody=html.slice(cardStart,cardEnd);
+    if(cardBody.split('    return card;').length!==2)throw Error('מבנה כרטיס הפרויקט השתנה.');
+    html=html.slice(0,cardStart)+cardBody.replace('    return card;',`    if(editEnabled && !isBrandsGallery && window.CRMOProjectMove){
+      card.prepend(window.CRMOProjectMove.createControl({
+        galleries,sourceId:gallery.galleryId,tileId:tile.tileId,title:tile.overlay?.title||hoverTitle,
+        onMove:async(targetId)=>{
+          if(!canEdit())throw Error('אין הרשאת עריכה.');
+          await runWithSyncLock('moving project',async()=>{
+            window.CRMOProjectMove.moveProject(galleries,gallery.galleryId,targetId,tile.tileId);
+            persistLocal(makePayload(galleries));
+            const saved=await saveGalleriesToCloud();
+            if(!saved)throw Error('ההעברה נשמרה מקומית בלבד. יש להתחבר ולשמור.');
+          });
+        }
+      }));
+    }
+    return card;`)+html.slice(cardEnd);
+  }
 
   // Reuse the private editor's own validated manager state and cloud-save
   // routine for inline visibility switches, rather than duplicating storage.
@@ -404,6 +438,14 @@ ${bootMarker}`);
   const contentSyncScript=editorDocument.createElement('script');
   contentSyncScript.src=new URL('public/content-sync.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
   studioAssetsScript.after(contentSyncScript);
+  if(new URLSearchParams(window.location.search).get('dev')==='move-projects'){
+    const moveScript=editorDocument.createElement('script');
+    moveScript.src=new URL('public/admin-project-move.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+    contentSyncScript.after(moveScript);
+    const moveStyle=editorDocument.createElement('style');
+    moveStyle.textContent='.crmo-project-move{position:absolute;top:6px;right:6px;z-index:30;max-width:calc(100% - 48px);width:170px;padding:6px;border:1px solid #aaa;border-radius:5px;background:#fff;color:#111;font:12px Arial,sans-serif;direction:rtl}#crmo-project-move-status{position:fixed;bottom:20px;right:20px;z-index:10040;max-width:min(500px,90vw);padding:14px 20px;border:1px solid #bbb;border-radius:8px;background:#fff;box-shadow:0 3px 18px #0002;direction:rtl;font:14px Arial,sans-serif}';
+    editorDocument.head.append(moveStyle);
+  }
   const releaseGuard=editorDocument.createElement('script');
   releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);

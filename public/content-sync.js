@@ -56,5 +56,14 @@
     active = {accept,check,stop(){stopped=true;clearInterval(timer);window.removeEventListener('focus',focus);document.removeEventListener('visibilitychange',focus);}};
     return active;
   }
-  window.CRMOContentSync = Object.freeze({start});
+  // An atomic compare-and-swap: a stale editor can never replace a newer row.
+  async function updateIfCurrent({client,table,keyColumn,rowKey,row,revision}) {
+    if (!revision) throw new Error('לא נטענה גרסת ענן מאומתת. יש לרענן לפני שמירה. העריכה המקומית נשמרה.');
+    const result = await client.from(table).update(row)
+      .eq(keyColumn,rowKey).eq('updated_at',revision).select(keyColumn).maybeSingle();
+    if (result?.error) throw result.error;
+    if (!result?.data) throw new Error('התוכן באתר עודכן בחלון אחר. השמירה נעצרה כדי לא לדרוס אותו. העריכה המקומית נשמרה; יש לטעון את התוכן העדכני לפני שמירה נוספת.');
+    return result;
+  }
+  window.CRMOContentSync = Object.freeze({start,updateIfCurrent});
 })();
