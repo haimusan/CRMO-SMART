@@ -1563,7 +1563,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   const isBrandWall = isBrandGalleryObject(gallery);
   const inlineKey = getInlineExpandedKey(managerId, gallery);
   const expanded = !!getExpandedRequestedManagerId() || inlineExpandedGalleryIds.has(inlineKey);
-  const limit = isBrandWall ? getExpandedTileLimitFor(managerId, gallery) : MAX_TILES_PER_GALLERY;
+  const limit = isBrandWall ? getExpandedTileLimitFor(managerId, gallery) : (expanded ? getExpandedTileLimitFor(managerId, gallery) : STACK_TILE_LIMIT);
   const alreadyShown = new Set(
     Array.from(galleryStack.querySelectorAll('.crmo3045-tile-wrap[data-crmo-project-key]'))
       .filter(card => !section.contains(card))
