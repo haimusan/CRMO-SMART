@@ -1038,6 +1038,8 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
         openLightbox(galleryIndex, tileIndex, 0);
       }
     });
+    if(!isBrandsGallery && tile.media.length && window.CRMOProjectVotes)card.append(window.CRMOProjectVotes.createControl({projectId:tile.tileId,title:tile.overlay?.title||hoverTitle,galleryId:gallery.galleryId,galleryTitle:gallery.meta?.adminLabelHe||gallery.meta?.title}));
+    window.CRMODemo?.decorateCard(card,gallery,tile);
     return card;
   }
 
@@ -1721,6 +1723,7 @@ function renderLightbox() {
     }
     byId('crmo3047LbMeta').textContent = isBrandTile ? 'מותג' : '';
     byId('crmo3047LbTitle').textContent = isBrandTile ? (brandItem?.title || (tile.meta.brand || 'מותג')) : getPrimaryTileName(tile, activeGalleryIndex, activeMediaIndex);
+    window.CRMOProjectVotes?.mountLightbox(tile,gallery);
     byId('crmo3047LbDesc').textContent = isBrandTile ? (brandItem?.desc || ' ') : (getPrimaryTileDesc(tile, activeGalleryIndex, activeMediaIndex) || ' ');
     const link = byId('crmo3047LbLink');
     const rawLink = isBrandTile ? (brandItem?.link || '') : (tile.overlay.link || '');
@@ -1933,6 +1936,7 @@ function applyAllWorksCopyOnce3284() {
   }
 
 function applyWrapper(raw){
+ window.CRMODemo?.capture(raw);
  const next=hydrateWrapperShape(raw); if(!next) throw Error('Invalid site content');
  siteState=ensureSiteState(next.site||{});galleries=ensureAllGalleries(next.galleries||[]);
  aboutSection=ensureAboutSection(next.aboutSection||siteState.about||{});

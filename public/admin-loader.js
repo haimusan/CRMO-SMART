@@ -128,7 +128,11 @@ ${bootMarker}`);
   // routine for inline visibility switches, rather than duplicating storage.
   const quickManagerMarker='function renderGalleryManager() {';
   if(html.split(quickManagerMarker).length!==2)throw Error('מבנה ניהול הגלריות השתנה. העדכון נעצר לשמירת התוכן.');
-  html=html.replace(quickManagerMarker,`window.CRMO_QUICK_MANAGER = {
+  html=html.replace(quickManagerMarker,`window.CRMO_VOTING_CONTEXT = {
+    getSupabaseClient:()=>getSupabaseClient(),getSession:()=>getSession(),
+    canManage:()=>canEdit(),getProjects:()=>galleries
+  };
+  window.CRMO_QUICK_MANAGER = {
     get(id) {
       const state=getGalleryManagerState();
       if(!findGalleryByManagerId(id) && id!==SUPER_GALLERY_ID)return null;
@@ -170,6 +174,17 @@ ${bootMarker}`);
     }
   };
   ${quickManagerMarker}`);
+
+  const voteCardStart=html.indexOf('  function createGalleryCard(');
+  const voteCardEnd=html.indexOf('\n  function ',voteCardStart+5);
+  const voteCard=html.slice(voteCardStart,voteCardEnd);
+  if(voteCardStart<0||voteCardEnd<0||voteCard.split('    return card;').length!==2)throw Error('מבנה כרטיס ההצבעה השתנה.');
+  html=html.slice(0,voteCardStart)+voteCard.replace('    return card;',`    if(!isBrandsGallery && tile.media.length && window.CRMOProjectVotes)card.append(window.CRMOProjectVotes.createControl({projectId:tile.tileId,title:tile.overlay?.title||hoverTitle,galleryId:gallery.galleryId,galleryTitle:gallery.meta?.adminLabelHe||gallery.meta?.title}));
+    return card;`)+html.slice(voteCardEnd);
+  const voteTitleStart=html.indexOf("    byId('crmo3047LbTitle').textContent =");
+  const voteTitleEnd=html.indexOf('\n',voteTitleStart);
+  if(voteTitleStart<0||voteTitleEnd<0)throw Error('מבנה ההצבעה בלייטבוקס השתנה.');
+  html=html.slice(0,voteTitleEnd)+"\n    window.CRMOProjectVotes?.mountLightbox(tile,gallery);"+html.slice(voteTitleEnd);
 
   // Match the public brand wall rather than the legacy six-project preview.
   const brandLimitMarker = '  const STACK_TILE_LIMIT = 6;';
@@ -440,6 +455,12 @@ ${bootMarker}`);
   const contentSyncScript=editorDocument.createElement('script');
   contentSyncScript.src=new URL('public/content-sync.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
   studioAssetsScript.after(contentSyncScript);
+  const votesScript=editorDocument.createElement('script');
+  votesScript.src=new URL('public/project-votes.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  contentSyncScript.after(votesScript);
+  const votesStyle=editorDocument.createElement('link');votesStyle.rel='stylesheet';
+  votesStyle.href=new URL('public/project-votes.css?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  editorDocument.head.append(votesStyle);
   if(new URLSearchParams(window.location.search).get('dev')==='move-projects'){
     const moveScript=editorDocument.createElement('script');
     moveScript.src=new URL('public/admin-project-move.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
