@@ -224,6 +224,8 @@ ${bootMarker}`);
   const headerStyle=editorDocument.createElement('style');
   headerStyle.id='crmo-admin-header-layout';
   headerStyle.textContent=`
+    .crmo3045-tile.crmo-berlin-award::after,
+    .crmo3045-lb-view.crmo-berlin-award::after{content:none!important;display:none!important}
     body header,body.role-admin header,body.role-master header{
       position:sticky!important;top:0!important;z-index:9999;
       background:#fff!important;isolation:isolate;
