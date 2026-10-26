@@ -150,7 +150,6 @@ ${bootMarker}`);
       const state=structuredClone(getGalleryManagerState());
       state.items=state.items||{};
       state.items[id]=state.items[id]||{};
-      if(flag==='showExpandedButton' && enabled && !isExpandedButtonEligible(id,state.items[id]))return false;
       state.items[id][flag]=!!enabled;
       setGalleryManagerState(state);
       if(flag==='showExpandedButton'){
@@ -391,7 +390,7 @@ ${bootMarker}`);
           const label=document.createElement('label');
           const proxy=document.createElement('input');
           proxy.type='checkbox';proxy.checked=state[flag];
-          proxy.disabled=flag==='showExpandedButton'&&!state.expandedAllowed;
+          proxy.disabled=false;
           label.append(proxy,document.createTextNode(names[flag]));
           proxy.addEventListener('change',async()=>{
             proxy.disabled=true;
@@ -399,7 +398,7 @@ ${bootMarker}`);
             finally {
               const next=manager.get(section.id);
               proxy.checked=!!next?.[flag];
-              proxy.disabled=flag==='showExpandedButton'&&!next?.expandedAllowed;
+              proxy.disabled=false;
             }
           });
           quick.append(label);
