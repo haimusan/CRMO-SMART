@@ -473,7 +473,7 @@ ${bootMarker}`);
   studioAssetsScript.src=new URL('public/studio-fallback.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
   releaseConfig.after(studioAssetsScript);
   const contentSyncScript=editorDocument.createElement('script');
-  contentSyncScript.src=new URL('public/content-sync.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  contentSyncScript.src=new URL('public/content-sync.js?v=3329',window.CRMO_ROOT_URL).href;
   studioAssetsScript.after(contentSyncScript);
   const votesScript=editorDocument.createElement('script');
   votesScript.src=new URL('public/project-votes.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
