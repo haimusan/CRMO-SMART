@@ -1,6 +1,10 @@
 /* Fetch private editor code only after verifying the account role. */
 (async()=>{
- const status=document.getElementById('admin-status');
+ let status=document.getElementById('admin-status');
+ if(!status){
+  status=document.createElement('p');status.id='admin-status';status.setAttribute('role','status');
+  document.body.prepend(status);
+ }
  try{
   const bridge=window.CRMOAuthBridge;
   if(!bridge)throw Error('לא ניתן לטעון את מנגנון ההתחברות.');
@@ -232,16 +236,17 @@ ${bootMarker}`);
   });
   // Private release files still contain an unversioned config.js. A cached copy
   // overwrites the freshly injected release and can point at a different content row.
+  const editorBase=new URL('admin/',window.CRMO_ROOT_URL);
   editorDocument.querySelectorAll('script[src]').forEach(script=>{
-    if(new URL(script.getAttribute('src'),window.CRMO_ROOT_URL).pathname.endsWith('/public/config.js'))script.remove();
-    else if(new URL(script.getAttribute('src'),window.CRMO_ROOT_URL).pathname.endsWith('/admin/permissions.js')){
+    if(new URL(script.getAttribute('src'),editorBase).pathname.endsWith('/public/config.js'))script.remove();
+    else if(new URL(script.getAttribute('src'),editorBase).pathname.endsWith('/admin/permissions.js')){
       script.setAttribute('src',new URL('admin/permissions.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href);
     }
   });
   // All first-party editor dependencies use the central release cache key.
   editorDocument.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(node=>{
     const attr=node.tagName==='SCRIPT'?'src':'href';
-    const url=new URL(node.getAttribute(attr),window.location.href);
+    const url=new URL(node.getAttribute(attr),editorBase);
     if(url.origin!==new URL(window.CRMO_ROOT_URL).origin||!/[.](js|css)$/.test(url.pathname))return;
     url.searchParams.set('v',window.CRMO_CONFIG.release);
     node.setAttribute(attr,url.href);
@@ -500,6 +505,9 @@ ${bootMarker}`);
     editorDocument.body.append(framingScript);
   }
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
+  if(!bridge.isLoggedIn()||!bridge.canManage())throw Error('הרשאת הניהול השתנתה. יש להתחבר מחדש.');
+  // The public viewer must not keep polling against its detached DOM after promotion.
+  window.CRMOContentSync?.stop?.();
   bridge.dispose();delete window.CRMOAuthBridge;
   document.open();document.write(editorHTML);document.close();
  }catch(error){status.textContent=error.message||'לא ניתן לפתוח את ממשק הניהול.';status.setAttribute('role','alert');}

@@ -122,5 +122,5 @@
     if (!result?.data) throw new Error('התוכן באתר עודכן בחלון אחר. השמירה נעצרה כדי לא לדרוס אותו. העריכה המקומית נשמרה; יש לטעון את התוכן העדכני לפני שמירה נוספת.');
     return result;
   }
-  window.CRMOContentSync = Object.freeze({start,updateIfCurrent});
+  window.CRMOContentSync = Object.freeze({start,updateIfCurrent,stop:()=>active?.stop()});
 })();

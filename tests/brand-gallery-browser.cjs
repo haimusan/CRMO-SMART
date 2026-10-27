@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');
 const fs=require('node:fs'),http=require('node:http'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
-const legacy=fs.readFileSync(path.join(root,'preview/v3286/admin/CRMO_v3286.html'),'utf8');
+const legacy=fs.readFileSync(path.join(root,'../crmo-private-fixtures/CRMO_v3286.html'),'utf8');
 const brand={tileId:'brands-live-logo',meta:{brand:'Coca-Cola',client:''},overlay:{title:'Coca-Cola',desc:'',link:''},isVisible:true,media:[{id:'live-logo',src:'/assets/brands/coca-cola.svg',type:'image/svg+xml',isVisible:true}],display:{},brandConfig:{enableLightbox:true,attachedWorkRefs:[]}};
 const payload={schema:'crmo-structured-content-v1',site:{},galleries:[{galleryId:'our-brands',meta:{slug:'our-brands',label:'our-brands',visible:true},tiles:Array.from({length:18},(_,i)=>({...brand,tileId:'brand-'+i,meta:{...brand.meta,brand:i===0?'Coca-Cola':'Brand '+i},media:[{...brand.media[0],id:'logo-'+i}]}))}]};
 if(process.env.CRMO_LIVE_BRANDS_FIXTURE)payload.galleries=[JSON.parse(fs.readFileSync(process.env.CRMO_LIVE_BRANDS_FIXTURE,'utf8'))];

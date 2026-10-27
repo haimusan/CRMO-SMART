@@ -6,6 +6,15 @@
  const adminURL=new URL('admin/',root).href;
  const onAdminPage=location.pathname.startsWith(new URL('admin/',root).pathname);
  const canManage=()=>['admin','owner'].includes(role);
+ let editorLoading=false;
+ function enableEditor(){
+  if(onAdminPage||editorLoading||!canManage())return;
+  editorLoading=true;
+  const script=document.createElement('script');
+  script.src=new URL('public/admin-loader.js?v='+config.release,root).href;
+  script.onerror=()=>{editorLoading=false;script.remove();};
+  document.body.append(script);
+ }
  let resolveReady;const ready=new Promise(resolve=>{resolveReady=resolve;});
  function render(){
   document.getElementById('crmo-user-indicator')?.classList.toggle('is-authed',!!session);
@@ -41,7 +50,8 @@
   }catch(_){if(current===generation)role=session?'registered':'viewer';}
   if(current!==generation)return;
   render();resolveReady();
-  if(canManage()&&!onAdminPage&&new URLSearchParams(location.search).get('view')!=='public')location.replace(adminURL);
+  // Role, rather than the entry URL or a public-view query, selects capabilities.
+  enableEditor();
  }
  async function action(fn){
   if(!client)return {ok:false,message:'ספריית ההתחברות לא נטענה. רענן את העמוד ונסה שוב.'};

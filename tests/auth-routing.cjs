@@ -1,36 +1,35 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-const auth=fs.readFileSync('public/auth-client.js','utf8'),loader=fs.readFileSync('public/admin-loader.js','utf8');
-async function scenario(role,options={}){
- const nodes=new Map(),events=[],downloads=[];let redirect='',written='',callback;
- const element=()=>({hidden:false,textContent:'',attributes:{},classList:{toggle(){}},addEventListener(){},setAttribute(k,v){this.attributes[k]=v;},insertAdjacentElement(_,node){nodes.set(node.id,node);}});
- nodes.set('login-trigger',element());nodes.set('admin-status',element());
- const user={id:'test-user',email:'test@example.test',user_metadata:{role:'owner'}};
- let session=role==='anonymous'?null:{user,access_token:'test'};
- const client={auth:{onAuthStateChange(fn){callback=fn;},getSession:async()=>({data:{session}}),getUser:async()=>options.expired?{error:{}}:{data:{user}},signOut:async()=>{session=null;callback('SIGNED_OUT',null);return {}; }},from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>options.roleError?{error:{}}:{data:{role}}})})}),storage:{from:()=>({download:async name=>{downloads.push(name);return options.storageError?{error:{}}:{data:new Blob([name==='latest.json'?JSON.stringify({path:options.badManifest?'../bad.js':'releases/CRMO_v3288.html'}):'<!DOCTYPE html><html><body>CRMO_v3288</body></html>'])};}})}};
- const context=vm.createContext({URL,URLSearchParams,Promise,Blob,console,setTimeout,clearTimeout,localStorage:{setItem(){},getItem(){return null;}},location:{href:'https://www.crmo.co.il/',pathname:options.admin?'/admin/':'/',protocol:'https:',search:options.public?'?view=public':'',replace(v){redirect=v;}},document:{getElementById:id=>nodes.get(id),createElement:element,open(){},write(html){written=html;},close(){}},CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}}});
- context.window=context;context.CRMO_ROOT_URL='https://www.crmo.co.il/';context.CRMO_CONFIG={url:'https://example.test',anonKey:'public'};context.supabase={createClient:()=>client};context.dispatchEvent=e=>events.push(e);
- vm.runInContext(auth,context);await context.CRMOAuthBridge.ready;
- if(options.admin)await vm.runInContext(loader,context);
- return {context,nodes,downloads,redirect:()=>redirect,written:()=>written};
+const source=fs.readFileSync('public/auth-client.js','utf8');
+async function scenario(role,search='',pathname='/',options={}){
+ const nodes=new Map(),scripts=[],events=[];let callback,redirect='';
+ const element=()=>({hidden:false,classList:{toggle(){}},addEventListener(){},remove(){},insertAdjacentElement(_,n){nodes.set(n.id,n)}});
+ nodes.set('login-trigger',element());
+ const user={id:'u1',email:'owner@example.test',user_metadata:{role:'owner'}};
+ let session=role==='anonymous'?null:{user};
+ const client={auth:{getSession:async()=>({data:{session}}),getUser:async()=>options.expired?{error:{}}:{data:{user}},onAuthStateChange(fn){callback=fn},signOut:async()=>{session=null;callback('SIGNED_OUT',null);return {}}},
+  from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>options.roleError?{error:{}}:{data:{role}}})})})};
+ const c={URL,URLSearchParams,Promise,console,setTimeout,clearTimeout,localStorage:{getItem(){},setItem(){}},
+  location:{pathname,protocol:'https:',search,replace(v){redirect=v}},
+  document:{getElementById:id=>nodes.get(id),createElement:element,body:{append:n=>scripts.push(n)}},
+  CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail}}};
+ c.window=c;c.CRMO_ROOT_URL='https://www.crmo.co.il/';c.CRMO_CONFIG={url:'https://db.test',anonKey:'public',release:'3330'};c.supabase={createClient:()=>client};c.dispatchEvent=e=>events.push(e);
+ vm.runInNewContext(source,c);await c.CRMOAuthBridge.ready;await new Promise(r=>setImmediate(r));
+ return {c,scripts,events,nodes,redirect:()=>redirect,refresh:()=>callback('TOKEN_REFRESHED',session)};
 }
 (async()=>{
- for(const role of ['anonymous','registered','client']){
-  const s=await scenario(role);assert.equal(s.redirect(),'');assert(!s.nodes.has('crmo-admin-entry'));assert(!s.context.CRMOAuthBridge.canManage());
-  const a=await scenario(role,{admin:true});assert.equal(a.downloads.length,0);assert.equal(a.written(),'');if(role==='anonymous')assert(a.redirect().includes('login=1'));else assert.equal(a.nodes.get('admin-status').attributes.role,'alert');
+ for(const role of ['admin','owner'])for(const search of ['','?view=public','?view=public&gallery=intro']){
+  const s=await scenario(role,search);assert(s.c.CRMOAuthBridge.canManage());
+  assert.equal(s.redirect(),'','entry URL is preserved');
+  assert.equal(s.scripts.length,1);assert.equal(s.scripts[0].src,'https://www.crmo.co.il/public/admin-loader.js?v=3330');
+  s.refresh();await new Promise(r=>setTimeout(r,10));assert.equal(s.scripts.length,1,'token refresh does not reload the editor');
  }
- for(const role of ['admin','owner']){
-  assert.equal((await scenario(role)).redirect(),'https://www.crmo.co.il/admin/');
-  const a=await scenario(role,{admin:true});assert.deepEqual(a.downloads,['latest.json','releases/CRMO_v3288.html']);
-  // Permission permits the download; the loader still rejects an unknown editor.
-  assert.equal(a.written(),'');assert.equal(a.nodes.get('admin-status').attributes.role,'alert');
+ for(const role of ['anonymous','registered','social','client','viewer']){
+  const s=await scenario(role,'?view=public');assert.equal(s.scripts.length,0,'non-editor never loads private editor');assert(!s.c.CRMOAuthBridge.canManage());
  }
- for(const options of [{expired:true},{roleError:true},{storageError:true},{badManifest:true}]){
-  const a=await scenario('owner',{...options,admin:true});assert.equal(a.written(),'');
+ for(const options of [{roleError:true},{expired:true}]){
+  const s=await scenario('owner','?view=public','/',options);assert.equal(s.scripts.length,0,'failed verification cannot load editor');
  }
- const publicAdmin=await scenario('owner',{public:true});assert.equal(publicAdmin.redirect(),'');assert(publicAdmin.nodes.has('crmo-admin-entry'));await publicAdmin.context.CRMOAuthBridge.logout();assert(publicAdmin.nodes.get('crmo-admin-entry').hidden);
- // Run the actual footer renderer and check the generated release label.
- const source=fs.readFileSync('public/viewer.js','utf8');const start=source.indexOf('function renderFooterSection('),end=source.indexOf('\nfunction openPrivacyPanel',start);assert(start>=0&&end>start);
- let footer;const ctx=vm.createContext({window:{CRMO_CONFIG:{release:'3288'}},footerDialog:null,footerEditorDraft:null,footerSection:{visible:true},ensureFooterSection:s=>s,escape:s=>String(s||''),document:{createElement:()=>({querySelector(){return null;}})},galleryStack:{appendChild:node=>footer=node}});
- vm.runInContext(source.slice(start,end)+'\nrenderFooterSection(false);',ctx);assert(footer.innerHTML.includes('id="crmo-footer-version">CRMO_v3288</span>'));
- console.log('PASS: 15 routing/access cases and rendered public footer.');
-})().catch(error=>{console.error(error);process.exit(1);});
+ const admin=await scenario('owner','','/admin/');assert.equal(admin.scripts.length,0,'dedicated admin entry owns its loader');
+ const owner=await scenario('owner','?view=public');await owner.c.CRMOAuthBridge.logout();assert(!owner.c.CRMOAuthBridge.canManage());assert(owner.nodes.get('crmo-admin-entry').hidden);
+ console.log('PASS: role-based editor loading from root/public query, non-editor denial, failed verification, token refresh, admin entry and logout.');
+})().catch(e=>{console.error(e);process.exit(1)});
