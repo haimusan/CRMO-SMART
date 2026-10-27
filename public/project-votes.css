@@ -11,3 +11,12 @@
  body.role-admin .crmo3045-tile-wrap>.crmo-project-vote::after,body.role-master .crmo3045-tile-wrap>.crmo-project-vote::after{top:auto;bottom:calc(100% + 7px)}
  #crmo-lightbox-vote .crmo-project-vote::after{top:auto;bottom:calc(100% + 7px)}
 }
+
+/* Show the entire original Kimberly-Clark archive image, in tiles and lightboxes. */
+.crmo3045-tile-media[src*="/assets/kcc-archive-20261026/"],
+.crmo3045-lb-media[src*="/assets/kcc-archive-20261026/"],
+.crmo3045-thumb img[src*="/assets/kcc-archive-20261026/"]{
+ object-fit:contain !important;
+ object-position:center !important;
+ background:#fff;
+}
