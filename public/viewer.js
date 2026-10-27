@@ -1588,8 +1588,9 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
     if (!isBrandWall) candidateKeys.add(key);
   });
   const mobile = window.matchMedia('(max-width: 900px)').matches;
+  const isSmallBusiness = String(gallery?.galleryId || '') === 'small-business';
   const columns = mobile ? 2 : 3;
-  const minimum = mobile ? 4 : 6;
+  const minimum = isSmallBusiness ? 6 : (mobile ? 4 : 6);
   const count = isBrandWall
     ? candidates.length
     : Math.min(limit, Math.max(minimum, Math.floor(candidates.length / columns) * columns));
@@ -1609,8 +1610,23 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   } else {
     for (let i=visibleIndexes.length;i<minimum;i++) {
       const blank=document.createElement('div');
-      blank.className='crmo3045-tile-wrap crmo-ux-empty-tile';
-      blank.setAttribute('aria-hidden','true');
+      if (isSmallBusiness) {
+        blank.className = 'crmo3045-tile-wrap crmo-small-business-invite';
+        const link = document.createElement('a');
+        link.className = 'crmo3045-tile crmo-small-business-invite-link';
+        link.href = '#contact';
+        link.setAttribute('aria-label', 'גם העסק שלך יכול להיות פה — צור קשר');
+        const img = document.createElement('img');
+        img.className = 'crmo3045-tile-media';
+        img.src = new URL('assets/studio/images/small-business-invitation.svg', getSiteRootUrl()).href;
+        img.alt = 'גם העסק שלך יכול להיות פה';
+        img.loading = 'lazy';
+        link.appendChild(img);
+        blank.appendChild(link);
+      } else {
+        blank.className='crmo3045-tile-wrap crmo-ux-empty-tile';
+        blank.setAttribute('aria-hidden','true');
+      }
       grid.appendChild(blank);
     }
   }
