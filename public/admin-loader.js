@@ -96,10 +96,15 @@ ${bootMarker}`);
   // latest row before saving must never bless an older in-memory draft.
   const unsafeWrite = /    let result = await client\.from\(conn\.table\)\.upsert\(row, \{ onConflict: rowKeyCol \}\);\s*if \(result\?\.error && \/updated_at\/i\.test\(String\(result\.error\?\.message \|\| result\.error\?\.details \|\| ''\)\)\) \{\s*result = await client\.from\(conn\.table\)\.upsert\(\{ \[rowKeyCol\]: cloudRowKey, \[payloadCol\]: payload \}, \{ onConflict: rowKeyCol \}\);\s*\}\s*if \(result\?\.error\) throw result\.error;/;
   if (!unsafeWrite.test(html)) throw Error('מבנה השמירה השתנה. העורך נעצר כדי להגן על התוכן.');
-  html = html.replace(unsafeWrite, `    await window.CRMOContentSync.updateIfCurrent({
+  html = html.replace(unsafeWrite, `    const committed = await window.CRMOContentSync.updateIfCurrent({
       client, table: conn.table, keyColumn: rowKeyCol, rowKey: cloudRowKey,
       row, revision: cloudContentRevision
-    });`);
+    });
+    const committedRevision = committed.data?.updated_at;
+    if (!committedRevision) throw Error('השמירה בוצעה אך לא התקבלה גרסת ענן מאומתת. יש לרענן לפני עריכה נוספת.');
+    cloudContentRevision = committedRevision;
+    cloudContentBaseline = contentFingerprint();
+    cloudContentSync?.publish(committedRevision);`);
 
   if(new URLSearchParams(window.location.search).get('dev')==='move-projects'){
     const cardStart=html.indexOf('  function createGalleryCard(');
