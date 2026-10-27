@@ -194,7 +194,7 @@ function ensureGalleryMeta(meta = {}) {
       galleryType: String(meta.galleryType || ''),
       parentId: String(meta.parentId || ''),
       expandedEnabled: meta.expandedEnabled === true,
-      compactCount: [6,9,12,15,18,21,24].includes(Number(meta.compactCount)) ? Number(meta.compactCount) : 6,
+      compactCount: [6,9,12,15,18,21,24].includes(Number(meta.compactCount)) ? Number(meta.compactCount) : 9,
       expandedCount
     };
   }
@@ -1360,8 +1360,8 @@ function isExpandedTarget(id) {
 
 function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
     const inlineKey = getInlineExpandedKey(id, gallery);
-    const chosenCompact = Number(gallery?.meta?.compactCount || 6);
-    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : ([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 6);
+    const chosenCompact = Number(gallery?.meta?.compactCount || 9);
+    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : ([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 9);
     if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return compactLimit;
     const fullCount = getFullTileCountForExpanded(gallery?.tiles || []);
     if (fullCount <= compactLimit) return compactLimit;
@@ -1622,7 +1622,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : (gallery.meta?.compactCount || 6), visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
+          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : (gallery.meta?.compactCount || 9), visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
           <div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(gallery).title || `Gallery ${galleryIndex + 1}`)}</div>
           <div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(gallery).desc)}</div>
         </div>
