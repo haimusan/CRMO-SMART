@@ -195,6 +195,7 @@ function ensureGalleryMeta(meta = {}) {
       parentId: String(meta.parentId || ''),
       expandedEnabled: meta.expandedEnabled === true,
       compactCount: [6,9,12,15,18,21,24].includes(Number(meta.compactCount)) ? Number(meta.compactCount) : 9,
+      brandLogoCount: [9,18,27].includes(Number(meta.brandLogoCount)) ? Number(meta.brandLogoCount) : 27,
       expandedCount
     };
   }
@@ -582,7 +583,7 @@ const normalizeGallery = (gallery, galleryIndex) => {
       expandedEnabled: gallery?.meta?.expandedEnabled,
       expandedCount: gallery?.meta?.expandedCount
     });
-    const rawTiles = Array.isArray(gallery?.tiles) ? gallery.tiles.slice(0, MAX_TILES_PER_GALLERY) : [];
+    const rawTiles = Array.isArray(gallery?.tiles) ? gallery.tiles.slice(0, gallery?.galleryId === 'our-brands' ? BRANDS_STACK_TILE_LIMIT : MAX_TILES_PER_GALLERY) : [];
     const targetCount = Math.max(TILES_PER_GALLERY, rawTiles.length || TILES_PER_GALLERY);
     return {
       galleryId: gallery?.galleryId || `gallery-${galleryIndex + 1}`,
@@ -1363,7 +1364,7 @@ function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
     const chosenCompact = Number(gallery?.meta?.compactCount || 9);
     const available = getFullTileCountForExpanded(gallery?.tiles || []);
     const completedRows = Math.max(6, Math.floor(available / 3) * 3);
-    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : Math.min(([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 9), completedRows);
+    const compactLimit = isBrandGalleryObject(gallery) ? ([9,18,27].includes(Number(gallery?.meta?.brandLogoCount)) ? Number(gallery.meta.brandLogoCount) : BRANDS_STACK_TILE_LIMIT) : Math.min(([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 9), completedRows);
     if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return compactLimit;
     const fullCount = isBrandGalleryObject(gallery) ? available : completedRows;
     if (fullCount <= compactLimit) return compactLimit;
@@ -1599,7 +1600,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
     visibleIndexes.push(tileIndex);
   });
   if (isBrandWall) {
-    for (let i = visibleIndexes.length; i < BRANDS_STACK_TILE_LIMIT; i++) {
+    for (let i = visibleIndexes.length; i < limit; i++) {
       const blank = document.createElement('div');
       blank.className = 'crmo-brand-empty-slot';
       blank.setAttribute('aria-hidden', 'true');
@@ -1631,7 +1632,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : (gallery.meta?.compactCount || 9), visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
+          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? ([9,18,27].includes(Number(gallery.meta?.brandLogoCount)) ? Number(gallery.meta.brandLogoCount) : BRANDS_STACK_TILE_LIMIT) : (gallery.meta?.compactCount || 9), visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
           <div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(gallery).title || `Gallery ${galleryIndex + 1}`)}</div>
           <div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(gallery).desc)}</div>
         </div>
