@@ -1361,9 +1361,11 @@ function isExpandedTarget(id) {
 function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
     const inlineKey = getInlineExpandedKey(id, gallery);
     const chosenCompact = Number(gallery?.meta?.compactCount || 9);
-    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : ([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 9);
+    const available = getFullTileCountForExpanded(gallery?.tiles || []);
+    const completedRows = Math.max(6, Math.floor(available / 3) * 3);
+    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : Math.min(([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 9), completedRows);
     if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return compactLimit;
-    const fullCount = getFullTileCountForExpanded(gallery?.tiles || []);
+    const fullCount = isBrandGalleryObject(gallery) ? available : completedRows;
     if (fullCount <= compactLimit) return compactLimit;
     const requested = Number(gallery?.meta?.expandedCount || item?.expandedCount || 0);
     if (requested > compactLimit) return Math.min(requested, fullCount, MAX_TILES_PER_GALLERY);
