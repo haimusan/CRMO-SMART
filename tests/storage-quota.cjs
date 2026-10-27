@@ -1,8 +1,8 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const loader=fs.readFileSync('public/admin-loader.js','utf8');
 const patch=loader.slice(loader.indexOf('  const persistPattern'),loader.indexOf('  // Release files'));
-const legacy=fs.readFileSync('preview/v3286/admin/CRMO_v3286.html','utf8');
-const context={html:legacy};vm.createContext(context);vm.runInContext(patch,context);
+const legacy=fs.readFileSync('../crmo-private-fixtures/CRMO_v3286.html','utf8').replace(/\r\n/g,'\n');
+const context={html:legacy,URLSearchParams,window:{location:{search:''}}};vm.createContext(context);vm.runInContext(patch,context);
 assert.notEqual(context.html,legacy);
 const body=context.html.match(/function persistLocal\(payload = makePayload\(galleries\)\) \{[\s\S]*?\n  \}/)[0];
 function run({online=true,error=null}={}){

@@ -18,7 +18,7 @@ for(const page of ['https://www.crmo.co.il/','https://www.crmo.co.il/admin/']){
 const loader=fs.readFileSync(path.join(root,'public/admin-loader.js'),'utf8');
 assert(loader.indexOf('releaseConfig.after(studioAssetsScript)')<loader.indexOf('document.write('));
 assert(loader.includes("querySelectorAll('#galleryTestSections')"));
-const legacy=fs.readFileSync(path.join(root,'preview/v3286/admin/CRMO_v3286.html'),'utf8');
+const legacy=fs.readFileSync(path.join(root,'../crmo-private-fixtures/CRMO_v3286.html'),'utf8');
 const context={html:legacy};vm.createContext(context);
 vm.runInContext(loader.slice(loader.indexOf('  const persistPattern'),loader.indexOf('  // Release files')),context);
 for(const match of context.html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))if(match[1].trim())new vm.Script(match[1]);
