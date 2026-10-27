@@ -5,12 +5,16 @@
   function start(adapter) {
     active?.stop();
     const config = window.CRMO_CONFIG;
-    let revision = '', running = false, stopped = false;
+    let revision = '', running = false, stopped = false, pending = false;
+    let realtimeClient, realtimeChannel;
     const blocked = () => document.visibilityState === 'hidden' ||
-      !!document.querySelector('dialog[open], .crmo3047-privacy-panel.is-open') ||
+      !!document.querySelector(adapter.allowLightbox ? 'dialog[open]:not(#crmo3047Lightbox), .crmo3047-privacy-panel.is-open' : 'dialog[open], .crmo3047-privacy-panel.is-open') ||
       !!document.activeElement?.closest('input,textarea,select,[contenteditable="true"]') ||
       adapter.canApply?.() === false;
-    const accept = value => { if (value) revision = String(value); };
+    const accept = value => { if (value) {
+      revision = String(value);
+      document.documentElement?.setAttribute('data-crmo-content-revision', revision);
+    } };
     const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('crmo-content-revisions') : null;
     const onRevision = event => {
       if (event?.data?.rowKey === config.contentRow && event.data.revision !== revision) void check();
@@ -22,7 +26,10 @@
     };
     window.addEventListener('storage', onStorage);
     async function check() {
-      if (stopped || running || blocked()) return;
+      if (stopped) return;
+      if (running) { pending = true; return; }
+      if (blocked()) return;
+      pending = false;
       running = true;
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
@@ -57,12 +64,32 @@
       } finally {
         clearTimeout(timeout);
         running = false;
+        if (pending && !stopped && !blocked()) { pending = false; void check(); }
       }
     }
-    const focus = () => { void check(); };
+    // A dedicated anonymous connection does not compete with the editor's auth
+    // session. Existing SELECT/RLS policies still authorize each change event.
+    function connect() {
+      if (stopped || realtimeChannel || !window.supabase?.createClient) return;
+      realtimeClient = window.supabase.createClient(config.url, config.anonKey, {
+        auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+      });
+      realtimeChannel = realtimeClient.channel('crmo-content-' + config.contentRow)
+        .on('postgres_changes', {event:'UPDATE',schema:'public',table:config.table,
+          filter:(config.keyColumn || 'key') + '=eq.' + config.contentRow}, () => { void check(); })
+        .subscribe(status => { if (status === 'SUBSCRIBED') void check(); });
+    }
+    const focus = () => { connect(); void check(); };
     window.addEventListener('focus', focus);
+    window.addEventListener('online', focus);
+    // SDK can finish loading after the viewer starts. Capture script load events.
+    document.addEventListener('load', connect, true);
+    // Apply a queued cloud change as soon as an editor/dialog loses its guard.
+    document.addEventListener('close', focus, true);
+    document.addEventListener('focusout', focus);
     document.addEventListener('visibilitychange', focus);
     const timer = setInterval(focus, 5000);
+    connect();
     active = {
       accept, check,
       publish(savedRevision) {
@@ -74,8 +101,13 @@
       stop() {
         stopped=true;clearInterval(timer);
         channel?.close();
+        if (realtimeChannel) void realtimeClient.removeChannel(realtimeChannel);
         window.removeEventListener('storage',onStorage);
         window.removeEventListener('focus',focus);
+        window.removeEventListener('online',focus);
+        document.removeEventListener('load',connect,true);
+        document.removeEventListener('close',focus,true);
+        document.removeEventListener('focusout',focus);
         document.removeEventListener('visibilitychange',focus);
       }
     };

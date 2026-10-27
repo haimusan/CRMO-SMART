@@ -29,8 +29,8 @@ async function scenario() {
 function editorPatch() {
   const loader=fs.readFileSync('public/admin-loader.js','utf8');
   const start=loader.indexOf('  const persistPattern'),end=loader.indexOf('  // Release files');
-  const legacy=fs.readFileSync('preview/v3286/admin/CRMO_v3286.html','utf8');
-  const context={html:legacy};vm.createContext(context);vm.runInContext(loader.slice(start,end),context);
+  const legacy=fs.readFileSync('preview/v3286/admin/CRMO_v3286.html','utf8').replace(/\r\n/g,'\n');
+  const context={html:legacy,URLSearchParams,window:{location:{search:''}}};vm.createContext(context);vm.runInContext(loader.slice(start,end),context);
   assert(context.html.includes('window.CRMOContentSync.start('));
   assert(context.html.includes('contentFingerprint() === cloudContentBaseline'));
   assert(context.html.includes('return window.CRMO_CONFIG.contentRow'));
@@ -42,8 +42,8 @@ function editorPatch() {
   assert(count>5,'patched legacy script syntax checked');
   const removed=[];
   const scriptPaths=['../public/config.js','https://www.crmo.co.il/public/config.js?v=old','../public/mobile.js','../admin/permissions.js'];
-  const configPatch=loader.slice(loader.indexOf("  editorDocument.querySelectorAll('script[src]')"),loader.indexOf('  const legacyNotice'));
-  vm.runInNewContext(configPatch,{URL,window:{CRMO_ROOT_URL:'https://www.crmo.co.il/'},editorDocument:{querySelectorAll:()=>scriptPaths.map(path=>({getAttribute:()=>path,remove:()=>removed.push(path)}))}});
+  const configPatch=loader.slice(loader.indexOf("  editorDocument.querySelectorAll('script[src]')"),loader.indexOf('  // All first-party editor dependencies'));
+  vm.runInNewContext(configPatch,{URL,window:{CRMO_ROOT_URL:'https://www.crmo.co.il/',CRMO_CONFIG:{release:'3329'}},editorDocument:{querySelectorAll:()=>scriptPaths.map(path=>({getAttribute:()=>path,setAttribute(){},remove:()=>removed.push(path)}))}});
   assert.deepEqual(removed,scriptPaths.slice(0,2),'cached private config is removed; unrelated scripts remain');
 }
 (async()=>{await scenario();editorPatch();console.log('PASS: shared cloud revisions, retry, no-change stability, protected edits/dialogs, in-flight guard, scroll preservation, editor patch syntax.');})().catch(e=>{console.error(e);process.exit(1);});
