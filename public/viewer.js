@@ -11,7 +11,7 @@ const TILES_PER_GALLERY = 6;
 const MAX_TILES_PER_GALLERY = 24;
 
 const STACK_TILE_LIMIT = 9;
-const BRANDS_STACK_TILE_LIMIT = 18;
+const BRANDS_STACK_TILE_LIMIT = 27;
 
 const BRANDS_GALLERY_BLUEPRINT = Object.freeze({
     galleryId: 'our-brands',
@@ -1598,7 +1598,14 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
     grid.appendChild(card);
     visibleIndexes.push(tileIndex);
   });
-  if (!isBrandWall) {
+  if (isBrandWall) {
+    for (let i = visibleIndexes.length; i < BRANDS_STACK_TILE_LIMIT; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'crmo-brand-empty-slot';
+      blank.setAttribute('aria-hidden', 'true');
+      grid.appendChild(blank);
+    }
+  } else {
     for (let i=visibleIndexes.length;i<minimum;i++) {
       const blank=document.createElement('div');
       blank.className='crmo3045-tile-wrap crmo-ux-empty-tile';
@@ -1617,7 +1624,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     const isBrandsGallery = isBrandGalleryObject(gallery);
     const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
     const brandLogoCount = isBrandsGallery ? (gallery.tiles || []).filter((tile) => tile?.isVisible !== false && ((Array.isArray(tile?.media) && tile.media.some((media) => media?.src && media?.isVisible !== false)) || tile?.logoSrc || tile?.brandConfig?.logoSrc)).length : 0;
-    const brandWallReady = isBrandsGallery && visibleTileCount >= 18 && brandLogoCount >= 15;
+    const brandWallReady = isBrandsGallery;
     section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}${brandWallReady ? ' is-brand-wall-ready' : ''}`;
     section.dataset.galleryIndex = String(galleryIndex);
     section.id = String(gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`);
