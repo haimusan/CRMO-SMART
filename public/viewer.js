@@ -194,6 +194,7 @@ function ensureGalleryMeta(meta = {}) {
       galleryType: String(meta.galleryType || ''),
       parentId: String(meta.parentId || ''),
       expandedEnabled: meta.expandedEnabled === true,
+      compactCount: [6,9,12,15,18,21,24].includes(Number(meta.compactCount)) ? Number(meta.compactCount) : 6,
       expandedCount
     };
   }
@@ -1359,7 +1360,8 @@ function isExpandedTarget(id) {
 
 function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
     const inlineKey = getInlineExpandedKey(id, gallery);
-    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT;
+    const chosenCompact = Number(gallery?.meta?.compactCount || 6);
+    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : ([6,9,12,15,18,21,24].includes(chosenCompact) ? chosenCompact : 6);
     if (!isExpandedTarget(id) && !inlineExpandedGalleryIds.has(inlineKey)) return compactLimit;
     const fullCount = getFullTileCountForExpanded(gallery?.tiles || []);
     if (fullCount <= compactLimit) return compactLimit;
@@ -1563,7 +1565,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   const isBrandWall = isBrandGalleryObject(gallery);
   const inlineKey = getInlineExpandedKey(managerId, gallery);
   const expanded = !!getExpandedRequestedManagerId() || inlineExpandedGalleryIds.has(inlineKey);
-  const limit = isBrandWall ? getExpandedTileLimitFor(managerId, gallery) : (expanded ? getExpandedTileLimitFor(managerId, gallery) : STACK_TILE_LIMIT);
+  const limit = getExpandedTileLimitFor(managerId, gallery);
   const alreadyShown = new Set(
     Array.from(galleryStack.querySelectorAll('.crmo3045-tile-wrap[data-crmo-project-key]'))
       .filter(card => !section.contains(card))
@@ -1620,7 +1622,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     section.innerHTML = `
       <div class="crmo3047-gallery-head">
         <div class="crmo3047-gallery-copy">
-          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT, visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
+          <div class="crmo3047-gallery-kicker">${escape(isBrandsGallery ? 'our-brands' : (gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`))} · ${Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : (gallery.meta?.compactCount || 6), visibleTileCount)} shown · ${visibleTileCount} active · ${gallery.tiles.length} total</div>
           <div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(gallery).title || `Gallery ${galleryIndex + 1}`)}</div>
           <div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(gallery).desc)}</div>
         </div>
