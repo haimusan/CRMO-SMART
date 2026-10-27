@@ -11,6 +11,16 @@
       !!document.activeElement?.closest('input,textarea,select,[contenteditable="true"]') ||
       adapter.canApply?.() === false;
     const accept = value => { if (value) revision = String(value); };
+    const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('crmo-content-revisions') : null;
+    const onRevision = event => {
+      if (event?.data?.rowKey === config.contentRow && event.data.revision !== revision) void check();
+    };
+    if (channel) channel.onmessage = onRevision;
+    const onStorage = event => {
+      if (event.key !== 'crmo-content-revision-signal' || !event.newValue) return;
+      try { onRevision({data: JSON.parse(event.newValue)}); } catch (_) {}
+    };
+    window.addEventListener('storage', onStorage);
     async function check() {
       if (stopped || running || blocked()) return;
       running = true;
@@ -52,15 +62,30 @@
     const focus = () => { void check(); };
     window.addEventListener('focus', focus);
     document.addEventListener('visibilitychange', focus);
-    const timer = setInterval(focus, 30000);
-    active = {accept,check,stop(){stopped=true;clearInterval(timer);window.removeEventListener('focus',focus);document.removeEventListener('visibilitychange',focus);}};
+    const timer = setInterval(focus, 5000);
+    active = {
+      accept, check,
+      publish(savedRevision) {
+        accept(savedRevision);
+        const message = {rowKey:config.contentRow,revision:String(savedRevision || ''),at:Date.now()};
+        channel?.postMessage(message);
+        try { localStorage.setItem('crmo-content-revision-signal',JSON.stringify(message)); } catch (_) {}
+      },
+      stop() {
+        stopped=true;clearInterval(timer);
+        channel?.close();
+        window.removeEventListener('storage',onStorage);
+        window.removeEventListener('focus',focus);
+        document.removeEventListener('visibilitychange',focus);
+      }
+    };
     return active;
   }
   // An atomic compare-and-swap: a stale editor can never replace a newer row.
   async function updateIfCurrent({client,table,keyColumn,rowKey,row,revision}) {
     if (!revision) throw new Error('לא נטענה גרסת ענן מאומתת. יש לרענן לפני שמירה. העריכה המקומית נשמרה.');
     const result = await client.from(table).update(row)
-      .eq(keyColumn,rowKey).eq('updated_at',revision).select(keyColumn).maybeSingle();
+      .eq(keyColumn,rowKey).eq('updated_at',revision).select(keyColumn + ',updated_at').maybeSingle();
     if (result?.error) throw result.error;
     if (!result?.data) throw new Error('התוכן באתר עודכן בחלון אחר. השמירה נעצרה כדי לא לדרוס אותו. העריכה המקומית נשמרה; יש לטעון את התוכן העדכני לפני שמירה נוספת.');
     return result;
