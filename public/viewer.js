@@ -1964,6 +1964,7 @@ function applyAllWorksCopyOnce3284() {
   }
 
 function applyWrapper(raw){
+ const opened = lb.open ? {galleryId:galleries[activeGalleryIndex]?.galleryId,tileId:galleries[activeGalleryIndex]?.tiles[activeTileIndex]?.tileId} : null;
  window.CRMODemo?.capture(raw);
  const next=hydrateWrapperShape(raw); if(!next) throw Error('Invalid site content');
  siteState=ensureSiteState(next.site||{});galleries=ensureAllGalleries(next.galleries||[]);
@@ -1973,7 +1974,14 @@ function applyWrapper(raw){
  accessibilitySection=ensureAccessibilitySection(next.accessibilitySection||siteState.accessibility||{});
  privacySection=ensurePrivacySection(next.privacySection||siteState.privacy||{});
  applyPosCopyOnce();applyOurBrandsCopyOnce3283();applyAllWorksCopyOnce3284();applyRequestedGalleryOrderOnce();
- document.getElementById('crmo-loading')?.remove();renderGalleryStack();applyFaviconLaw();return {galleries,site:siteState};
+ document.getElementById('crmo-loading')?.remove();renderGalleryStack();applyFaviconLaw();
+ if(opened){
+   const gi=galleries.findIndex(g=>g.galleryId===opened.galleryId);
+   const ti=gi<0?-1:galleries[gi].tiles.findIndex(t=>t.tileId===opened.tileId&&t.isVisible!==false);
+   if(ti<0||galleries[gi].meta?.visible===false)lb.close();
+   else{activeGalleryIndex=gi;activeTileIndex=ti;renderLightbox();}
+ }
+ return {galleries,site:siteState};
  }
 
 function closePrivacyPanel() { byId('crmo3047PrivacyPanel')?.classList.remove('is-open'); }
@@ -1989,7 +1997,7 @@ window.CRMO_VIEW = {apply:applyWrapper,summary:()=>({galleryIds:galleries.map(g=
 // Rebuild only at that breakpoint; ordinary scrolling/resizing never resets the grid.
 window.matchMedia('(max-width: 900px)').addEventListener('change',()=>renderGalleryStack());
 if(window.CRMO_RELEASE_SNAPSHOT)applyWrapper(window.CRMO_RELEASE_SNAPSHOT);
-const contentSync = window.CRMOContentSync?.start({refresh:refreshPublicContent});
+const contentSync = window.CRMOContentSync?.start({refresh:refreshPublicContent,allowLightbox:true});
 async function refreshPublicContent(canApply = () => true){
  const c=window.CRMO_CONFIG;const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),10000);
  try{const query=new URLSearchParams({select:'payload,updated_at',key:'eq.'+c.contentRow});
@@ -1999,6 +2007,6 @@ async function refreshPublicContent(canApply = () => true){
  }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';return false;}finally{clearTimeout(timer);}}
 // Load content on navigation or an explicit page refresh. Rebuilding the gallery
 // on window focus collapses the page and resets the visitor's scroll position.
-refreshPublicContent();
+if(contentSync)void contentSync.check();else void refreshPublicContent();
 
 })();
