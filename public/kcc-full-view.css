@@ -1,0 +1,9 @@
+/* Preserve the complete original frame of the 2026-10-26 Kimberly-Clark POS archive.
+   The source images have varying aspect ratios; never crop their product heads or bases. */
+.crmo3045-tile-media[src*="/assets/kcc-archive-20261026/"],
+.crmo3045-lb-media[src*="/assets/kcc-archive-20261026/"],
+.crmo3045-thumb img[src*="/assets/kcc-archive-20261026/"]{
+  object-fit:contain !important;
+  object-position:center center !important;
+  background:#fff;
+}
