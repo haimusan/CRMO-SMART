@@ -185,6 +185,16 @@ ${bootMarker}`);
   if(voteTitleStart<0||voteTitleEnd<0)throw Error('מבנה ההצבעה בלייטבוקס השתנה.');
   html=html.slice(0,voteTitleEnd)+"\n    window.CRMOProjectVotes?.mountLightbox(tile,gallery);"+html.slice(voteTitleEnd);
 
+
+  // CRMO editor controls: compact gallery rows and safe project transfer.
+  const crmoPatchOnce=(from,to,label)=>{if(html.split(from).length!==2)throw Error('Editor feature marker changed: '+label);html=html.replace(from,to);};
+  crmoPatchOnce("      expandedEnabled: meta.expandedEnabled === true,\n      expandedCount\n","      expandedEnabled: meta.expandedEnabled === true,\n      compactCount: [6,9,12,15,18,21,24].includes(Number(meta.compactCount)) ? Number(meta.compactCount) : 6,\n      expandedCount\n","meta");
+  crmoPatchOnce("    galleryEditorDraft.meta = meta;\n    byId('crmo3047GalleryTitleMobile')","    galleryEditorDraft.meta = meta;\n    const compactSelect = byId('crmo3047CompactCount');\n    if (compactSelect) compactSelect.value = String(meta.compactCount || 6);\n    byId('crmo3047GalleryTitleMobile')","render");
+  crmoPatchOnce("    meta.expandedEnabled = !byId('crmo3047ExpandedEnabled').disabled","    meta.compactCount = Number(byId('crmo3047CompactCount')?.value || meta.compactCount || 6);\n    meta.expandedEnabled = !byId('crmo3047ExpandedEnabled').disabled","sync");
+  crmoPatchOnce("    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT;","    const selectedCompact = Number(gallery?.meta?.compactCount || 6);\n    const compactLimit = isBrandGalleryObject(gallery) ? BRANDS_STACK_TILE_LIMIT : ([6,9,12,15,18,21,24].includes(selectedCompact) ? selectedCompact : STACK_TILE_LIMIT);","limit");
+  crmoPatchOnce("    tileEditorDraft = structuredClone(sourceTile);\n    if (isBrandGalleryIndex(galleryIndex)) stabilizeBrandEditorDraft();\n    renderTileEditor();\n    byId('crmo3047EditorNote')","    tileEditorDraft = structuredClone(sourceTile);\n    if (isBrandGalleryIndex(galleryIndex)) stabilizeBrandEditorDraft();\n    renderTileEditor();\n    const moveSelect = byId('crmo3047TileMoveTarget');\n    if (moveSelect) {\n      moveSelect.innerHTML = '<option value=\"\">השאר בגלריה הנוכחית</option>';\n      if (!isBrandGalleryIndex(galleryIndex) && galleries[galleryIndex]?.meta?.galleryType !== 'master') galleries.forEach((g) => {\n        if (g.galleryId === galleries[galleryIndex]?.galleryId || g.galleryId === 'our-brands' || g.meta?.galleryType === 'master') return;\n        const o = document.createElement('option');o.value = g.galleryId;\n        o.textContent = (g.meta?.parentId === 'pos' ? 'POS · ' : '') + (g.meta?.adminLabelHe || g.meta?.title || g.galleryId);\n        moveSelect.append(o);\n      });\n      moveSelect.closest('label').hidden = isBrandGalleryIndex(galleryIndex) || galleries[galleryIndex]?.meta?.galleryType === 'master';\n      moveSelect.value = '';\n    }\n    byId('crmo3047EditorNote')","move-selection");
+  crmoPatchOnce("    const normalized = normalizeTile(workingDraft, galleryIndex, tileIndex);\n    if (source === 'gallery-draft'","    const normalized = normalizeTile(workingDraft, galleryIndex, tileIndex);\n    const moveTargetId = byId('crmo3047TileMoveTarget')?.value || '';\n    if (moveTargetId && !isBrandGalleryIndex(galleryIndex)) {\n      try {\n        if (!window.CRMOProjectMove) throw Error('מנגנון העברת פרויקטים לא נטען.');\n        if (source === 'gallery-draft' && galleryEditorDraft && galleryEditorIndex === galleryIndex) {\n          galleryEditorDraft.tiles[tileIndex] = normalized;\n          galleries[galleryIndex] = normalizeGallery(galleryEditorDraft, galleryIndex);\n        } else galleries[galleryIndex].tiles[tileIndex] = normalized;\n        window.CRMOProjectMove.moveProject(galleries,galleries[galleryIndex].galleryId,moveTargetId,normalized.tileId);\n        persistLocal(makePayload(galleries));\n        closeTileEditor();\n        if (galleryDialog.open) closeGalleryEditor();\n        renderGalleryStack();populateGallerySelect();\n        await runWithSyncLock('moving project to another gallery',async()=>{\n          const saved = await saveGalleriesToCloud();\n          if (!saved) throw Error('השינוי נשמר מקומית בלבד.');\n        });\n        setStatus('הפרויקט הועבר ונשמר בענן.');\n      } catch (error) { setStatus('העברה נכשלה: '+(error?.message||error)); }\n      return;\n    }\n    if (source === 'gallery-draft'","move-commit");
+
   // Match the public brand wall rather than the legacy six-project preview.
   const brandLimitMarker = '  const STACK_TILE_LIMIT = 6;';
   const limitFunctionStart = html.indexOf('  function getExpandedTileLimitFor(');
@@ -202,6 +212,11 @@ ${bootMarker}`);
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
+  // The private editor creates dialogs at runtime, so add the new fields after it boots.
+  const editorFeaturesScript=editorDocument.createElement('script');
+  editorFeaturesScript.textContent="(()=>{\n    function attach(){\n      const galleryTools=document.querySelector('#crmo3047GalleryEditor .crmo3047-gallery-tools-row');\n      if(galleryTools&&!document.getElementById('crmo3047CompactCount')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='מספר עבודות בתצוגת הגלריה';\n        const select=document.createElement('select');select.id='crmo3047CompactCount';\n        for(const count of [6,9,12,15,18,21,24]){\n          const option=document.createElement('option');option.value=String(count);option.textContent=String(count)+' עבודות';select.append(option);\n        }\n        label.append(caption,select);\n        galleryTools.prepend(label);\n      }\n      const tileTop=document.querySelector('#crmo3047TileEditor .crmo3047-tile-editor-top');\n      if(tileTop&&!document.getElementById('crmo3047TileMoveTarget')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='העבר לגלריה אחרת';\n        const select=document.createElement('select');select.id='crmo3047TileMoveTarget';select.setAttribute('aria-label','העבר לגלריה אחרת');\n        label.append(caption,select);tileTop.append(label);\n      }\n    }\n    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();\n  })();";
+  editorDocument.body.append(editorFeaturesScript);
+
   // Replace the bundled resolver below with the shared resolver before editor boot.
   // The external folder uploader is obsolete; existing cloud assets remain untouched.
   editorDocument.querySelectorAll('script[src*="studio-assets.js"],script#crmo3283-studio-assets').forEach(script=>script.remove());
@@ -460,10 +475,10 @@ ${bootMarker}`);
   const votesStyle=editorDocument.createElement('link');votesStyle.rel='stylesheet';
   votesStyle.href=new URL('public/project-votes.css?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
   editorDocument.head.append(votesStyle);
+  const moveScript=editorDocument.createElement('script');
+  moveScript.src=new URL('public/admin-project-move.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  contentSyncScript.after(moveScript);
   if(new URLSearchParams(window.location.search).get('dev')==='move-projects'){
-    const moveScript=editorDocument.createElement('script');
-    moveScript.src=new URL('public/admin-project-move.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
-    contentSyncScript.after(moveScript);
     const moveStyle=editorDocument.createElement('style');
     moveStyle.textContent='.crmo-project-move{position:absolute;top:6px;right:6px;z-index:30;max-width:calc(100% - 48px);width:170px;padding:6px;border:1px solid #aaa;border-radius:5px;background:#fff;color:#111;font:12px Arial,sans-serif;direction:rtl}#crmo-project-move-status{position:fixed;bottom:20px;right:20px;z-index:10040;max-width:min(500px,90vw);padding:14px 20px;border:1px solid #bbb;border-radius:8px;background:#fff;box-shadow:0 3px 18px #0002;direction:rtl;font:14px Arial,sans-serif}';
     editorDocument.head.append(moveStyle);
