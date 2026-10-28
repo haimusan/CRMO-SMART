@@ -26,3 +26,13 @@
 - The current public viewer hydrates the legacy `payload.galleries` array before the structured `payload.tiles.items` representation. Updating only tiles.items does not update the public gallery.
 - For every project addition, media reorder, caption change or visibility change, keep the matching legacy gallery tile (`overlay`, `meta`, `media`, `display`, `isVisible`) and structured tile (`title`, `shortDescription`, `files`, `filesMeta`, `visible`) synchronized.
 - Verify the legacy gallery media count, order, caption and visibility as well as the structured record before reporting a publication. Scope updates to the requested projects and preserve unrelated content.
+
+# Mandatory private release parity gate
+
+- **Never mark a CRMO version as published or complete until both the public code and the private `admin` Storage release have been verified.** Public deployment alone is incomplete.
+- The private artifact path is `admin/releases/CRMO_v<N>.html` (Supabase Storage bucket `admin`, private), with `admin/latest.json` pointing to exactly that path and version. The file must be a complete usable HTML editor, not merely a renamed older release.
+- Before deployment: identify the current public release from `public/config.js`, select the next unused version, prepare the matching full editor, and retain the previous release. Do not increment a public version without a matching private artifact ready to upload.
+- Release order: upload the complete HTML to the private bucket, download it with an admin-authenticated session and verify its hash, version and basic editor boot; update `latest.json` only after successful upload; verify the manifest resolves to the same file; then deploy/publicize the corresponding version. If any step fails, stop and report the release as blocked. Never silently publish only `index.html` or `config.js`.
+- At the end of each release, confirm `public/config.js` version, public site version, private release filename, `latest.json` target, and actual content/structure parity. Include a local-file ↔ cloud round-trip test before claiming full multi-environment synchronization.
+- Keep the private editor in a private bucket and never copy it into a public GitHub Pages path. Never commit secrets or service-role credentials to the repository.
+- Do not confuse the file's external filename with its internal version markers. A renamed legacy file is not a new release; check the embedded version, sync protocol and behavior.
