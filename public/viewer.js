@@ -387,6 +387,7 @@ function getPosBlueprint(slotIndex) {
   }
 
 function getSuperSubButtonLabel(slotIndex) {
+    if(slotIndex===0)return 'POS CHOSEN · עבודות נבחרות';
     return String(getPosBlueprint(slotIndex)?.buttonLabel || `תת כפתור ${slotIndex + 1}`);
   }
 
@@ -1322,6 +1323,8 @@ function getManagerRenderOrder() { return normalizeGalleryManagerState(siteState
 function getSiteRootUrl(){const u=new URL(window.CRMO_ROOT_URL || new URL("./",location.href));u.search="";u.hash="";return u;}
 
 function getDedicatedRoute() {
+    const cleanRoute=window.CRMO_ROUTES?.current();
+    if(cleanRoute)return {managerId:cleanRoute.galleryId,posCategory:cleanRoute.galleryId==='pos'?'all-works':''};
     if (window.location.protocol === 'file:') return null;
     const segments = window.location.pathname.split('/').filter(Boolean).map((part) => {
       try { return decodeURIComponent(part).toLowerCase(); } catch (_) { return ''; }
@@ -1360,6 +1363,7 @@ function isExpandedTarget(id) {
   }
 
 function getExpandedTileLimitFor(id, gallery, item = getManagerItem(id)) {
+    if(window.CRMO_ROUTES?.current())return Math.min(MAX_TILES_PER_GALLERY,(gallery?.tiles||[]).length);
     const inlineKey = getInlineExpandedKey(id, gallery);
     const chosenCompact = Number(gallery?.meta?.compactCount || 9);
     const available = getFullTileCountForExpanded(gallery?.tiles || []);
@@ -1449,7 +1453,7 @@ function addExpandedLinkIfNeeded(section, id) {
 function renderManagedMasterSection(masterGallery, managerId, editEnabled) { const children = getChildrenForMaster(managerId).filter((child) => isManagerItemVisible(getGalleryLookupId(child))); if (!children.length) return; let activeId = activeManagedMasterIds[managerId] || getGalleryLookupId(children[0]); let activeGallery = children.find((gallery) => getGalleryLookupId(gallery) === activeId) || children[0]; activeManagedMasterIds[managerId] = getGalleryLookupId(activeGallery); const activeGalleryIndex = galleries.findIndex((gallery) => gallery === activeGallery); const section = document.createElement('section'); section.className = 'crmo3047-gallery is-super-gallery'; section.id = managerId; section.dataset.galleryIndex = 'managed-master'; section.innerHTML = `<div class="crmo3047-gallery-head"><div class="crmo3047-gallery-copy"><div class="crmo3047-gallery-title">${escape(getGalleryDisplayCopy(masterGallery).title || getManagerDisplayName(managerId))}</div><div class="crmo3047-gallery-desc">${escape(getGalleryDisplayCopy(masterGallery).desc)}</div></div></div><div class="crmo3047-super-gap"><div class="crmo3047-super-nav" data-super-nav></div><div class="crmo3047-super-body"><div class="crmo3047-super-tools">${editEnabled && activeGalleryIndex >= 0 ? `<button class="crmo3045-btn" type="button" data-managed-gallery-editor>ניהול גלריה</button>` : ``}</div><div class="crmo3045-grid" data-super-grid></div></div></div>`; const nav = section.querySelector('[data-super-nav]'); children.forEach((gallery) => { const gid = getGalleryLookupId(gallery); const btn = document.createElement('button'); btn.type = 'button'; btn.className = `crmo3047-super-btn${gid === activeManagedMasterIds[managerId] ? ' is-active' : ''}`; btn.textContent = String(gallery?.meta?.adminLabelHe || gallery?.meta?.title || gid); btn.addEventListener('click', () => { activeManagedMasterIds[managerId] = gid; renderGalleryStack(); }); nav.appendChild(btn); }); const grid = section.querySelector('[data-super-grid]'); crmoRenderCuratedGrid(grid, section, activeGallery, activeGalleryIndex, editEnabled, managerId); section.querySelector('[data-managed-gallery-editor]')?.addEventListener('click', () => void 0); addExpandedLinkIfNeeded(section, managerId); galleryStack.appendChild(section); }
 
 function renderSuperGallerySection(editEnabled) {
-    const superSubs = getSuperSubGalleries();
+    const superSubs = getSuperSubGalleries().filter(g=>editEnabled||g.meta?.visible!==false);
     if (!superSubs.length) return;
     const displayCopy = getGalleryDisplayCopy;
     let activeGallery = superSubs.find((gallery) => gallery.galleryId === activeSuperGalleryId) || null;
@@ -1485,7 +1489,7 @@ function renderSuperGallerySection(editEnabled) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `crmo3047-super-btn${gallery.galleryId === activeSuperGalleryId ? ' is-active' : ''}`;
-      btn.textContent = getSuperSubButtonLabel(slotIndex);
+      btn.textContent = getSuperSubButtonLabel(Number(gallery.galleryId.slice(SUPER_SUB_PREFIX.length))-1);
       btn.dataset.galleryId = gallery.galleryId;
       btn.addEventListener('click', () => {
         if (activeSuperGalleryId !== gallery.galleryId) showSuperGallery(gallery);
@@ -1495,7 +1499,7 @@ function renderSuperGallerySection(editEnabled) {
     const grid = section.querySelector('[data-super-grid]');
     function showSuperGallery(gallery) {
       activeSuperGalleryId = gallery.galleryId;
-      if (getAboutDisplayMode() === 'expanded') {
+      if (getAboutDisplayMode() === 'expanded' && window.CRMO_ROUTES?.current()?.kind !== 'all') {
         const url = new URL(window.location.href);
         if (getDedicatedRoute()?.managerId === SUPER_GALLERY_ID) {
           const slug = getPosBlueprint(Number(gallery.galleryId.slice(SUPER_SUB_PREFIX.length)) - 1)?.label;
@@ -1593,7 +1597,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   const minimum = isSmallBusiness ? 6 : (mobile ? 4 : 6);
   const count = isBrandWall
     ? candidates.length
-    : Math.min(limit, Math.max(minimum, Math.floor(candidates.length / columns) * columns));
+    : window.CRMO_ROUTES?.current() ? candidates.length : Math.min(limit, Math.max(minimum, Math.floor(candidates.length / columns) * columns));
   candidates.slice(0,count).forEach(({tile,tileIndex,key})=>{
     const card = createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled);
     if (!isBrandWall) { card.dataset.crmoProjectKey = key; alreadyShown.add(key); }
@@ -1636,7 +1640,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
 }
 
 function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
-    if (!gallery || isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) return;
+    if (!gallery || ((isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) && window.CRMO_ROUTES?.current()?.galleryId !== gallery.galleryId)) return;
     const section = document.createElement('section');
     const isBrandsGallery = isBrandGalleryObject(gallery);
     const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
@@ -1668,6 +1672,10 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
 
 function renderGalleryStack() {
     galleryStack.innerHTML = '';
+    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
+      renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
+      renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
+      renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;
     crmoHomeTileIndexes.clear();
     let firstRenderedSection = true;
     const editEnabled = canEdit();
@@ -1714,6 +1722,7 @@ function renderGalleryStack() {
     renderContactSection(editEnabled);
     renderFooterSection(editEnabled);
     renderLegalSection(editEnabled);
+    window.CRMO_ROUTES?.decorate();
   }
 
 function getLightboxMedia(tile) {
