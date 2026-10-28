@@ -518,6 +518,42 @@ ${bootMarker}`);
   const releaseGuard=editorDocument.createElement('script');
   releaseGuard.textContent="(()=>{const title=window.CRMO_CONFIG.siteTitle;const version=\"CRMO_v\"+window.CRMO_CONFIG.release;const sync=()=>{if(document.title!==title)document.title=title;document.querySelectorAll(\"#adminVersionPill,#footerVersionLabel,#crmo-footer-version,.crmo3047-footer-version\").forEach(el=>{if(el.textContent!==version)el.textContent=version;});};sync();new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true,characterData:true});})();";
   editorDocument.body.append(releaseGuard);
+  // Report independent public and private versions; never label a stale private editor as current.
+  const publicVersion='CRMO_v'+String(window.CRMO_CONFIG.release);
+  const privateVersion='CRMO_v'+release.path.match(/CRMO_v(\d+)\.html$/)[1];
+  const embeddedVersions=[...html.matchAll(/\bconst\s+VERSION\s*=\s*['"]CRMO_v(\d+)['"]/g)]
+    .map(match=>'CRMO_v'+match[1]);
+  const embeddedVersion=embeddedVersions[0] || 'לא זוהתה';
+  const parityOk=publicVersion===privateVersion &&
+    embeddedVersions.length>0 && embeddedVersions.every(version=>version===privateVersion);
+  const parityPanel=editorDocument.createElement('section');
+  parityPanel.id='crmo-release-parity';
+  parityPanel.setAttribute('role',parityOk?'status':'alert');
+  parityPanel.setAttribute('aria-live','polite');
+  parityPanel.setAttribute('data-sync-state',parityOk?'matched':'mismatch');
+  parityPanel.style.cssText='direction:rtl;padding:9px 12px;margin:8px 0;border-radius:8px;border:2px solid '+(parityOk?'#278352':'#c2410c')+';background:'+(parityOk?'#eaf8ef':'#fff1e6')+';color:#17231c;font:600 13px Arial,sans-serif;line-height:1.6;';
+  const statusLine=editorDocument.createElement('div');
+  statusLine.textContent=parityOk?'✓ גרסאות מערכת תואמות':'⚠ גרסאות אינן מסונכרנות — אין לפרסם גרסה חדשה';
+  parityPanel.append(statusLine);
+  for(const labelAndVersion of [['אתר ציבורי קל',publicVersion],['מערכת ניהול מלאה בבאקט פרטי',privateVersion],['גרסה פנימית של קובץ המערכת',embeddedVersion]]){
+    const line=editorDocument.createElement('div');
+    line.textContent=labelAndVersion[0]+': '+labelAndVersion[1];
+    line.style.fontWeight='400';
+    parityPanel.append(line);
+  }
+  const detail=editorDocument.createElement('small');
+  detail.textContent=parityOk?'התאמת גרסאות אומתה; סנכרון התוכן נבדק בנפרד.':'הבדיקה נכשלה. הקובץ הפרטי והאתר הציבורי חייבים להיות מאותה גרסה לפני שנכריז על סנכרון מלא.';
+  parityPanel.append(detail);
+  const parityHost=editorDocument.querySelector('#adminDashboard') || editorDocument.body;
+  parityHost.prepend(parityPanel);
+  if(!parityOk){
+    const warning=editorDocument.createElement('div');
+    warning.id='crmo-release-parity-warning';
+    warning.setAttribute('role','alert');
+    warning.textContent='⚠ CRMO: האתר הציבורי וקובץ הניהול הפרטי בגרסאות שונות. פתח את לוח הניהול לפרטים.';
+    warning.style.cssText='position:sticky;top:0;z-index:10030;direction:rtl;text-align:center;padding:8px;background:#9a3412;color:#fff;font:600 14px Arial,sans-serif;';
+    editorDocument.body.prepend(warning);
+  }
   // Mirror public reviewed framing in the privately loaded editor.
   if (!editorDocument.querySelector('script[src*="crmo-smart-framing.js"]')) {
     const framingScript=editorDocument.createElement('script');
