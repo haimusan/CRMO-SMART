@@ -26,8 +26,21 @@ test('disabled POS ALL is not made public by its direct address',()=>{
  const s=setup('https://www.crmo.co.il/pos-all/');s.adapter.visible=()=>false;s.routes.render(s.adapter);assert(!s.calls.includes('pos-all'));
 });
 test('legacy hashes and display parameters normalize to readable addresses',()=>{
- for(const [old,wanted] of [['?view=public#about','about/'],['?view=public#retail-pos','pos-mix/'],['pos','pos-all/'],['pos/all-works','pos/chosen/'],['?view=expanded&gallery=branding','branding/']]){
+ for(const [old,wanted] of [['?view=public#about','#about'],['?view=public#retail-pos','#retail-pos'],['pos','pos-all/'],['pos/all-works','pos/chosen/'],['?view=expanded&gallery=branding','branding/']]){
   assert.equal(setup('https://www.crmo.co.il/'+old).location.href,'https://www.crmo.co.il/'+wanted);
  }
  assert.equal(setup('https://www.crmo.co.il/?login=1&view=public').location.href,'https://www.crmo.co.il/?login=1');
+});
+test('header remains internal everywhere; share links are separate standalone addresses',()=>{
+ for(const path of ['/','/exhibitions/','/pos/floor-stands/']){
+  const s=setup('https://www.crmo.co.il'+path),links=['#exhibitions','#about','#stores'].map(value=>({href:value,getAttribute(){return value}}));
+  s.adapter.galleries=[];
+  // Exercise the real decorator against DOM-backed link stubs.
+  const c={window:{},URL,location:{href:'https://www.crmo.co.il'+path,pathname:path,origin:'https://www.crmo.co.il'},history:{replaceState(){}},document:{querySelectorAll:()=>links}};
+  vm.runInNewContext(source,c);c.window.CRMO_ROUTES.decorate();
+  assert.deepEqual(links.map(l=>l.href),['/#exhibitions','/#about','/#stores']);
+  assert.equal(c.window.CRMO_ROUTES.shareURL('exhibitions'),'https://www.crmo.co.il/exhibitions/');
+  assert.equal(c.window.CRMO_ROUTES.shareURL('pos-sub-1'),'https://www.crmo.co.il/pos/chosen/');
+  assert.equal(c.window.CRMO_ROUTES.shareURL('gallery-18'),'https://www.crmo.co.il/pos-mix/');
+ }
 });

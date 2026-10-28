@@ -16,6 +16,7 @@
  const aliases = {'intro':'selected-work','intro-more':'more-work','our-brands':'brands','retail-pos':'pos-mix','pos':'pos-all','pos/all-works':'pos/chosen'};
  const byId = new Map(entries.map(([path,id])=>[id,path]));
  const href = id => '/' + (byId.get(id) || aliases[id] || id) + '/';
+ const shareURL = id => byId.has(id) ? new URL(href(id),location.origin).href : '';
  function current(){
   let path;try{path=decodeURIComponent(location.pathname).replace(/^\/+|\/+$/g,'');}catch(_){return null;}
   const entry=entries.find(([key])=>key===path);
@@ -31,7 +32,6 @@
   }
   if(aliases[path])path=aliases[path];
   const hash=url.hash.slice(1);
-  if(!path && (byId.has(hash)||aliases[hash])){path=byId.get(hash)||aliases[hash];url.hash='';}
   if(hash==='top')url.hash='';
   if(entries.some(([key])=>key===path)){url.pathname='/'+path+'/';url.hash='';}
   else if(!path)url.pathname='/';
@@ -44,7 +44,8 @@
    if(url.origin!==location.origin)return;
    const id=url.hash.slice(1);
    if(id==='top')link.href='/';
-   else if(byId.has(id)||aliases[id])link.href=href(id);
+   // Header links always point into the complete home page, even from a shared gallery.
+   else if(byId.has(id)||aliases[id])link.href='/#'+id;
   });
  }
  function render(adapter){
@@ -63,5 +64,5 @@
   return true;
  }
  canonicalize();
- window.CRMO_ROUTES=Object.freeze({entries,aliases,href,current,render,decorate,canonicalize});
+ window.CRMO_ROUTES=Object.freeze({entries,aliases,href,shareURL,current,render,decorate,canonicalize});
 })();
