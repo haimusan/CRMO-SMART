@@ -2570,3 +2570,5 @@ header{background:#fff !important;border-bottom:1px solid #e6e6e6 !important;}
 #crmo-user-indicator{cursor:pointer}
 /* Empty tiles are permitted only to complete the minimum 3x2 / 2x2 grid. */
 .crmo-ux-empty-tile { aspect-ratio:16 / 9; background:#f5f5f5; pointer-events:none; }
+.crmo-route-home{display:block;width:max-content;margin:28px auto;padding:10px 20px;border:1px solid #111;color:#111;text-decoration:none}
+.crmo-route-name{text-align:center;font:500 16px/1.5 Rubik,Arial,sans-serif;margin:20px 0 0}

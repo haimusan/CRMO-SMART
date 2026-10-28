@@ -219,6 +219,21 @@ ${bootMarker}`);
   html = html.replace(brandClassMarker, "${isBrandsGallery ? ' is-brands-gallery' : ''}${isBrandsGallery && visibleTileCount >= 18 && (gallery.tiles || []).filter(tile => tile?.isVisible !== false && ((tile.media || []).some(media => media?.src && media?.isVisible !== false) || tile.logoSrc || tile.brandConfig?.logoSrc)).length >= 15 ? ' is-brand-wall-ready' : ''}`;");
   html = html.replace('Math.min(STACK_TILE_LIMIT, visibleTileCount)', 'Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT, visibleTileCount)');
 
+  // Apply the same standalone-gallery contract to the authenticated legacy renderer.
+  const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
+      renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
+      renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
+      renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;`;
+  html=html.replace('  function getSuperSubButtonLabel(slotIndex) {', "  function getSuperSubButtonLabel(slotIndex) {\n    if(slotIndex===0)return 'POS CHOSEN · עבודות נבחרות';");
+  html=html.replace('    const superSubs = getSuperSubGalleries();', '    const superSubs = getSuperSubGalleries().filter(g=>editEnabled||g.meta?.visible!==false);');
+  html=html.replace('btn.textContent = getSuperSubButtonLabel(slotIndex);','btn.textContent = getSuperSubButtonLabel(Number(gallery.galleryId.slice(SUPER_SUB_PREFIX.length))-1);');
+  html=html.replace('    const selectedCompact =', '    if(window.CRMO_ROUTES?.current())return Math.min(MAX_TILES_PER_GALLERY,(gallery?.tiles||[]).length);\n    const selectedCompact =');
+  html=html.replace("  function renderGalleryStack() {\n    galleryStack.innerHTML = '';", "  function renderGalleryStack() {\n    galleryStack.innerHTML = '';\n"+routeHook);
+  html=html.replace("    if (!gallery || isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) return;", "    if (!gallery || ((isManagedChildGallery(gallery) || isManagedMasterGallery(gallery)) && window.CRMO_ROUTES?.current()?.galleryId !== gallery.galleryId)) return;");
+  html=html.replace('  function getDedicatedRoute() {', "  function getDedicatedRoute() {\n    const cleanRoute=window.CRMO_ROUTES?.current();\n    if(cleanRoute)return {managerId:cleanRoute.galleryId,posCategory:cleanRoute.galleryId==='pos'?'all-works':''};");
+  html=html.replace("      if (getAboutDisplayMode() === 'expanded') {", "      if (getAboutDisplayMode() === 'expanded' && window.CRMO_ROUTES?.current()?.kind !== 'all') {");
+  html=html.replace('    renderLegalSection(editEnabled);', '    renderLegalSection(editEnabled);\n    window.CRMO_ROUTES?.decorate();');
+
   // Release files can contain obsolete admin chrome. Normalize it on every load.
   const editorDocument=new DOMParser().parseFromString(html,'text/html');
   editorDocument.title='CRMO | sales oriented design';
@@ -472,6 +487,9 @@ ${bootMarker}`);
   const releaseConfig=editorDocument.createElement('script');
   releaseConfig.textContent='window.CRMO_CONFIG=Object.freeze('+JSON.stringify(window.CRMO_CONFIG)+');';
   editorDocument.head.prepend(releaseConfig);
+  const routeScript=editorDocument.createElement('script');
+  routeScript.src=new URL('public/gallery-routes.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+  releaseConfig.after(routeScript);
   // applyFaviconLaw and auth UI call this synchronously, before the first cloud read.
   editorDocument.querySelectorAll('script[src*="studio-fallback.js"]').forEach(script=>script.remove());
   const studioAssetsScript=editorDocument.createElement('script');
