@@ -19,6 +19,10 @@
 
 # Content synchronization
 
+- Site-wide navigation rule: header and mobile-menu links navigate to sections of the complete home page (`/#exhibitions`, for example). They do not open standalone galleries.
+- External share links and the admin Copy Link action use the standalone gallery path (`/exhibitions/`, for example). Preserve this distinction in every gallery, including all POS children.
+- A home-page hash stays internal. Removing `view=public` must not convert that hash into a standalone path.
+
 - The current public viewer hydrates the legacy `payload.galleries` array before the structured `payload.tiles.items` representation. Updating only tiles.items does not update the public gallery.
 - For every project addition, media reorder, caption change or visibility change, keep the matching legacy gallery tile (`overlay`, `meta`, `media`, `display`, `isVisible`) and structured tile (`title`, `shortDescription`, `files`, `filesMeta`, `visible`) synchronized.
 - Verify the legacy gallery media count, order, caption and visibility as well as the structured record before reporting a publication. Scope updates to the requested projects and preserve unrelated content.
