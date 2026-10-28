@@ -29,7 +29,7 @@ test('a failed database write is surfaced without an unconditional retry',async(
  await assert.rejects(save({...args(database(),'revision-1','newer'),client}),/permission denied/);assert.equal(calls,1);
 });
 test('loader replaces legacy blind write and tracks the loaded cloud revision',async()=>{
- const html=fs.readFileSync('../crmo-private-fixtures/CRMO_v3286.html','utf8');let patched;
+ const html=fs.readFileSync('../crmo-private-fixtures/CRMO_v3286.html','utf8').replace('function renderGalleryStack()', 'function renderGalleryStackContents()');let patched;
  const context={URL,URLSearchParams,Date,console,window:{location:{href:'https://www.crmo.co.il/admin/?dev=move-projects',search:'?dev=move-projects'},CRMO_ROOT_URL:'https://www.crmo.co.il/',CRMO_CONFIG:{url:'https://example.com',release:'3314',anonKey:'public-key'}},document:{getElementById(){return {setAttribute(){}}}},fetch:async()=>({ok:true,json:async()=>({path:'releases/CRMO_v3288.html'})}),DOMParser:class {parseFromString(text){patched=text;throw Error('capture')}}};
  context.window.CRMOAuthBridge={
   ready:Promise.resolve(),isLoggedIn:()=>true,canManage:()=>true,
@@ -42,6 +42,7 @@ test('loader replaces legacy blind write and tracks the loaded cloud revision',a
  assert.ok(patched,'loader should validate and patch the legacy editor');
  assert.ok(patched.includes('cloudContentRevision = next.__cloudRevision'));
  assert.ok(patched.includes('row, revision: cloudContentRevision'));
+ assert.ok(patched.includes('renderGallery:(g,i)=>renderSingleGallerySection'), 'active wrapped renderer receives the standalone route hook');
  const saving=patched.slice(patched.indexOf('  async function saveGalleriesToCloud()'),patched.indexOf('  async function loadFromCloudAndApply()'));
  assert.ok(!saving.includes('.upsert('));assert.ok(saving.includes('updateIfCurrent'));
  for(const script of patched.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)) if(script[1].trim())new vm.Script(script[1]);
