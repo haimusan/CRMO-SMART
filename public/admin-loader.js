@@ -379,6 +379,7 @@ ${bootMarker}`);
       .crmo3047-gallery-desc.crmo-ux-mobile-desc-hidden {display:none!important}
     }
   `;
+  uxStyle.textContent += `.crmo3339-gallery-toolbar{display:flex!important;direction:rtl;justify-content:flex-start;align-items:center;gap:18px;width:100%;justify-self:stretch}.crmo3339-gallery-toolbar button[data-gallery-editor],.crmo3339-gallery-toolbar button[data-managed-gallery-editor],.crmo3339-gallery-toolbar button[data-super-gallery-editor]{width:40px!important;height:40px!important;min-width:40px!important;flex:0 0 40px}.crmo3339-inline-checks{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.crmo3339-inline-checks label{font-size:16px;min-height:44px;gap:8px}.crmo3339-inline-checks input{width:22px;height:22px}.crmo3047-gallery-head{margin-bottom:0!important;gap:8px!important}.crmo3047-gallery{gap:8px!important}`;
   editorDocument.head.append(uxStyle);
   const uxScript=editorDocument.createElement('script');
   uxScript.id='crmo-ux-v3306-script';
@@ -426,34 +427,6 @@ ${bootMarker}`);
       document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
         button.setAttribute('aria-label','עריכת הגלריה');
         button.title='עריכת הגלריה';
-      });
-      document.querySelectorAll('section.crmo3047-gallery[id]').forEach(section=>{
-        const manager=window.CRMO_QUICK_MANAGER;
-        const state=manager?.get(section.id);
-        const copy=section.querySelector('.crmo3047-gallery-copy');
-        if(!state||!copy)return;
-        let quick=copy.querySelector('.crmo-ux-quick-flags');
-        if(quick)return;
-        quick=document.createElement('div');quick.className='crmo-ux-quick-flags';
-        const names={visible:'כללי',visibleMobile:'מובייל',visibleDesktop:'דסקטופ',showExpandedButton:'עבודות נוספות'};
-        Object.keys(names).forEach(flag=>{
-          const label=document.createElement('label');
-          const proxy=document.createElement('input');
-          proxy.type='checkbox';proxy.checked=state[flag];
-          proxy.disabled=false;
-          label.append(proxy,document.createTextNode(names[flag]));
-          proxy.addEventListener('change',async()=>{
-            proxy.disabled=true;
-            try{await manager.set(section.id,flag,proxy.checked)}
-            finally {
-              const next=manager.get(section.id);
-              proxy.checked=!!next?.[flag];
-              proxy.disabled=false;
-            }
-          });
-          quick.append(label);
-        });
-        copy.append(quick);
       });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
