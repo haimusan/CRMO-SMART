@@ -352,12 +352,12 @@ ${bootMarker}`);
     .crmo3047-gallery-tools {position:absolute!important;top:0!important;left:0!important;
       margin:0!important;padding:0!important;z-index:20!important}
     button[data-gallery-editor],button[data-managed-gallery-editor] {
-      display:grid!important;place-items:center!important;width:28px!important;height:28px!important;
-      padding:0!important;min-width:28px!important;border:0!important;border-radius:50%!important;
-      background:#111!important;color:transparent!important;font-size:0!important;line-height:1!important;
+      display:grid!important;place-items:center!important;width:36px!important;height:36px!important;
+      padding:0!important;min-width:36px!important;border:0!important;border-radius:50%!important;
+      background:transparent!important;color:inherit!important;font-size:0!important;line-height:1!important;
     }
     button[data-gallery-editor]::before,button[data-managed-gallery-editor]::before {
-      content:"✎";color:#fff;font:20px/1 Arial,sans-serif;
+      content:"✎";color:currentColor;font:28px/1 Arial,sans-serif;
     }
     .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
       filter:grayscale(1);opacity:.56;
@@ -424,36 +424,8 @@ ${bootMarker}`);
         const releaseBadge=document.createElement('span');releaseBadge.className='crmo-admin-release-badge';releaseBadge.style.cssText='margin-inline:10px;font:11px Arial,sans-serif';releaseBadge.textContent='CRMO_v'+window.CRMO_CONFIG.release;row.append(button,releaseBadge);panel.prepend(row);
       }
       document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
-        button.setAttribute('aria-label','עריכת הגלריה');
+        if(!button.classList.contains('crmo-gallery-pencil'))button.setAttribute('aria-label','עריכת הגלריה');
         button.title='עריכת הגלריה';
-      });
-      document.querySelectorAll('section.crmo3047-gallery[id]').forEach(section=>{
-        const manager=window.CRMO_QUICK_MANAGER;
-        const state=manager?.get(section.id);
-        const copy=section.querySelector('.crmo3047-gallery-copy');
-        if(!state||!copy)return;
-        let quick=copy.querySelector('.crmo-ux-quick-flags');
-        if(quick)return;
-        quick=document.createElement('div');quick.className='crmo-ux-quick-flags';
-        const names={visible:'כללי',visibleMobile:'מובייל',visibleDesktop:'דסקטופ',showExpandedButton:'עבודות נוספות'};
-        Object.keys(names).forEach(flag=>{
-          const label=document.createElement('label');
-          const proxy=document.createElement('input');
-          proxy.type='checkbox';proxy.checked=state[flag];
-          proxy.disabled=false;
-          label.append(proxy,document.createTextNode(names[flag]));
-          proxy.addEventListener('change',async()=>{
-            proxy.disabled=true;
-            try{await manager.set(section.id,flag,proxy.checked)}
-            finally {
-              const next=manager.get(section.id);
-              proxy.checked=!!next?.[flag];
-              proxy.disabled=false;
-            }
-          });
-          quick.append(label);
-        });
-        copy.append(quick);
       });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
