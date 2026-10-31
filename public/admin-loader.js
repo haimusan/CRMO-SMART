@@ -550,3 +550,4 @@ ${bootMarker}`);
  }catch(error){status.textContent=error.message||'לא ניתן לפתוח את ממשק הניהול.';status.setAttribute('role','alert');}
 })();
 
+
