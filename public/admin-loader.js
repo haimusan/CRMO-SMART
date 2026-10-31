@@ -349,15 +349,15 @@ ${bootMarker}`);
       background:#111;color:#fff;cursor:pointer;font:13px/1 Arial,sans-serif;
     }
     .crmo3047-gallery-head {position:relative!important}
-    .crmo3047-gallery-tools {position:absolute!important;top:0!important;left:0!important;
+    .crmo3047-gallery-tools {position:absolute!important;top:0!important;right:0!important;left:auto!important;
       margin:0!important;padding:0!important;z-index:20!important}
     button[data-gallery-editor],button[data-managed-gallery-editor] {
-      display:grid!important;place-items:center!important;width:28px!important;height:28px!important;
-      padding:0!important;min-width:28px!important;border:0!important;border-radius:50%!important;
+      display:grid!important;place-items:center!important;width:48px!important;height:48px!important;
+      padding:0!important;min-width:48px!important;border:0!important;border-radius:50%!important;
       background:#111!important;color:transparent!important;font-size:0!important;line-height:1!important;
     }
     button[data-gallery-editor]::before,button[data-managed-gallery-editor]::before {
-      content:"✎";color:#fff;font:20px/1 Arial,sans-serif;
+      content:"✎";color:#fff;font:25px/1 Arial,sans-serif;
     }
     .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
       filter:grayscale(1);opacity:.56;
@@ -375,6 +375,44 @@ ${bootMarker}`);
     }
     .crmo-ux-quick-flags label {display:inline-flex;gap:3px;align-items:center;cursor:pointer}
     .crmo-ux-quick-flags input {width:12px;height:12px;margin:0;accent-color:#111}
+    /* CRMO 3342 gallery UI: compact header and aligned editor controls. */
+    .crmo3047-gallery-head{margin-bottom:8px!important;padding-bottom:0!important}
+    .crmo3047-gallery-copy{margin-bottom:0!important;padding-bottom:0!important}
+    .crmo3047-gallery-desc{margin-bottom:0!important}
+    .crmo3047-gallery-head + .crmo3045-grid{margin-top:0!important}
+    .crmo-ux-quick-flags{display:none!important}
+    #crmo3047GalleryEditor #crmo3047GalleryTiles.is-brand-editor-grid{
+      grid-template-columns:repeat(9,minmax(0,1fr))!important;gap:10px!important
+    }
+    #crmo3047GalleryTiles.is-brand-editor-grid .crmo3045-tile{
+      aspect-ratio:1/1!important;min-width:0!important;background:#fff!important
+    }
+    #crmo3047GalleryTiles.is-brand-editor-grid .crmo3045-tile-media{
+      object-fit:contain!important;padding:5px!important;box-sizing:border-box!important
+    }
+    #crmoGalleryManagerDialog button[data-move]{display:none!important}
+    #crmoGalleryManagerDialog .crmo3339-drag-handle{
+      appearance:none!important;border:0!important;background:transparent!important;
+      box-shadow:none!important;border-radius:8px!important;width:36px!important;height:42px!important;
+      min-width:36px!important;min-height:42px!important;padding:0!important;
+      font-size:0!important;color:transparent!important;cursor:grab!important;position:relative!important
+    }
+    #crmoGalleryManagerDialog .crmo3339-drag-handle::before{
+      content:""!important;position:absolute;inset:11px 13px;
+      background:radial-gradient(circle,#555 2px,transparent 2.5px) 0 0/7px 7px!important;
+      background-repeat:repeat!important
+    }
+    #crmoGalleryManagerDialog .crmo3339-drag-handle:hover{background:#f1f1f1!important}
+    #crmoGalleryManagerDialog .crmo3339-drag-handle:active{cursor:grabbing!important}
+    #crmoGalleryManagerDialog .crmo3263-manager-row.is-sorting{
+      opacity:.85!important;box-shadow:0 14px 32px rgba(0,0,0,.14)!important;transform:scale(1.005)
+    }
+    @media(max-width:900px){
+      #crmo3047GalleryEditor #crmo3047GalleryTiles.is-brand-editor-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+    }
+    @media(max-width:640px){
+      #crmo3047GalleryEditor #crmo3047GalleryTiles.is-brand-editor-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    }
     @media(max-width:900px) {
       .crmo3047-gallery-desc.crmo-ux-mobile-desc-hidden {display:none!important}
     }
@@ -426,34 +464,6 @@ ${bootMarker}`);
       document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
         button.setAttribute('aria-label','עריכת הגלריה');
         button.title='עריכת הגלריה';
-      });
-      document.querySelectorAll('section.crmo3047-gallery[id]').forEach(section=>{
-        const manager=window.CRMO_QUICK_MANAGER;
-        const state=manager?.get(section.id);
-        const copy=section.querySelector('.crmo3047-gallery-copy');
-        if(!state||!copy)return;
-        let quick=copy.querySelector('.crmo-ux-quick-flags');
-        if(quick)return;
-        quick=document.createElement('div');quick.className='crmo-ux-quick-flags';
-        const names={visible:'כללי',visibleMobile:'מובייל',visibleDesktop:'דסקטופ',showExpandedButton:'עבודות נוספות'};
-        Object.keys(names).forEach(flag=>{
-          const label=document.createElement('label');
-          const proxy=document.createElement('input');
-          proxy.type='checkbox';proxy.checked=state[flag];
-          proxy.disabled=false;
-          label.append(proxy,document.createTextNode(names[flag]));
-          proxy.addEventListener('change',async()=>{
-            proxy.disabled=true;
-            try{await manager.set(section.id,flag,proxy.checked)}
-            finally {
-              const next=manager.get(section.id);
-              proxy.checked=!!next?.[flag];
-              proxy.disabled=false;
-            }
-          });
-          quick.append(label);
-        });
-        copy.append(quick);
       });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
