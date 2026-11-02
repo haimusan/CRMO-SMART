@@ -30,6 +30,7 @@
         </div>
       </div>
       <div class="crmo-auth-modal__body">
+<div class="crmo-client-tools" style="padding:16px 0 20px;margin-bottom:18px;border-bottom:1px solid #ddd"><p style="margin:0 0 6px;font-size:16px">SPRINT — סטודיו לפרינט ולדיגיטל</p><p style="margin:0 0 12px;font-size:13px;line-height:1.6">העלאת עיצוב, בחירת פריסה והורדת התוצאה.</p><a href="https://sprint-print-studio.boochin593516.chatgpt.site/?client=1" target="_blank" rel="noopener" style="display:inline-block;padding:10px 20px;background:#c0fa67;color:#21362e;text-decoration:none">כניסה ל־SPRINT ↗</a><p style="margin:8px 0 0;font-size:11px">ללקוחות שקיבלו הרשאת גישה · נפתח בחלון נפרד</p></div>
         <div class="crmo-auth-modal__modebtns" aria-label="בחירת פעולה">
           <button type="button" class="crmo-auth-modal__modebtn is-active" data-auth-mode="login">כניסה</button>
           <button type="button" class="crmo-auth-modal__modebtn" data-auth-mode="register">הרשמה</button>
