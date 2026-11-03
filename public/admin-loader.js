@@ -231,7 +231,7 @@ ${bootMarker}`);
       renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
       renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;`;
   html=html.replace('  function makeDedicatedGalleryUrl(id) {', "  function makeDedicatedGalleryUrl(id) {\n    const shared=window.CRMO_ROUTES?.shareURL(id);\n    if(shared)return shared;");
-  html=html.replace('  function getSuperSubButtonLabel(slotIndex) {', "  function getSuperSubButtonLabel(slotIndex) {\n    if(slotIndex===0)return 'POS CHOSEN · עבודות נבחרות';");
+  html=html.replace('  function getSuperSubButtonLabel(slotIndex) {', "  function getSuperSubButtonLabel(slotIndex) {\n    if(slotIndex===0)return 'עבודות נבחרות';");
   html=html.replace('    const superSubs = getSuperSubGalleries();', '    const superSubs = getSuperSubGalleries().filter(g=>editEnabled||g.meta?.visible!==false);');
   html=html.replace('btn.textContent = getSuperSubButtonLabel(slotIndex);','btn.textContent = getSuperSubButtonLabel(Number(gallery.galleryId.slice(SUPER_SUB_PREFIX.length))-1);');
   html=html.replace('    const selectedCompact =', '    if(window.CRMO_ROUTES?.current())return Math.min(MAX_TILES_PER_GALLERY,(gallery?.tiles||[]).length);\n    const selectedCompact =');
