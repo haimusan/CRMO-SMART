@@ -29,13 +29,18 @@ test('a failed database write is surfaced without an unconditional retry',async(
  await assert.rejects(save({...args(database(),'revision-1','newer'),client}),/permission denied/);assert.equal(calls,1);
 });
 test('loader replaces legacy blind write and tracks the loaded cloud revision',async()=>{
- const html=fs.readFileSync('../crmo-private-fixtures/CRMO_v3286.html','utf8').replace('function renderGalleryStack()', 'function renderGalleryStackContents()');let patched;
+ const html=fs.readFileSync(process.env.CRMO_EDITOR_FIXTURE||'../crmo-private-fixtures/CRMO_v3286.html','utf8').replace('function renderGalleryStack()', 'function renderGalleryStackContents()');let patched;
+ const bytes=Buffer.from(html),version=html.match(/const VERSION\s*=\s*['"]CRMO_v(\d+)/)[1];
+ const manifest={path:'releases/CRMO_v'+version+'.html',version,bytes:bytes.length,sha256:require('node:crypto').createHash('sha256').update(bytes).digest('hex')};
  const context={URL,URLSearchParams,Date,console,window:{location:{href:'https://www.crmo.co.il/admin/?dev=move-projects',search:'?dev=move-projects'},CRMO_ROOT_URL:'https://www.crmo.co.il/',CRMO_CONFIG:{url:'https://example.com',release:'3314',anonKey:'public-key'}},document:{getElementById(){return {setAttribute(){}}}},fetch:async()=>({ok:true,json:async()=>({path:'releases/CRMO_v3288.html'})}),DOMParser:class {parseFromString(text){patched=text;throw Error('capture')}}};
+ context.window.CRMO_CONFIG.release=version;
+ context.crypto=require('node:crypto').webcrypto;context.Uint8Array=Uint8Array;context.TextDecoder=TextDecoder;
+ context.fetch=async()=>({ok:true,json:async()=>manifest});
  context.window.CRMOAuthBridge={
   ready:Promise.resolve(),isLoggedIn:()=>true,canManage:()=>true,
   getSupabaseClient:()=>({
    auth:{getSession:async()=>({data:{session:{access_token:'test'}}})},
-   storage:{from:()=>({download:async()=>({data:{text:async()=>html}})})}
+   storage:{from:()=>({download:async()=>({data:new Blob([bytes])})})}
   })
  };
  await vm.runInNewContext(fs.readFileSync('public/admin-loader.js','utf8'),context);
