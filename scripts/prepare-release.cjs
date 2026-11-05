@@ -15,3 +15,5 @@ for(const file of ['index.html','admin/index.html']){
 const manifest={version,path:'releases/CRMO_v'+version+'.html',sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length,contentRow:'main__multi_gallery_demo'};
 fs.writeFileSync('releases/'+version+'.json',JSON.stringify(manifest,null,2)+'\n');
 console.log(JSON.stringify(manifest));
+require('node:child_process').execFileSync(process.execPath,['scripts/sync-display-contract.cjs'],{stdio:'inherit'});
+require('node:child_process').execFileSync(process.execPath,['scripts/generate-gallery-pages.cjs'],{stdio:'inherit'});
