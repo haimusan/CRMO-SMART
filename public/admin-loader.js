@@ -586,6 +586,22 @@ ${bootMarker}`);
     framingScript.src=new URL('public/crmo-smart-framing.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
     editorDocument.body.append(framingScript);
   }
+  // Share the public mobile navigation assets with the private editor.
+  // Do not replace editor navigation or alter privileged controls.
+  if (editorDocument.querySelector('header nav.nav')) {
+    if (!editorDocument.querySelector('link[href*="public/mobile.css"]')) {
+      const mobileStyle=editorDocument.createElement('link');
+      mobileStyle.rel='stylesheet';
+      mobileStyle.href=new URL('public/mobile.css?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+      editorDocument.head.append(mobileStyle);
+    }
+    if (!editorDocument.querySelector('script[src*="public/mobile.js"]')) {
+      const mobileScript=editorDocument.createElement('script');
+      mobileScript.defer=true;
+      mobileScript.src=new URL('public/mobile.js?v='+window.CRMO_CONFIG.release,window.CRMO_ROOT_URL).href;
+      editorDocument.body.append(mobileScript);
+    }
+  }
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   if(!bridge.isLoggedIn()||!bridge.canManage())throw Error('הרשאת הניהול השתנתה. יש להתחבר מחדש.');
   // The public viewer must not keep polling against its detached DOM after promotion.
