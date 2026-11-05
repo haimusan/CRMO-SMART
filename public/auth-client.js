@@ -83,7 +83,7 @@
   signUpWithPassword(email,password,keep=true,profile={}){remember(keep);return action(()=>client.auth.signUp({email:String(email).trim(),password,options:{data:profile,emailRedirectTo:redirect()}}));},
   requestPasswordReset(email){return action(()=>client.auth.resetPasswordForEmail(String(email).trim(),{redirectTo:redirect()}));},
   loginWithProvider(provider){if(location.protocol==='file:')return Promise.resolve({ok:false,message:'לכניסה חברתית יש לפתוח את האתר בכתובת אינטרנט.'});return action(()=>client.auth.signInWithOAuth({provider,options:{redirectTo:redirect()}}));},
-  logout(){return action(()=>client.auth.signOut().then(result=>({...result,data:{session:null}})));},
+  async logout(){try{await fetch(sprintURL+'api/logout',{method:'POST',credentials:'include'});}catch(_){}return action(()=>client.auth.signOut().then(result=>({...result,data:{session:null}})));},
   openSprint,
   getRememberPreference:()=>localStorage.getItem('CRMO_AUTH_REMEMBER_PREF')!=='0',
   isLoggedIn:()=>!!session,getSession:()=>session,getUserEmail:()=>session?.user?.email||'',
