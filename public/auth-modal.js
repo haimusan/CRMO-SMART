@@ -197,11 +197,16 @@
   }
 
   function setLoggedInState(isLoggedIn, email){
+    const tools=wrap.querySelector('.crmo-client-tools');
+    if(tools)tools.hidden=!isLoggedIn;
     els.loggedInState.classList.toggle('is-visible', !!isLoggedIn);
     els.loggedInState.textContent = isLoggedIn ? ('מחובר כ־' + (email || 'אדמין')) : '';
   }
 
   wrap.querySelectorAll('[data-auth-close]').forEach(node => node.addEventListener('click', close));
+  wrap.querySelector('.crmo-client-tools a')?.addEventListener('click',event=>{
+    event.preventDefault();void window.CRMOAuthBridge?.openSprint();
+  });
   els.form.addEventListener('submit', submitForm);
   els.modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.authMode)));
   els.passwordToggle.addEventListener('click', () => { passwordVisible = !passwordVisible; updatePasswordUI(); });

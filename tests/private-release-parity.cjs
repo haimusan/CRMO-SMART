@@ -1,5 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const file=process.argv[2]||'../crmo-private-fixtures/CRMO_v3335.html';
+const expected=process.argv[3]||file.match(/CRMO_v\d+/)?.[0];
+assert(expected, 'Expected release must be supplied or present in the filename');
 const original=fs.readFileSync(file,'utf8'),html=original.replace(/\r\n/g,'\n');
 const loader=fs.readFileSync('public/admin-loader.js','utf8');
 const start=loader.indexOf('  const persistPattern'),end=loader.indexOf('  // Release files');
@@ -9,5 +11,5 @@ assert(scripts>5);assert(c.html.includes('window.CRMOContentSync.updateIfCurrent
 assert(c.html.includes('contentFingerprint() === cloudContentBaseline'));assert(c.html.includes('renderGallery:(g,i)=>renderSingleGallerySection'));
 assert(c.html.includes('const shared=window.CRMO_ROUTES?.shareURL(id)'));
 assert.equal((c.html.match(/let cloudContentRevision = '';/g)||[]).length,1);
-const versions=[...original.matchAll(/const VERSION\s*=\s*['"]([^'"]+)/g)].map(m=>m[1]);assert(versions.length>=2);assert(versions.every(v=>v==='CRMO_v3335'));
+const versions=[...original.matchAll(/const VERSION\s*=\s*['"]([^'"]+)/g)].map(m=>m[1]);assert(versions.length>=2);assert(versions.every(v=>v===expected), 'Embedded editor versions must match the release');
 console.log(JSON.stringify({file,scripts,embeddedVersions:versions,sha256:crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),status:'PASS'}));

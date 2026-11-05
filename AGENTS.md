@@ -19,6 +19,9 @@
 
 # Content synchronization
 
+- Public display and the saved admin display MUST use the same `CRMO_CONFIG.contentRow`, content revision, gallery order, media order, captions and visibility. Authentication changes editing capabilities only; it must never select a second content dataset. Unsaved editor drafts must never become public automatically.
+- Client entry verifies the CRMO session before navigating to the current tested SPRINT interface. Do not send access tokens or passwords in URLs. SPRINT's server access restrictions remain in force.
+
 - Site-wide navigation rule: header and mobile-menu links navigate to sections of the complete home page (`/#exhibitions`, for example). They do not open standalone galleries.
 - External share links and the admin Copy Link action use the standalone gallery path (`/exhibitions/`, for example). Preserve this distinction in every gallery, including all POS children.
 - A home-page hash stays internal. Removing `view=public` must not convert that hash into a standalone path.

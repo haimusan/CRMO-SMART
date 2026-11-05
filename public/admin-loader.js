@@ -26,10 +26,22 @@
   const manifest=await fetch(manifestUrl,{headers:{apikey:window.CRMO_CONFIG.anonKey,Authorization:'Bearer '+token},cache:'no-store'});
   if(!manifest.ok)throw Error('לא ניתן לטעון את גרסת הניהול. נסה לרענן.');
   const release=await manifest.json();
-  if(!/^releases\/CRMO_v\d+\.html$/.test(release.path))throw Error('כתובת גרסת הניהול אינה תקינה.');
+  const artifactVersion = /^releases\/CRMO_v(\d+)\.html$/.exec(release.path || '')?.[1];
+  const manifestVersion = String(release.version || release.release || '').replace(/^CRMO_v/, '');
+  if (!artifactVersion || artifactVersion !== String(window.CRMO_CONFIG.release) || manifestVersion !== artifactVersion)
+    throw Error('גרסת הניהול אינה תואמת לגרסת האתר. הטעינה נעצרה; יש להשלים פרסום מסונכרן.');
+  if (!/^[a-f0-9]{64}$/i.test(release.sha256 || '') || !Number.isSafeInteger(release.bytes) || release.bytes <= 0)
+    throw Error('חסרים נתוני אימות לקובץ הניהול.');
   const file=await client.storage.from('admin').download(release.path);
   if(file.error)throw Error('טעינת ממשק הניהול נכשלה. נסה לרענן.');
-  let html=(await file.data.text()).replace(/\r\n/g,'\n');
+  const editorBytes = await file.data.arrayBuffer();
+  const editorHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', editorBytes)), byte => byte.toString(16).padStart(2, '0')).join('');
+  if (editorBytes.byteLength !== release.bytes || editorHash !== release.sha256.toLowerCase())
+    throw Error('קובץ הניהול אינו תואם לחתימת הגרסה. הטעינה נעצרה.');
+  let html = new TextDecoder().decode(editorBytes).replace(/\r\n/g, '\n');
+  const embeddedVersions = [...html.matchAll(/const VERSION\s*=\s*['"]CRMO_v(\d+)['"]/g)].map(match => match[1]);
+  if (embeddedVersions.length < 2 || embeddedVersions.some(version => version !== artifactVersion))
+    throw Error('הגרסה הפנימית של קובץ הניהול אינה תואמת לגרסה המוצהרת.');
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
 
   // Patch the private legacy editor before execution. Never clear existing drafts.

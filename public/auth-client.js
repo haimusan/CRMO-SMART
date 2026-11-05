@@ -6,6 +6,18 @@
  const adminURL=new URL('admin/',root).href;
  const onAdminPage=location.pathname.startsWith(new URL('admin/',root).pathname);
  const canManage=()=>['admin','owner'].includes(role);
+ const sprintURL='https://sprint-print-studio.boochin593516.chatgpt.site/SPRINT_DEV.html';
+ let sprintRequested=false;
+ async function openSprint(){
+  if(!session){sprintRequested=true;window.CRMOAuthModal?.open('login');return false;}
+  const verified=await client.auth.getUser();
+  if(verified.error||verified.data?.user?.id!==session?.user?.id){
+   await update(null);sprintRequested=true;window.CRMOAuthModal?.open('login');return false;
+  }
+  sprintRequested=false;
+  // No credentials in links. SPRINT retains its own server-enforced audience.
+  location.assign(sprintURL);return true;
+ }
  let editorLoading=false;
  function enableEditor(){
   if(onAdminPage||editorLoading||!canManage())return;
@@ -50,6 +62,7 @@
   }catch(_){if(current===generation)role=session?'registered':'viewer';}
   if(current!==generation)return;
   render();resolveReady();
+  if(session&&sprintRequested){void openSprint();return;}
   // Role, rather than the entry URL or a public-view query, selects capabilities.
   enableEditor();
  }
@@ -66,6 +79,7 @@
   requestPasswordReset(email){return action(()=>client.auth.resetPasswordForEmail(String(email).trim(),{redirectTo:redirect()}));},
   loginWithProvider(provider){if(location.protocol==='file:')return Promise.resolve({ok:false,message:'לכניסה חברתית יש לפתוח את האתר בכתובת אינטרנט.'});return action(()=>client.auth.signInWithOAuth({provider,options:{redirectTo:redirect()}}));},
   logout(){return action(()=>client.auth.signOut().then(result=>({...result,data:{session:null}})));},
+  openSprint,
   getRememberPreference:()=>localStorage.getItem('CRMO_AUTH_REMEMBER_PREF')!=='0',
   isLoggedIn:()=>!!session,getSession:()=>session,getUserEmail:()=>session?.user?.email||'',
   getSupabaseClient:()=>client,getRole:()=>role,canManage,ready,
@@ -76,6 +90,7 @@
   subscription=client.auth.onAuthStateChange((_event,next)=>{setTimeout(()=>update(next),0);})?.data?.subscription;
   client.auth.getSession().then(({data})=>update(data?.session)).catch(()=>update(null));
  }else{resolveReady();}
- for(const id of ['crmo-user-indicator','login-trigger'])document.getElementById(id)?.addEventListener('click',event=>{event.preventDefault();window.CRMOAuthModal?.open('login');});
+ document.getElementById('login-trigger')?.addEventListener('click',event=>{event.preventDefault();void openSprint();});
+ document.getElementById('crmo-user-indicator')?.addEventListener('click',event=>{event.preventDefault();window.CRMOAuthModal?.open('login');});
  if(new URLSearchParams(location.search).get('login')==='1')setTimeout(()=>window.CRMOAuthModal?.open('login'),0);
 })();
