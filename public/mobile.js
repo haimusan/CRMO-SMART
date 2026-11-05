@@ -27,18 +27,40 @@
   toggle.addEventListener('click', () => {
     const links = menu.querySelector('nav');
     links.replaceChildren();
-    nav.querySelectorAll('a:not(.logo):not(#crmo-user-indicator)').forEach(original => {
+    // Mobile is the complete portfolio directory, independent of home-page visibility.
+    // Keep the desktop navigation untouched.
+    const routes = window.CRMO_ROUTES?.entries || [];
+    const excluded = new Set(['intro-more','pos','pos-sub-1','pos-sub-2','pos-sub-3','pos-sub-4','pos-sub-5','pos-sub-6','pos-sub-7','pos-sub-8']);
+    const added = new Set();
+    const addLink = (title, href, original) => {
+      if (!title || added.has(href)) return;
+      added.add(href);
       const link = document.createElement('a');
-      link.textContent = original.textContent;
-      link.href = original.href;
-      link.addEventListener('click', event => {
+      link.textContent = title;
+      link.href = href;
+      if (original) link.addEventListener('click', event => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
         closeMenu();
         original.click();
       });
+      else link.addEventListener('click', closeMenu);
       links.append(link);
-    });
+    };
+    if (routes.length) {
+      routes.forEach(([path,id,title]) => {
+        if (excluded.has(id)) return;
+        const section = document.getElementById(id);
+        if (section?.dataset?.published === 'false' || section?.dataset?.unpublished === 'true') return;
+        addLink(title, window.CRMO_ROUTES.href(id));
+      });
+    } else {
+      nav.querySelectorAll('a:not(.logo):not(#crmo-user-indicator)').forEach(original =>
+        addLink(original.textContent.trim(), original.href, original));
+    }
+    // Account access remains available independently of gallery navigation.
+    const login = nav.querySelector('#login-trigger');
+    if (login) addLink(login.textContent.trim(), login.href, login);
     toggle.setAttribute('aria-expanded', 'true');
     document.body.classList.add('crmo-menu-open');
     menu.showModal();
