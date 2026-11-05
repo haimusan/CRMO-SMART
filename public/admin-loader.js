@@ -253,6 +253,11 @@ ${bootMarker}`);
     return crmoRenderCuratedGrid(grid,section,gallery,galleryIndex,editEnabled,getGalleryLookupId(gallery));
   }
 `+html.slice(displayGridEnd);
+  const navigationStart=html.indexOf('  function getNavigableTileIndexes(');
+  const navigationEnd=html.indexOf('\n  function openLightbox(',navigationStart);
+  if(navigationStart<0||navigationEnd<0)throw Error('מבנה ניווט הפרויקטים השתנה.');
+  const navigation=html.slice(navigationStart,navigationEnd);
+  html=html.slice(0,navigationStart)+navigation.replace('    const indexes = [];',"    const indexes = [];\n    const shownHome = getExpandedRequestedManagerId() ? null : crmoHomeTileIndexes.get(galleryIndex);").replace('      if (tile?.isVisible === false) return;','      if (tile?.isVisible === false) return;\n      if (shownHome && !shownHome.includes(tileIndex)) return;')+html.slice(navigationEnd);
 
   // Apply the same standalone-gallery contract to the authenticated legacy renderer.
   const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,

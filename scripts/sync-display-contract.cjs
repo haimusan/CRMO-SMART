@@ -12,7 +12,7 @@ for(const file of ['index.html','admin/index.html']){
  let html=fs.readFileSync(file,'utf8').replace(/<script src="(?:\.\.\/)?public\/display-contract\.js\?v=\d+"><\/script>/g,'');
  const version=fs.readFileSync('public/config.js','utf8').match(/"release":"(\d+)"/)[1];
  const prefix=file.startsWith('admin/')?'../':'';
- html=html.replace(/(<script src="(?:\.\.\/)?public\/config\.js\?v=\d+"><\/script>)/,'$1<script src="'+prefix+'public/display-contract.js?v='+version+'"></script>');
+ html=html.replace(/(<script src="(?:\.\.\/)?public\/config\.js\?v=[^"<>]+"><\/script>)/,'$1<script src="'+prefix+'public/display-contract.js?v='+version+'"></script>');
  html=html.replace(/public\/(config|auth-client|admin-loader)\.js\?v=[^"<>]+/g,'public/$1.js?v='+version+'-display-parity');
  fs.writeFileSync(file,html);
 }
