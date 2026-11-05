@@ -43,6 +43,7 @@ test('loader replaces legacy blind write and tracks the loaded cloud revision',a
    storage:{from:()=>({download:async()=>({data:new Blob([bytes])})})}
   })
  };
+ vm.runInNewContext(fs.readFileSync('public/display-contract.js','utf8'),context);
  await vm.runInNewContext(fs.readFileSync('public/admin-loader.js','utf8'),context);
  assert.ok(patched,'loader should validate and patch the legacy editor');
  assert.ok(patched.includes('cloudContentRevision = next.__cloudRevision'));
