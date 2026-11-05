@@ -17,7 +17,7 @@
   try{
    const response=await fetch(sprintURL+'api/sso',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:accessToken})});
    if(!response.ok){let message='לא ניתן לפתוח את SPRINT. בדוק את החיבור ונסה שוב.';try{message=(await response.json()).error||message;}catch{}window.CRMOAuthModal?.showFeedback(message,'error');return false;}
-   location.assign(sprintURL);return true;
+   location.replace(sprintURL);return true;
   }catch(_){window.CRMOAuthModal?.showFeedback('החיבור ל־SPRINT לא הושלם. בדוק את חיבור האינטרנט ונסה שוב.','error');return false;}
  }
  let editorLoading=false;
