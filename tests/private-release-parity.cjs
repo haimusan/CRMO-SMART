@@ -5,7 +5,7 @@ assert(expected, 'Expected release must be supplied or present in the filename')
 const original=fs.readFileSync(file,'utf8'),html=original.replace(/\r\n/g,'\n');
 const loader=fs.readFileSync('public/admin-loader.js','utf8');
 const start=loader.indexOf('  const persistPattern'),end=loader.indexOf('  // Release files');
-const c={html,URLSearchParams,window:{location:{search:''}}};vm.createContext(c);vm.runInContext(loader.slice(start,end),c);
+const c={html,URLSearchParams,window:{location:{search:''}}};vm.createContext(c);vm.runInContext(fs.readFileSync('public/display-contract.js','utf8'),c);vm.runInContext(loader.slice(start,end),c);
 let scripts=0;for(const m of c.html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))if(m[1].trim()){new vm.Script(m[1]);scripts++;}
 assert(scripts>5);assert(c.html.includes('window.CRMOContentSync.updateIfCurrent'));assert(c.html.includes('cloudContentSync?.publish(committedRevision)'));
 assert(c.html.includes('contentFingerprint() === cloudContentBaseline'));assert(c.html.includes('renderGallery:(g,i)=>renderSingleGallerySection'));

@@ -23,7 +23,7 @@
   if(onAdminPage||editorLoading||!canManage())return;
   editorLoading=true;
   const script=document.createElement('script');
-  script.src=new URL('public/admin-loader.js?v='+config.release,root).href;
+  script.src=new URL('public/admin-loader.js?v='+(config.displayRevision||config.release),root).href;
   script.onerror=()=>{editorLoading=false;script.remove();};
   document.body.append(script);
  }

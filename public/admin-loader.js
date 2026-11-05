@@ -237,6 +237,23 @@ ${bootMarker}`);
   html = html.replace(brandClassMarker, "${isBrandsGallery ? ' is-brands-gallery' : ''}${isBrandsGallery && visibleTileCount >= 18 && (gallery.tiles || []).filter(tile => tile?.isVisible !== false && ((tile.media || []).some(media => media?.src && media?.isVisible !== false) || tile.logoSrc || tile.brandConfig?.logoSrc)).length >= 15 ? ' is-brand-wall-ready' : ''}`;");
   html = html.replace('Math.min(STACK_TILE_LIMIT, visibleTileCount)', 'Math.min(isBrandsGallery ? BRANDS_STACK_TILE_LIMIT : STACK_TILE_LIMIT, visibleTileCount)');
 
+  // Display content must match the public viewer. Hidden/empty editing slots
+  // remain in the gallery editor, never in the administrative page preview.
+  const display=window.CRMO_DISPLAY_SOURCE;
+  if(!display?.curation||!display?.limit)throw Error('כללי התצוגה המשותפים לא נטענו. רענן את העמוד.');
+  const displayGridStart=html.indexOf('  function renderGalleryGridTiles(');
+  const displayGridEnd=html.indexOf('\n  function getAboutDisplayMode(',displayGridStart);
+  const displayLimitStart=html.indexOf('  function getExpandedTileLimitFor(');
+  const displayLimitEnd=html.indexOf('\n  function getExpandedTileCountForManagerId(',displayLimitStart);
+  if(displayGridStart<0||displayGridEnd<0||displayLimitStart<0||displayLimitEnd<0)throw Error('מבנה התצוגה השתנה. העורך נעצר לשמירת התאימות.');
+  html=html.slice(0,displayLimitStart)+display.limit+html.slice(displayLimitEnd);
+  html=html.slice(0,displayGridStart)+display.curation+`
+  function renderGalleryGridTiles(grid,gallery,galleryIndex,renderLimit,editEnabled){
+    const section=grid.closest('.crmo3047-gallery');
+    return crmoRenderCuratedGrid(grid,section,gallery,galleryIndex,editEnabled,getGalleryLookupId(gallery));
+  }
+`+html.slice(displayGridEnd);
+
   // Apply the same standalone-gallery contract to the authenticated legacy renderer.
   const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
       renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
@@ -262,6 +279,17 @@ ${bootMarker}`);
   const editorFeaturesScript=editorDocument.createElement('script');
   editorFeaturesScript.textContent="(()=>{\n    function attach(){\n      const galleryTools=document.querySelector('#crmo3047GalleryEditor .crmo3047-gallery-tools-row');\n      if(galleryTools&&!document.getElementById('crmo3047CompactCount')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='מספר פריטים בתצוגת הגלריה';\n        const select=document.createElement('select');select.id='crmo3047CompactCount';\n        for(const count of [6,9,12,15,18,21,24,27]){\n          const option=document.createElement('option');option.value=String(count);option.textContent=String(count)+' פריטים';select.append(option);\n        }\n        label.append(caption,select);\n        galleryTools.prepend(label);\n      }\n      const tileTop=document.querySelector('#crmo3047TileEditor .crmo3047-tile-editor-top');\n      if(tileTop&&!document.getElementById('crmo3047TileMoveTarget')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='העבר לגלריה אחרת';\n        const select=document.createElement('select');select.id='crmo3047TileMoveTarget';select.setAttribute('aria-label','העבר לגלריה אחרת');\n        label.append(caption,select);tileTop.append(label);\n      }\n    }\n    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();\n  })();";
   editorDocument.body.append(editorFeaturesScript);
+  const clientEntryScript=editorDocument.createElement('script');
+  clientEntryScript.textContent=`document.addEventListener('click',async event=>{
+    if(!event.target.closest?.('#login-trigger'))return;
+    event.preventDefault();event.stopImmediatePropagation();
+    const bridge=window.CRMOAuthBridge;
+    if(!bridge?.isLoggedIn?.()){window.CRMOAuthModal?.open('login');return;}
+    const result=await bridge.getSupabaseClient().auth.getUser();
+    if(result.error||!result.data?.user){window.CRMOAuthModal?.open('login');return;}
+    location.assign('https://sprint-print-studio.boochin593516.chatgpt.site/SPRINT_DEV.html');
+  },true);`;
+  editorDocument.body.append(clientEntryScript);
 
   // Replace the bundled resolver below with the shared resolver before editor boot.
   // The external folder uploader is obsolete; existing cloud assets remain untouched.
