@@ -54,7 +54,7 @@
   const gallery=galleries.find(g=>g.galleryId===route.galleryId);
   const heading=document.createElement('h1');heading.className='crmo-route-name';heading.textContent=route.title;stack.appendChild(heading);
   const allowed=editable || (route.kind==='section' || (route.kind==='all'?visible('pos'):
-    gallery && gallery.meta?.published!==false && gallery.meta?.unpublished!==true));
+    gallery && gallery.meta?.visible!==false && gallery.meta?.published!==false && gallery.meta?.unpublished!==true && visible(route.galleryId)!==false));
   if(!allowed){
    const message=document.createElement('p');message.setAttribute('role','status');message.textContent='הגלריה אינה זמינה לצפייה כרגע.';stack.appendChild(message);
   }else if(route.kind==='all')renderAll();

@@ -288,7 +288,8 @@ ${bootMarker}`);
   clientEntryScript.textContent=`document.addEventListener('click',event=>{
     if(!event.target.closest?.('#login-trigger'))return;
     event.preventDefault();event.stopImmediatePropagation();
-    location.assign(new URL('?sprint=1',window.CRMO_ROOT_URL).href);
+    if(window.CRMO_OWNER_SPRINT_OPEN)void window.CRMO_OWNER_SPRINT_OPEN();
+    else window.open('https://sprint.crmo.co.il/','_blank','noopener,noreferrer');
   },true);`;
   editorDocument.body.append(clientEntryScript);
 
@@ -600,6 +601,8 @@ ${bootMarker}`);
   }
   const editorHTML='<!DOCTYPE html>'+editorDocument.documentElement.outerHTML;
   if(!bridge.isLoggedIn()||!bridge.canManage())throw Error('הרשאת הניהול השתנתה. יש להתחבר מחדש.');
+  // Preserve the checked SSO entry across the legacy editor document replacement.
+  window.CRMO_OWNER_SPRINT_OPEN=()=>bridge.openSprint();
   // The public viewer must not keep polling against its detached DOM after promotion.
   window.CRMOContentSync?.stop?.();
   bridge.dispose();delete window.CRMOAuthBridge;

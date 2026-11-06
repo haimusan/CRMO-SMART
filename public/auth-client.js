@@ -3,23 +3,28 @@
  const config=window.CRMO_CONFIG;let session=null,role='viewer',generation=0,disposed=false,subscription=null;
  const client=window.supabase?.createClient(config.url,config.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const root=window.CRMO_ROOT_URL||new URL('./',location.href).href;
- const adminURL=new URL('admin/',root).href;
  const onAdminPage=location.pathname.startsWith(new URL('admin/',root).pathname);
  const canManage=()=>['admin','owner'].includes(role);
  const sprintRequested=new URLSearchParams(location.search).get('sprint')==='1';
  const sprintURL='https://sprint.crmo.co.il/';
- async function openSprint(){
-  if(!session){window.CRMOAuthModal?.open('login');return false;}
+ async function openSprint({newTab=true}={}){
+  // Open synchronously while handling the click: browsers block popups opened after an async SSO call.
+  const tab=newTab?window.open('about:blank','_blank'):null;
+  if(newTab&&!tab){window.CRMOAuthModal?.showFeedback('הדפדפן חסם פתיחת טאב. אפשר פתיחת חלונות עבור CRMO ונסה שוב.','error');return false;}
+  if(tab)tab.opener=null;
+  const navigate=()=>{if(tab)tab.location.replace(sprintURL);else location.replace(sprintURL);return true;};
+  const fail=message=>{if(tab&&!tab.closed)tab.close();window.CRMOAuthModal?.showFeedback(message,'error');return false;};
+  // Visitors and future client accounts see SPRINT's dedicated three-field sign-in.
+  if(!session||role!=='owner')return navigate();
   const verified=await client.auth.getUser();
-  if(verified.error||verified.data?.user?.id!==session?.user?.id){await update(null);window.CRMOAuthModal?.showFeedback('צריך להתחבר מחדש ל־CRMO.','error');return false;}
-  if(role!=='owner'){window.CRMOAuthModal?.showFeedback('הכניסה לממשק SPRINT מוגבלת כרגע למנהל הסטודיו.','error');return false;}
+  if(verified.error||verified.data?.user?.id!==session?.user?.id){await update(null);return navigate();}
   const current=await client.auth.getSession(),accessToken=current.data?.session?.access_token;
-  if(current.error||!accessToken||current.data.session.user?.id!==verified.data.user.id){window.CRMOAuthModal?.showFeedback('לא נמצא חיבור פעיל. התחבר מחדש ל־CRMO.','error');return false;}
+  if(current.error||!accessToken||current.data.session.user?.id!==verified.data.user.id)return navigate();
   try{
    const response=await fetch(sprintURL+'api/sso',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:accessToken})});
-   if(!response.ok){let message='לא ניתן לפתוח את SPRINT. בדוק את החיבור ונסה שוב.';try{message=(await response.json()).error||message;}catch{}window.CRMOAuthModal?.showFeedback(message,'error');return false;}
-   location.replace(sprintURL);return true;
-  }catch(_){window.CRMOAuthModal?.showFeedback('החיבור ל־SPRINT לא הושלם. בדוק את חיבור האינטרנט ונסה שוב.','error');return false;}
+   if(!response.ok){let message='לא ניתן לפתוח את SPRINT. בדוק את החיבור ונסה שוב.';try{message=(await response.json()).error||message;}catch{}return fail(message);}
+   return navigate();
+  }catch(_){return fail('החיבור ל־SPRINT לא הושלם. בדוק את חיבור האינטרנט ונסה שוב.');}
  }
  let editorLoading=false;
  function enableEditor(){
@@ -34,12 +39,8 @@
  function render(){
   document.getElementById('crmo-user-indicator')?.classList.toggle('is-authed',!!session);
   window.CRMOAuthModal?.setLoggedInState(!!session,session?.user?.email||'');
-  let link=document.getElementById('crmo-admin-entry');
-  if(!link&&canManage()&&!onAdminPage){
-   link=document.createElement('a');link.id='crmo-admin-entry';link.href=adminURL;link.textContent='ממשק ניהול';
-   document.getElementById('login-trigger')?.insertAdjacentElement('afterend',link);
-  }
-  if(link)link.hidden=!canManage();
+  // Editing appears automatically after a verified server role; never flash a redundant link.
+  document.getElementById('crmo-admin-entry')?.remove();
   window.dispatchEvent(new CustomEvent('crmo:account',{detail:{role,canManage:canManage(),email:session?.user?.email||''}}));
  }
  async function update(next){
@@ -65,7 +66,7 @@
   }catch(_){if(current===generation)role=session?'registered':'viewer';}
   if(current!==generation)return;
   render();resolveReady();
-  if(sprintRequested&&await openSprint())return;
+  if(sprintRequested&&await openSprint({newTab:false}))return;
   if(current!==generation)return;
   // Role, rather than the entry URL or a public-view query, selects capabilities.
   enableEditor();
