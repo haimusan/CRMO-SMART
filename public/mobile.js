@@ -61,8 +61,6 @@
     // Account access remains available independently of gallery navigation.
     const login = nav.querySelector('#login-trigger');
     if (login) addLink(login.textContent.trim(), login.href, login);
-    const sprint = nav.querySelector('#crmo-sprint-entry');
-    if (sprint && !sprint.hidden) addLink('SPRINT', sprint.href, sprint);
     toggle.setAttribute('aria-expanded', 'true');
     document.body.classList.add('crmo-menu-open');
     menu.showModal();

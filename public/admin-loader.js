@@ -285,14 +285,10 @@ ${bootMarker}`);
   editorFeaturesScript.textContent="(()=>{\n    function attach(){\n      const galleryTools=document.querySelector('#crmo3047GalleryEditor .crmo3047-gallery-tools-row');\n      if(galleryTools&&!document.getElementById('crmo3047CompactCount')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='מספר פריטים בתצוגת הגלריה';\n        const select=document.createElement('select');select.id='crmo3047CompactCount';\n        for(const count of [6,9,12,15,18,21,24,27]){\n          const option=document.createElement('option');option.value=String(count);option.textContent=String(count)+' פריטים';select.append(option);\n        }\n        label.append(caption,select);\n        galleryTools.prepend(label);\n      }\n      const tileTop=document.querySelector('#crmo3047TileEditor .crmo3047-tile-editor-top');\n      if(tileTop&&!document.getElementById('crmo3047TileMoveTarget')){\n        const label=document.createElement('label');label.className='crmo3045-field';\n        const caption=document.createElement('span');caption.textContent='העבר לגלריה אחרת';\n        const select=document.createElement('select');select.id='crmo3047TileMoveTarget';select.setAttribute('aria-label','העבר לגלריה אחרת');\n        label.append(caption,select);tileTop.append(label);\n      }\n    }\n    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();\n  })();";
   editorDocument.body.append(editorFeaturesScript);
   const clientEntryScript=editorDocument.createElement('script');
-  clientEntryScript.textContent=`document.addEventListener('click',async event=>{
+  clientEntryScript.textContent=`document.addEventListener('click',event=>{
     if(!event.target.closest?.('#login-trigger'))return;
     event.preventDefault();event.stopImmediatePropagation();
-    const bridge=window.CRMOAuthBridge;
-    if(!bridge?.isLoggedIn?.()){window.CRMOAuthModal?.open('login');return;}
-    const result=await bridge.getSupabaseClient().auth.getUser();
-    if(result.error||!result.data?.user){window.CRMOAuthModal?.open('login');return;}
-    location.assign('https://sprint-print-studio.boochin593516.chatgpt.site/SPRINT_DEV.html');
+    location.assign(new URL('?sprint=1',window.CRMO_ROOT_URL).href);
   },true);`;
   editorDocument.body.append(clientEntryScript);
 

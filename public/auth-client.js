@@ -6,14 +6,15 @@
  const adminURL=new URL('admin/',root).href;
  const onAdminPage=location.pathname.startsWith(new URL('admin/',root).pathname);
  const canManage=()=>['admin','owner'].includes(role);
- const sprintURL='https://sprint.crmo.co.il/',sprintOwnerId='08fb07a9-822e-47b0-a530-7444b11a61ae';
+ const sprintRequested=new URLSearchParams(location.search).get('sprint')==='1';
+ const sprintURL='https://sprint.crmo.co.il/';
  async function openSprint(){
   if(!session){window.CRMOAuthModal?.open('login');return false;}
   const verified=await client.auth.getUser();
   if(verified.error||verified.data?.user?.id!==session?.user?.id){await update(null);window.CRMOAuthModal?.showFeedback('צריך להתחבר מחדש ל־CRMO.','error');return false;}
-  if(!canManage()||verified.data.user.id!==sprintOwnerId){window.CRMOAuthModal?.showFeedback('הכניסה לממשק SPRINT מוגבלת כרגע למנהל הסטודיו.','error');return false;}
+  if(role!=='owner'){window.CRMOAuthModal?.showFeedback('הכניסה לממשק SPRINT מוגבלת כרגע למנהל הסטודיו.','error');return false;}
   const current=await client.auth.getSession(),accessToken=current.data?.session?.access_token;
-  if(current.error||!accessToken){window.CRMOAuthModal?.showFeedback('לא נמצא חיבור פעיל. התחבר מחדש ל־CRMO.','error');return false;}
+  if(current.error||!accessToken||current.data.session.user?.id!==verified.data.user.id){window.CRMOAuthModal?.showFeedback('לא נמצא חיבור פעיל. התחבר מחדש ל־CRMO.','error');return false;}
   try{
    const response=await fetch(sprintURL+'api/sso',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:accessToken})});
    if(!response.ok){let message='לא ניתן לפתוח את SPRINT. בדוק את החיבור ונסה שוב.';try{message=(await response.json()).error||message;}catch{}window.CRMOAuthModal?.showFeedback(message,'error');return false;}
@@ -39,9 +40,6 @@
    document.getElementById('login-trigger')?.insertAdjacentElement('afterend',link);
   }
   if(link)link.hidden=!canManage();
-  let sprintLink=document.getElementById('crmo-sprint-entry');
-  if(!sprintLink&&!onAdminPage){sprintLink=document.createElement('a');sprintLink.id='crmo-sprint-entry';sprintLink.href=sprintURL;sprintLink.textContent='SPRINT';document.getElementById('crmo-admin-entry')?.insertAdjacentElement('afterend',sprintLink);sprintLink.addEventListener('click',event=>{event.preventDefault();void openSprint();});}
-  if(sprintLink)sprintLink.hidden=!(role==='owner'&&session?.user?.id===sprintOwnerId);
   window.dispatchEvent(new CustomEvent('crmo:account',{detail:{role,canManage:canManage(),email:session?.user?.email||''}}));
  }
  async function update(next){
@@ -67,7 +65,8 @@
   }catch(_){if(current===generation)role=session?'registered':'viewer';}
   if(current!==generation)return;
   render();resolveReady();
-  if(session&&sprintRequested){void openSprint();return;}
+  if(sprintRequested&&await openSprint())return;
+  if(current!==generation)return;
   // Role, rather than the entry URL or a public-view query, selects capabilities.
   enableEditor();
  }
@@ -95,7 +94,7 @@
   subscription=client.auth.onAuthStateChange((_event,next)=>{setTimeout(()=>update(next),0);})?.data?.subscription;
   client.auth.getSession().then(({data})=>update(data?.session)).catch(()=>update(null));
  }else{resolveReady();}
- document.getElementById('login-trigger')?.addEventListener('click',event=>{event.preventDefault();window.CRMOAuthModal?.open('login');});
+ document.getElementById('login-trigger')?.addEventListener('click',event=>{event.preventDefault();void openSprint();});
  document.getElementById('crmo-user-indicator')?.addEventListener('click',event=>{event.preventDefault();window.CRMOAuthModal?.open('login');});
  if(new URLSearchParams(location.search).get('login')==='1')setTimeout(()=>window.CRMOAuthModal?.open('login'),0);
 })();
