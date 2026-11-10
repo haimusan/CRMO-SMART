@@ -2016,6 +2016,7 @@ async function refreshPublicContent(canApply = () => true){
  }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';return false;}finally{clearTimeout(timer);}}
 // Load content on navigation or an explicit page refresh. Rebuilding the gallery
 // on window focus collapses the page and resets the visitor's scroll position.
-if(contentSync)void contentSync.check();else void refreshPublicContent();
+// Always load initial content; revision synchronization must not gate first render.
+void refreshPublicContent();
 
 })();
