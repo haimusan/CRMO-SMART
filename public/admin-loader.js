@@ -44,6 +44,14 @@
     throw Error('הגרסה הפנימית של קובץ הניהול אינה תואמת לגרסה המוצהרת.');
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
 
+  // Keep draft/hidden galleries available to authenticated editors only.
+  // The private editor is fetched after the Owner/Admin role check above.
+  const hiddenGalleryVisibility = /function isManagerItemVisible\(id\)\s*\{/g;
+  const hiddenVisibilityMatches = [...html.matchAll(hiddenGalleryVisibility)];
+  if (hiddenVisibilityMatches.length !== 1)
+    throw Error('לא ניתן לאמת את מנגנון תצוגת הגלריות במצב ניהול.');
+  html = html.replace(hiddenGalleryVisibility, match => match + '\n    if (canEdit()) return true;');
+
   // Patch the private legacy editor before execution. Never clear existing drafts.
   const persistPattern = /function persistLocal\(payload = makePayload\(galleries\)\)\s*\{\s*localWrapper = hydrateWrapperShape\(payload\) \|\| payload;\s*localStorage\.setItem\(STORAGE_KEY, JSON\.stringify\(payload\)\);\s*\}/;
   const safePersist = `function persistLocal(payload = makePayload(galleries)) {
