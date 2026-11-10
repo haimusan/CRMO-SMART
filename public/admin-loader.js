@@ -515,6 +515,24 @@ ${bootMarker}`);
         button.setAttribute('aria-label','עריכת הגלריה');
         button.title='עריכת הגלריה';
       });
+      // Private editor: make drafts visibly distinct from published galleries.
+      const projects=window.CRMO_VOTING_CONTEXT?.getProjects?.()||[];
+      document.querySelectorAll('.crmo3047-gallery[data-gallery-index]').forEach(section=>{
+        const index=Number(section.dataset.galleryIndex);
+        const gallery=Number.isInteger(index)?projects[index]:null;
+        if(!gallery)return;
+        const flags=window.CRMO_QUICK_MANAGER?.get?.(gallery.galleryId)||{};
+        const hidden=gallery.meta?.visible===false||gallery.meta?.published===false||gallery.meta?.unpublished===true||flags.visible===false;
+        const existing=section.querySelector('.crmo-dev-draft-indicator');
+        if(!hidden){existing?.remove();return;}
+        if(existing)return;
+        const mediaCount=(gallery.tiles||[]).filter(tile=>(tile.media||[]).some(media=>media?.src&&media?.isVisible!==false)).length;
+        const tag=document.createElement('span');
+        tag.className='crmo-dev-draft-indicator';
+        tag.textContent='לא מוצג באתר · '+mediaCount+' עבודות עם מדיה';
+        tag.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #bd9165;border-radius:20px;background:#fff7ed;color:#784421;font:500 12px Rubik,sans-serif';
+        (section.querySelector('.crmo3047-gallery-tools')||section.querySelector('.crmo3047-gallery-head'))?.prepend(tag);
+      });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
         const label=document.createElement('label');
