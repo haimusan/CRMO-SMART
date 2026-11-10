@@ -53,8 +53,9 @@
   const {stack,galleries,editable,visible,renderGallery,renderAll,renderAbout,renderContact,renderFooter,renderLegal}=adapter;
   const gallery=galleries.find(g=>g.galleryId===route.galleryId);
   const heading=document.createElement('h1');heading.className='crmo-route-name';heading.textContent=route.title;stack.appendChild(heading);
-  const allowed=editable || (route.kind==='section' || (route.kind==='all'?visible('pos'):
-    gallery && gallery.meta?.visible!==false && gallery.meta?.published!==false && gallery.meta?.unpublished!==true && visible(route.galleryId)!==false));
+  // Even editors must not pass a missing gallery to renderGallery (e.g. an uncurated POS MIX route).
+  const allowed=!(route.kind==='gallery' && !gallery) && (editable || (route.kind==='section' || (route.kind==='all'?visible('pos'):
+    gallery && gallery.meta?.visible!==false && gallery.meta?.published!==false && gallery.meta?.unpublished!==true && visible(route.galleryId)!==false)));
   if(!allowed){
    const message=document.createElement('p');message.setAttribute('role','status');message.textContent='הגלריה אינה זמינה לצפייה כרגע.';stack.appendChild(message);
   }else if(route.kind==='all')renderAll();
