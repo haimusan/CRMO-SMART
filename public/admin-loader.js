@@ -172,10 +172,11 @@ ${bootMarker}`);
       const state=getGalleryManagerState();
       if(!findGalleryByManagerId(id) && id!==SUPER_GALLERY_ID)return null;
       const item=state?.items?.[id]||{};
+      const meta=findGalleryByManagerId(id)?.meta||{};
       return {
-        visible:item.visible!==false,
-        visibleMobile:item.visibleMobile!==false,
-        visibleDesktop:item.visibleDesktop!==false,
+        visible:item.visible!==false && meta.visible!==false && meta.published!==false && meta.unpublished!==true,
+        visibleMobile:item.visibleMobile!==false && meta.visibleMobile!==false,
+        visibleDesktop:item.visibleDesktop!==false && meta.visibleDesktop!==false,
         showExpandedButton:item.showExpandedButton===true,
         expandedAllowed:isExpandedButtonEligible(id,item)
       };
@@ -186,9 +187,18 @@ ${bootMarker}`);
       state.items=state.items||{};
       state.items[id]=state.items[id]||{};
       state.items[id][flag]=!!enabled;
+      const gallery=findGalleryByManagerId(id);
+      if(gallery?.meta && flag!=='showExpandedButton')gallery.meta[flag]=!!enabled;
+      if(flag==='visible'){
+        // The single "show in gallery" switch controls both public layouts.
+        for(const mode of ['visibleMobile','visibleDesktop']){
+          state.items[id][mode]=!!enabled;
+          if(gallery?.meta)gallery.meta[mode]=!!enabled;
+        }
+        if(gallery?.meta)gallery.meta.visibleExpanded=!!enabled;
+      }
       setGalleryManagerState(state);
       if(flag==='showExpandedButton'){
-        const gallery=findGalleryByManagerId(id);
         if(gallery?.meta){
           gallery.meta.expandedEnabled=!!enabled;
           gallery.meta.showExpandedButton=!!enabled;
