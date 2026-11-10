@@ -422,6 +422,15 @@ ${bootMarker}`);
     .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
       filter:grayscale(1);opacity:.56;
     }
+    /* Owner/Admin-only preview: hidden galleries stay editable but are visibly unpublished. */
+    .crmo3047-gallery.crmo-dev-unpublished {
+      background:#f1f1f1!important;border-radius:14px;
+      box-shadow:inset 0 0 0 1px #d8d8d8;
+      padding-inline:16px!important;
+    }
+    .crmo3047-gallery.crmo-dev-unpublished .crmo-dev-draft-indicator {
+      border-color:#a3a3a3!important;background:#e0e0e0!important;color:#333!important;
+    }
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile,
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile-media {
       filter:grayscale(1)!important;opacity:.55!important;
@@ -533,15 +542,16 @@ ${bootMarker}`);
         if(!gallery)return;
         const flags=window.CRMO_QUICK_MANAGER?.get?.(gallery.galleryId)||{};
         const hidden=gallery.meta?.visible===false||gallery.meta?.published===false||gallery.meta?.unpublished===true||flags.visible===false;
+        section.classList.toggle('crmo-dev-unpublished',hidden);
         const existing=section.querySelector('.crmo-dev-draft-indicator');
         if(!hidden){existing?.remove();return;}
         if(existing)return;
         const mediaCount=(gallery.tiles||[]).filter(tile=>(tile.media||[]).some(media=>media?.src&&media?.isVisible!==false)).length;
         const tag=document.createElement('span');
         tag.className='crmo-dev-draft-indicator';
-        tag.textContent='לא מוצג באתר · '+mediaCount+' עבודות עם מדיה';
+        tag.textContent='לא מפורסמת · '+mediaCount+' עבודות עם מדיה';
         tag.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #bd9165;border-radius:20px;background:#fff7ed;color:#784421;font:500 12px Rubik,sans-serif';
-        (section.querySelector('.crmo3047-gallery-tools')||section.querySelector('.crmo3047-gallery-head'))?.prepend(tag);
+        (section.querySelector('.crmo3047-gallery-copy')||section.querySelector('.crmo3047-gallery-head'))?.append(tag);
       });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
