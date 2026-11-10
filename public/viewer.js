@@ -1308,7 +1308,18 @@ function getManagerItem(id) { const manager = normalizeGalleryManagerState(galle
 
 function getCurrentViewMode() { return getAboutDisplayMode(); }
 
-function isManagerItemVisible(id) { const item = getManagerItem(id); if (item.visible === false) return false; const mode = getCurrentViewMode(); if (mode === 'mobile' && item.visibleMobile === false) return false; if (mode === 'desktop' && item.visibleDesktop === false) return false; return true; }
+function isManagerItemVisible(id) {
+    // Owner/Admin preview is independent of the public visibility checkbox.
+    if (canEdit()) return true;
+    const gallery = findGalleryByManagerId(id);
+    if (gallery && (gallery.meta?.visible === false || gallery.meta?.published === false || gallery.meta?.unpublished === true)) return false;
+    const item = getManagerItem(id);
+    if (item.visible === false) return false;
+    const mode = getCurrentViewMode();
+    if (mode === 'mobile' && item.visibleMobile === false) return false;
+    if (mode === 'desktop' && item.visibleDesktop === false) return false;
+    return true;
+  }
 
 function findGalleryByManagerId(id) { return galleries.find((gallery) => getGalleryLookupId(gallery) === id || String(gallery?.galleryId || '') === id) || null; }
 

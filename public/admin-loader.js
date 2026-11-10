@@ -44,6 +44,14 @@
     throw Error('הגרסה הפנימית של קובץ הניהול אינה תואמת לגרסה המוצהרת.');
   if(!html.trimStart().toLowerCase().startsWith('<!doctype html>'))throw Error('קובץ הניהול אינו תקין.');
 
+  // Keep draft/hidden galleries available to authenticated editors only.
+  // The private editor is fetched after the Owner/Admin role check above.
+  const hiddenGalleryVisibility = /function isManagerItemVisible\(id\)\s*\{/g;
+  const hiddenVisibilityMatches = [...html.matchAll(hiddenGalleryVisibility)];
+  if (hiddenVisibilityMatches.length !== 1)
+    throw Error('לא ניתן לאמת את מנגנון תצוגת הגלריות במצב ניהול.');
+  html = html.replace(hiddenGalleryVisibility, match => match + '\n    if (canEdit()) return true;');
+
   // Patch the private legacy editor before execution. Never clear existing drafts.
   const persistPattern = /function persistLocal\(payload = makePayload\(galleries\)\)\s*\{\s*localWrapper = hydrateWrapperShape\(payload\) \|\| payload;\s*localStorage\.setItem\(STORAGE_KEY, JSON\.stringify\(payload\)\);\s*\}/;
   const safePersist = `function persistLocal(payload = makePayload(galleries)) {
@@ -164,10 +172,11 @@ ${bootMarker}`);
       const state=getGalleryManagerState();
       if(!findGalleryByManagerId(id) && id!==SUPER_GALLERY_ID)return null;
       const item=state?.items?.[id]||{};
+      const meta=findGalleryByManagerId(id)?.meta||{};
       return {
-        visible:item.visible!==false,
-        visibleMobile:item.visibleMobile!==false,
-        visibleDesktop:item.visibleDesktop!==false,
+        visible:item.visible!==false && meta.visible!==false && meta.published!==false && meta.unpublished!==true,
+        visibleMobile:item.visibleMobile!==false && meta.visibleMobile!==false,
+        visibleDesktop:item.visibleDesktop!==false && meta.visibleDesktop!==false,
         showExpandedButton:item.showExpandedButton===true,
         expandedAllowed:isExpandedButtonEligible(id,item)
       };
@@ -178,9 +187,18 @@ ${bootMarker}`);
       state.items=state.items||{};
       state.items[id]=state.items[id]||{};
       state.items[id][flag]=!!enabled;
+      const gallery=findGalleryByManagerId(id);
+      if(gallery?.meta && flag!=='showExpandedButton')gallery.meta[flag]=!!enabled;
+      if(flag==='visible'){
+        // The single "show in gallery" switch controls both public layouts.
+        for(const mode of ['visibleMobile','visibleDesktop']){
+          state.items[id][mode]=!!enabled;
+          if(gallery?.meta)gallery.meta[mode]=!!enabled;
+        }
+        if(gallery?.meta)gallery.meta.visibleExpanded=!!enabled;
+      }
       setGalleryManagerState(state);
       if(flag==='showExpandedButton'){
-        const gallery=findGalleryByManagerId(id);
         if(gallery?.meta){
           gallery.meta.expandedEnabled=!!enabled;
           gallery.meta.showExpandedButton=!!enabled;
@@ -404,6 +422,15 @@ ${bootMarker}`);
     .crmo3263-manager-row:has(input[data-flag="visible"]:not(:checked)) {
       filter:grayscale(1);opacity:.56;
     }
+    /* Owner/Admin-only preview: hidden galleries stay editable but are visibly unpublished. */
+    .crmo3047-gallery.crmo-dev-unpublished {
+      background:#f1f1f1!important;border-radius:14px;
+      box-shadow:inset 0 0 0 1px #d8d8d8;
+      padding-inline:16px!important;
+    }
+    .crmo3047-gallery.crmo-dev-unpublished .crmo-dev-draft-indicator {
+      border-color:#a3a3a3!important;background:#e0e0e0!important;color:#333!important;
+    }
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile,
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile-media {
       filter:grayscale(1)!important;opacity:.55!important;
@@ -506,6 +533,25 @@ ${bootMarker}`);
       document.querySelectorAll('button[data-gallery-editor],button[data-managed-gallery-editor]').forEach(button=>{
         button.setAttribute('aria-label','עריכת הגלריה');
         button.title='עריכת הגלריה';
+      });
+      // Private editor: make drafts visibly distinct from published galleries.
+      const projects=window.CRMO_VOTING_CONTEXT?.getProjects?.()||[];
+      document.querySelectorAll('.crmo3047-gallery[data-gallery-index]').forEach(section=>{
+        const index=Number(section.dataset.galleryIndex);
+        const gallery=Number.isInteger(index)?projects[index]:null;
+        if(!gallery)return;
+        const flags=window.CRMO_QUICK_MANAGER?.get?.(gallery.galleryId)||{};
+        const hidden=gallery.meta?.visible===false||gallery.meta?.published===false||gallery.meta?.unpublished===true||flags.visible===false;
+        section.classList.toggle('crmo-dev-unpublished',hidden);
+        const existing=section.querySelector('.crmo-dev-draft-indicator');
+        if(!hidden){existing?.remove();return;}
+        if(existing)return;
+        const mediaCount=(gallery.tiles||[]).filter(tile=>(tile.media||[]).some(media=>media?.src&&media?.isVisible!==false)).length;
+        const tag=document.createElement('span');
+        tag.className='crmo-dev-draft-indicator';
+        tag.textContent='לא מפורסמת · '+mediaCount+' עבודות עם מדיה';
+        tag.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #bd9165;border-radius:20px;background:#fff7ed;color:#784421;font:500 12px Rubik,sans-serif';
+        (section.querySelector('.crmo3047-gallery-copy')||section.querySelector('.crmo3047-gallery-head'))?.append(tag);
       });
       const mobile=document.getElementById('crmo3047GalleryDescMobile');
       if(mobile&&!document.getElementById('crmo-ux-hide-desc-mobile')){
