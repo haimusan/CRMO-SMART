@@ -32,7 +32,7 @@ const MAIN_GALLERY_BLUEPRINTS = Object.freeze([
   ]);
 
 const POS_GALLERY_BLUEPRINTS = Object.freeze([
-    { galleryId: 'all-works', label: 'all-works', buttonLabel: 'כל העבודות', title: 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.', desc: 'אנחנו מעצבים סטנדים ומתקני תצוגה שמייצרים נוכחות בולטת, מספרים את סיפור המותג ומניעים לקנייה מדויקת, בכל נקודת מגע.' },
+    { galleryId: 'all-works', label: 'all-works', buttonLabel: 'עבודות נבחרות', title: 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.', desc: 'אנחנו מעצבים סטנדים ומתקני תצוגה שמייצרים נוכחות בולטת, מספרים את סיפור המותג ומניעים לקנייה מדויקת, בכל נקודת מגע.' },
     { galleryId: 'shop-in-shop', label: 'shop-in-shop', buttonLabel: 'מתחמי מכירה', title: 'מתחמי מכירה', desc: 'מרחב ממותג שמרכז תשומת לב ומוביל להתנסות ולמכירה.' },
     { galleryId: 'floor-stands', label: 'floor-stands', buttonLabel: 'סטנדים רצפתיים', title: 'סטנדים רצפתיים', desc: 'הבמה של המותג. נוכחות שאי אפשר להתעלם ממנה.' },
     { galleryId: 'counter-displays', label: 'counter-displays', buttonLabel: 'סטנדים דלפקיים', title: 'סטנדים דלפקיים', desc: 'הסגירה האחרונה. קניית אימפולס ברגע הנכון.' },
@@ -45,7 +45,7 @@ const POS_GALLERY_BLUEPRINTS = Object.freeze([
 const POS_COPY_VERSION = '2026-09-26-pos-copy-1';
 
 const POS_COPY = Object.freeze([
-    { slug: 'all-works', name: 'כל העבודות', title: 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.', desc: 'אנחנו מעצבים סטנדים ומתקני תצוגה שמייצרים נוכחות בולטת, מספרים את סיפור המותג ומניעים לקנייה מדויקת, בכל נקודת מגע.' },
+    { slug: 'all-works', name: 'עבודות נבחרות', title: 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.', desc: 'אנחנו מעצבים סטנדים ומתקני תצוגה שמייצרים נוכחות בולטת, מספרים את סיפור המותג ומניעים לקנייה מדויקת, בכל נקודת מגע.' },
     { slug: 'shop-in-shop', name: 'מתחמי מכירה', title: 'למותג יש מקום משלו בתוך החנות.', desc: 'מתחם שמחבר תצוגה, מסר והתנסות לחוויה אחת ברורה, גם כשהשטח מוגבל.' },
     { slug: 'floor-stands', name: 'סטנדים רצפתיים', title: 'יוצאים מהמדף. נכנסים לשדה הראייה.', desc: 'תצוגה עצמאית שמציבה מוצר ומסר במסלול התנועה של הלקוחות, תוך תכנון השטח, הגישה למוצר וההרכבה בשטח.' },
     { slug: 'counter-displays', name: 'סטנדים דלפקיים', title: 'הבחירה הקטנה שלפני התשלום.', desc: 'תצוגה קומפקטית שמבליטה מוצר או הצעה משלימה ברגע קצר, בלי להעמיס על הדלפק ובלי להפריע לעבודת הצוות.' },
@@ -156,7 +156,7 @@ function getDefaultGalleryAdminLabelHe(gallery, index = 0) {
       'exhibitions': 'תערוכות',
       'packaging': 'אריזות',
       'small-business': 'עסקים קטנים',
-      'all-works': 'כל העבודות',
+      'all-works': 'עבודות נבחרות',
       'shop-in-shop': 'מתחמי מכירה',
       'floor-stands': 'סטנדים רצפתיים',
       'counter-displays': 'סטנדים דלפקיים',
@@ -387,7 +387,7 @@ function getPosBlueprint(slotIndex) {
   }
 
 function getSuperSubButtonLabel(slotIndex) {
-    if(slotIndex===0)return 'POS CHOSEN · עבודות נבחרות';
+    if(slotIndex===0)return 'עבודות נבחרות';
     return String(getPosBlueprint(slotIndex)?.buttonLabel || `תת כפתור ${slotIndex + 1}`);
   }
 
@@ -1967,7 +1967,7 @@ function applyAllWorksCopyOnce3284() {
     if (!gallery) return false;
     const title = 'פתרונות מדף, רצפה וחלל שממקסמים מכירה.';
     const desc = 'אנחנו מעצבים סטנדים ומתקני תצוגה שמייצרים נוכחות בולטת, מספרים את סיפור המותג ומניעים לקנייה מדויקת, בכל נקודת מגע.';
-    gallery.meta = ensureGalleryMeta({...gallery.meta, adminLabelHe:'כל העבודות', title, titleDesktop:title, titleMobile:title, titleExpanded:title, desc, descDesktop:desc, descMobile:desc, descExpanded:desc});
+    gallery.meta = ensureGalleryMeta({...gallery.meta, adminLabelHe:'עבודות נבחרות', title, titleDesktop:title, titleMobile:title, titleExpanded:title, desc, descDesktop:desc, descMobile:desc, descExpanded:desc});
     siteState.ui.allWorksCopyVersion = '3284-approved';
     return true;
   }
@@ -2016,7 +2016,6 @@ async function refreshPublicContent(canApply = () => true){
  }catch(e){console.warn('Content fetch failed:',e.message);const msg=document.getElementById('crmo-loading');if(msg)msg.textContent='לא ניתן לטעון את התוכן כרגע. בדוק את החיבור ונסה לרענן.';return false;}finally{clearTimeout(timer);}}
 // Load content on navigation or an explicit page refresh. Rebuilding the gallery
 // on window focus collapses the page and resets the visitor's scroll position.
-// Always load initial content; revision synchronization must not gate first render.
-void refreshPublicContent();
+if(contentSync)void contentSync.check();else void refreshPublicContent();
 
 })();
