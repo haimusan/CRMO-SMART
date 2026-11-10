@@ -283,7 +283,7 @@ ${bootMarker}`);
       renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
       renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;`;
   html=html.replace('  function makeDedicatedGalleryUrl(id) {', "  function makeDedicatedGalleryUrl(id) {\n    const shared=window.CRMO_ROUTES?.shareURL(id);\n    if(shared)return shared;");
-  html=html.replace('  function getSuperSubButtonLabel(slotIndex) {', "  function getSuperSubButtonLabel(slotIndex) {\n    if(slotIndex===0)return 'POS CHOSEN · עבודות נבחרות';");
+  html=html.replace('  function getSuperSubButtonLabel(slotIndex) {', "  function getSuperSubButtonLabel(slotIndex) {\n    if(slotIndex===0)return 'כל העבודות';");
   html=html.replace('    const superSubs = getSuperSubGalleries();', '    const superSubs = getSuperSubGalleries().filter(g=>editEnabled||g.meta?.visible!==false);');
   html=html.replace('btn.textContent = getSuperSubButtonLabel(slotIndex);','btn.textContent = getSuperSubButtonLabel(Number(gallery.galleryId.slice(SUPER_SUB_PREFIX.length))-1);');
   html=html.replace('    const selectedCompact =', '    if(window.CRMO_ROUTES?.current())return Math.min(MAX_TILES_PER_GALLERY,(gallery?.tiles||[]).length);\n    const selectedCompact =');
@@ -430,6 +430,16 @@ ${bootMarker}`);
     }
     .crmo3047-gallery.crmo-dev-unpublished .crmo-dev-draft-indicator {
       border-color:#a3a3a3!important;background:#e0e0e0!important;color:#333!important;
+    }
+    /* Editor-only: unfilled grid slots remain visibly aligned to full rows. */
+    .crmo3047-gallery .crmo3045-grid > .crmo-ux-empty-tile {
+      display:block!important;box-sizing:border-box!important;
+      aspect-ratio:16/9!important;min-height:0!important;
+      background:#ececec!important;outline:1px solid #d2d2d2!important;
+      outline-offset:-1px;pointer-events:none!important;
+    }
+    .crmo3047-gallery.crmo-dev-unpublished .crmo3045-grid > .crmo-ux-empty-tile {
+      background:#d8d8d8!important;outline-color:#c1c1c1!important;
     }
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile,
     #crmo3047GalleryTiles .crmo3045-tile-wrap.is-hidden-tile .crmo3045-tile-media {
