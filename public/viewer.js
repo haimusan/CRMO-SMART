@@ -1647,6 +1647,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     const brandLogoCount = isBrandsGallery ? (gallery.tiles || []).filter((tile) => tile?.isVisible !== false && ((Array.isArray(tile?.media) && tile.media.some((media) => media?.src && media?.isVisible !== false)) || tile?.logoSrc || tile?.brandConfig?.logoSrc)).length : 0;
     const brandWallReady = isBrandsGallery;
     section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}${brandWallReady ? ' is-brand-wall-ready' : ''}`;
+    section.dataset.crmoEditEnabled = editEnabled ? 'true' : 'false';
     section.dataset.galleryIndex = String(galleryIndex);
     section.id = String(gallery.meta?.label || gallery.galleryId || `gallery-${galleryIndex + 1}`);
     section.innerHTML = `
