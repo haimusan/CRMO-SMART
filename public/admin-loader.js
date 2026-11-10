@@ -424,8 +424,8 @@ ${bootMarker}`);
     }
     /* Owner/Admin-only preview: hidden galleries stay editable but are visibly unpublished. */
     .crmo3047-gallery.crmo-dev-unpublished {
-      background:#f1f1f1!important;border-radius:14px;
-      box-shadow:inset 0 0 0 1px #d8d8d8;
+      background:#e5e5e5!important;border-radius:14px;
+      box-shadow:inset 0 0 0 1px #bdbdbd;
       padding-inline:16px!important;
     }
     .crmo3047-gallery.crmo-dev-unpublished .crmo-dev-draft-indicator {
