@@ -1010,7 +1010,7 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
     if (first) {
       const preview = mediaEl(first, 'crmo3045-tile-media');
       if (preview?.tagName === 'IMG') {
-        preview.loading = gallery.galleryId === 'intro' && tileIndex < 4 ? 'eager' : 'lazy';
+        preview.loading = gallery.galleryId === 'intro' && tileIndex < 6 ? 'eager' : 'lazy';
         preview.fetchPriority = gallery.galleryId === 'intro' && tileIndex < 2 ? 'high' : 'auto';
       } else if (preview?.tagName === 'VIDEO') {
         preview.preload = 'metadata';
