@@ -1787,7 +1787,10 @@ function renderLightbox() {
       btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
       btn.setAttribute('aria-label', `Media ${idx + 1}`);
       const thumb = mediaEl(media);
-      if (thumb) btn.appendChild(thumb);
+      if (thumb) {
+        if (thumb.tagName === 'IMG') { thumb.loading = 'lazy'; thumb.decoding = 'async'; }
+        btn.appendChild(thumb);
+      }
       btn.addEventListener('click', () => { activeMediaIndex = idx; renderLightbox(); });
       strip.appendChild(btn);
     });
