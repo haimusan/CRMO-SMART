@@ -38,19 +38,26 @@
   for(const key of ['view','mode','display','expanded','gallery','section','posCategory'])q.delete(key);
   if(url.href!==location.href)history.replaceState(history.state,'',url.href);
  }
+ let galleryVisibility;
  function decorate(){
   document.querySelectorAll('nav a[href],.crmo-mobile-links a[href]').forEach(link=>{
    const url=new URL(link.getAttribute('href'),location.href);
    if(url.origin!==location.origin)return;
    const id=url.hash.slice(1);
+   const isPosHeaderLink=link.closest('header nav') && (id==='pos'||id==='retail-pos');
+   if(isPosHeaderLink && galleryVisibility){
+    link.href=galleryVisibility('pos')===false ? '/#retail-pos' : '/#pos';
+    return;
+   }
    if(id==='top')link.href='/';
    // Header links always point into the complete home page, even from a shared gallery.
    else if(byId.has(id)||aliases[id])link.href='/#'+id;
   });
  }
  function render(adapter){
-  const route=current();if(!route)return false;
   const {stack,galleries,editable,visible,renderGallery,renderAll,renderAbout,renderContact,renderFooter,renderLegal}=adapter;
+  galleryVisibility=visible;
+  const route=current();if(!route)return false;
   const gallery=galleries.find(g=>g.galleryId===route.galleryId);
   const heading=document.createElement('h1');heading.className='crmo-route-name';heading.textContent=route.title;stack.appendChild(heading);
   const allowed=editable || (route.kind==='section' || (route.kind==='all'?visible('pos'):

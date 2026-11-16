@@ -278,7 +278,7 @@ ${bootMarker}`);
   html=html.slice(0,navigationStart)+navigation.replace('    const indexes = [];',"    const indexes = [];\n    const shownHome = getExpandedRequestedManagerId() ? null : crmoHomeTileIndexes.get(galleryIndex);").replace('      if (tile?.isVisible === false) return;','      if (tile?.isVisible === false) return;\n      if (shownHome && !shownHome.includes(tileIndex)) return;')+html.slice(navigationEnd);
 
   // Apply the same standalone-gallery contract to the authenticated legacy renderer.
-  const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
+  const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isGalleryPubliclyVisible,
       renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
       renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
       renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;`;
@@ -431,6 +431,12 @@ ${bootMarker}`);
     .crmo3047-gallery.crmo-dev-unpublished .crmo-dev-draft-indicator {
       border-color:#a3a3a3!important;background:#e0e0e0!important;color:#333!important;
     }
+    .crmo3047-gallery.crmo-dev-unpublished.is-super-gallery .crmo3045-tile-media {
+      filter:grayscale(1);opacity:.55;
+    }
+    .crmo3047-gallery.crmo-dev-unpublished.is-super-gallery .crmo3045-tile:hover .crmo3045-tile-media {
+      transform:none;
+    }
     /* Editor-only: unfilled grid slots remain visibly aligned to full rows. */
     .crmo3047-gallery .crmo3045-grid > .crmo-ux-empty-tile {
       display:block!important;box-sizing:border-box!important;
@@ -547,19 +553,21 @@ ${bootMarker}`);
       // Private editor: make drafts visibly distinct from published galleries.
       const projects=window.CRMO_VOTING_CONTEXT?.getProjects?.()||[];
       document.querySelectorAll('.crmo3047-gallery[data-gallery-index]').forEach(section=>{
+        const isSuperGallery=section.dataset.galleryIndex==='super' && section.id==='pos';
         const index=Number(section.dataset.galleryIndex);
         const gallery=Number.isInteger(index)?projects[index]:null;
-        if(!gallery)return;
-        const flags=window.CRMO_QUICK_MANAGER?.get?.(gallery.galleryId)||{};
-        const hidden=gallery.meta?.visible===false||gallery.meta?.published===false||gallery.meta?.unpublished===true||flags.visible===false;
+        const galleryId=isSuperGallery?section.id:gallery?.galleryId;
+        if(!galleryId)return;
+        const flags=window.CRMO_QUICK_MANAGER?.get?.(galleryId)||{};
+        const hidden=flags.visible===false;
         section.classList.toggle('crmo-dev-unpublished',hidden);
         const existing=section.querySelector('.crmo-dev-draft-indicator');
         if(!hidden){existing?.remove();return;}
         if(existing)return;
-        const mediaCount=(gallery.tiles||[]).filter(tile=>(tile.media||[]).some(media=>media?.src&&media?.isVisible!==false)).length;
+        const mediaCount=(gallery?.tiles||[]).filter(tile=>(tile.media||[]).some(media=>media?.src&&media?.isVisible!==false)).length;
         const tag=document.createElement('span');
         tag.className='crmo-dev-draft-indicator';
-        tag.textContent='לא מפורסמת · '+mediaCount+' עבודות עם מדיה';
+        tag.textContent=isSuperGallery?'גלריית העל מוסתרת':'לא מפורסמת · '+mediaCount+' עבודות עם מדיה';
         tag.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #bd9165;border-radius:20px;background:#fff7ed;color:#784421;font:500 12px Rubik,sans-serif';
         (section.querySelector('.crmo3047-gallery-copy')||section.querySelector('.crmo3047-gallery-head'))?.append(tag);
       });
