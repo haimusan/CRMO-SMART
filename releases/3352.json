@@ -1,0 +1,7 @@
+{
+  "version": "3352",
+  "changes": [
+    "POS MIX header fallback when POS ALL is hidden",
+    "Hidden POS ALL status in the authenticated editor"
+  ]
+}
