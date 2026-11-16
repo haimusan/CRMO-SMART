@@ -278,7 +278,7 @@ ${bootMarker}`);
   html=html.slice(0,navigationStart)+navigation.replace('    const indexes = [];',"    const indexes = [];\n    const shownHome = getExpandedRequestedManagerId() ? null : crmoHomeTileIndexes.get(galleryIndex);").replace('      if (tile?.isVisible === false) return;','      if (tile?.isVisible === false) return;\n      if (shownHome && !shownHome.includes(tileIndex)) return;')+html.slice(navigationEnd);
 
   // Apply the same standalone-gallery contract to the authenticated legacy renderer.
-  const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
+  const routeHook = `    if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isGalleryPubliclyVisible,
       renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
       renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
       renderFooter:()=>renderFooterSection(canEdit()),renderLegal:()=>renderLegalSection(canEdit())}))return;`;
