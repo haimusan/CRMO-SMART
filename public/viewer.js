@@ -1042,6 +1042,7 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
       }
     });
     if(!isBrandsGallery && tile.media.length && window.CRMOProjectVotes)card.append(window.CRMOProjectVotes.createControl({projectId:tile.tileId,title:tile.overlay?.title||hoverTitle,galleryId:gallery.galleryId,galleryTitle:gallery.meta?.adminLabelHe||gallery.meta?.title}));
+    if (!isBrandsGallery && !editEnabled) window.CRMOEditorial?.addCard(card,tile);
     window.CRMODemo?.decorateCard(card,gallery,tile);
     return card;
   }
@@ -1671,6 +1672,8 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
   }
 
 function renderGalleryStack() {
+    window.CRMOEditorial?.clearCards();
+    window.CRMOEditorial?.unmount();
     galleryStack.innerHTML = '';
     if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
       renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
@@ -1717,6 +1720,7 @@ function renderGalleryStack() {
       markFirst();
     });
     if (expandedTargetId) return;
+    window.CRMOEditorial?.mount(galleryStack,galleries,openLightbox);
     renderAboutSection(editEnabled);
     markFirst();
     renderContactSection(editEnabled);
