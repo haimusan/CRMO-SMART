@@ -1,0 +1,35 @@
+/* A desktop home-page treatment for the portfolio section headings. */
+@media (min-width: 1100px) {
+  .stage :is(#stores, #exhibitions, #branding, #product-design, #retail-pos, #pos) {
+    --gallery-accent: #f6cc51;
+  }
+
+  .stage :is(#branding, #exhibitions) {
+    --gallery-accent: #ff8275;
+  }
+
+  .stage :is(#product-design, #pos, #retail-pos) {
+    --gallery-accent: #a6d4b4;
+  }
+
+  .stage :is(#stores, #exhibitions, #branding, #product-design, #retail-pos, #pos) .crmo3047-gallery-head {
+    justify-items: stretch;
+    justify-content: initial;
+    margin-block-end: 22px;
+  }
+
+  .stage :is(#stores, #exhibitions, #branding, #product-design, #retail-pos, #pos) .crmo3047-gallery-copy {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 16px 22px;
+    text-align: start;
+    border-inline-start: 6px solid var(--gallery-accent);
+    background: linear-gradient(to left, #f5f3ef, transparent 78%);
+  }
+
+  .stage :is(#stores, #exhibitions, #branding, #product-design, #retail-pos, #pos) .crmo3047-gallery-title {
+    text-align: start;
+    font-size: clamp(28px, 2.75vw, 42px);
+  }
+}
