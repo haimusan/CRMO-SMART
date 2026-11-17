@@ -3,7 +3,7 @@
   if (!('IntersectionObserver' in window)) return;
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const featured = [
-    ['intro', 'gallery-4-tile-02', 'חנויות וחללי מסחר'],
+    ['intro', 'intro-nuts-factory-us', 'חנויות וחללי מסחר'],
     ['intro', 'intro-vodka-berlin-2013', 'מיתוג'],
     ['intro', 'intro-huggies-babyland-2023', 'תערוכות'],
     ['product-design', 'thomy-sauce-carrier', 'עיצוב מוצר']
@@ -33,10 +33,13 @@
       !/^video/i.test(item.type || '') && !/^data:video|\.(mp4|webm|ogg)([?#]|$)/i.test(item.src));
   }
 
-  function unmount() { stop(); }
+  function unmount() {
+    stop();
+    stop = () => {};
+  }
 
   function mount(stack, galleries, openProject) {
-    stop();
+    unmount();
     const intro = stack.querySelector('#intro');
     if (!intro) return;
     const slides = featured.flatMap(([id, tileId, category]) => {
@@ -160,9 +163,14 @@
         clearTimeout(timer);
         cycle += 1;
         if (picture.src !== cover) picture.src = cover;
+        if (played) {
+          previewObserver.unobserve(card);
+          previews.delete(card);
+        }
         return;
       }
       if (played || motion.matches || document.hidden) return;
+      played = true;
       const run = ++cycle;
       let position = 1;
 
@@ -170,7 +178,6 @@
         if (!visible || cycle !== run || !picture.isConnected) return;
         if (position === stills.length) {
           picture.src = cover;
-          played = true;
           previewObserver.unobserve(card);
           previews.delete(card);
           return;

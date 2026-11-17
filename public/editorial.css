@@ -85,16 +85,19 @@
 }
 .crmo-editorial .crmo3047-gallery:not(.is-brands-gallery) .crmo3045-hover :is(.crmo3045-hover-title,.crmo3045-hover-desc) { color: white; }
 .crmo-editorial .crmo3047-gallery:not(.is-brands-gallery) .crmo3045-hover-link { color: var(--signal); }
-.crmo-editorial .crmo3047-gallery.is-brands-gallery .crmo3045-tile { aspect-ratio: 1; }
-.crmo-editorial .crmo3047-gallery.is-brands-gallery .crmo3045-tile-media {
-  object-fit: contain !important;
-  padding: clamp(.35rem, 1.1vw, 1rem);
-}
-.crmo-editorial .crmo-ux-empty-tile, .crmo-editorial .crmo-brand-empty-slot { display: none !important; }
+.crmo-editorial .crmo-ux-empty-tile { display: none !important; }
 
-@media (min-width: 901px) {
+.crmo-editorial .crmo3047-gallery:not(.is-brands-gallery) .crmo3045-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1080px) {
   .crmo-editorial .crmo3047-gallery:not(.is-brands-gallery) .crmo3045-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .crmo-editorial .crmo3047-gallery:not(.is-brands-gallery) .crmo3045-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 760px) {

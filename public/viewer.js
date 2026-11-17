@@ -979,11 +979,16 @@ function getPrimaryTileDesc(tile, galleryIndex, mediaIndex = 0) {
     return getTileTextForMedia(tile, galleryIndex, mediaIndex).desc;
   }
 
+function getBrandLogo(tile) {
+    return tile?.media?.find(item => item?.src && item.isVisible !== false && item.isEnabled !== false &&
+      !/^video/i.test(item.type || '') && !/^data:video|\.(mp4|webm|ogg)([?#]|$)/i.test(item.src)) || null;
+  }
+
 function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) {
     const card = document.createElement('div');
     card.className = 'crmo3045-tile-wrap';
     const isBrandsGallery = isBrandGalleryObject(gallery);
-    const first = tile.media[0] || null;
+    const first = isBrandsGallery ? getBrandLogo(tile) : tile.media[0] || null;
     const meta = [gallery.meta.label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
     const brandInteractive = !isBrandsGallery || isBrandTileInteractive(tile);
     const hoverTitle = isBrandsGallery ? (tile.meta.brand || tile.overlay.title || 'מותג') : getPrimaryTileName(tile, galleryIndex);
@@ -991,7 +996,7 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
     const hoverLink = prettifyHoverUrl(tile.overlay.link || '');
     card.innerHTML = `
       ${editEnabled ? `<button class="crmo3045-pencil" type="button" aria-label="Edit tile ${tileIndex + 1} in gallery ${galleryIndex + 1}">✎</button>` : ''}
-      <article class="crmo3045-tile" tabindex="0" aria-label="Gallery ${galleryIndex + 1} tile ${tileIndex + 1}">
+      <article class="crmo3045-tile" tabindex="0" aria-label="${escape(hoverTitle)}">
         ${first ? '' : `<div class="crmo3045-fallback">${isBrandsGallery ? 'BRAND' : 'CRMO TILE<br>16:9'}</div>`}
         <div class="crmo3045-hover">
           <div class="crmo3045-hover-title">${escape(hoverTitle)}</div>
@@ -1586,16 +1591,17 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
   grid.replaceChildren();
   (gallery.tiles || []).forEach((tile, tileIndex) => {
     if (candidates.length >= limit || tile?.isVisible === false) return;
-    if (!isBrandWall && !tileHasMeaningfulContent(tile)) return;
+    if (isBrandWall ? !getBrandLogo(tile) : !tileHasMeaningfulContent(tile)) return;
     const key = crmoProjectKey(tile);
     if (!expanded && !isBrandWall && (alreadyShown.has(key) || candidateKeys.has(key))) { suppressed += 1; return; }
     candidates.push({tile,tileIndex,key});
     if (!isBrandWall) candidateKeys.add(key);
   });
-  const mobile = window.matchMedia('(max-width: 900px)').matches;
+  const mobile = window.matchMedia('(max-width: 640px)').matches;
+  const tablet = window.matchMedia('(max-width: 1080px)').matches;
   const isSmallBusiness = String(gallery?.galleryId || '') === 'small-business';
-  const columns = mobile ? 2 : 3;
-  const minimum = isSmallBusiness ? 6 : (mobile ? 4 : 6);
+  const columns = mobile ? 1 : tablet ? 2 : 3;
+  const minimum = isSmallBusiness || !mobile ? 6 : 4;
   const count = isBrandWall
     ? candidates.length
     : window.CRMO_ROUTES?.current() ? candidates.length : Math.min(limit, Math.max(minimum, Math.floor(candidates.length / columns) * columns));
@@ -1605,14 +1611,7 @@ function crmoRenderCuratedGrid(grid, section, gallery, galleryIndex, editEnabled
     grid.appendChild(card);
     visibleIndexes.push(tileIndex);
   });
-  if (isBrandWall) {
-    for (let i = visibleIndexes.length; i < limit; i++) {
-      const blank = document.createElement('div');
-      blank.className = 'crmo-brand-empty-slot';
-      blank.setAttribute('aria-hidden', 'true');
-      grid.appendChild(blank);
-    }
-  } else {
+  if (!isBrandWall) {
     for (let i=visibleIndexes.length;i<minimum;i++) {
       const blank=document.createElement('div');
       if (isSmallBusiness) {
@@ -1645,7 +1644,6 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
     const section = document.createElement('section');
     const isBrandsGallery = isBrandGalleryObject(gallery);
     const visibleTileCount = (gallery.tiles || []).filter((tile) => tile?.isVisible !== false).length;
-    const brandLogoCount = isBrandsGallery ? (gallery.tiles || []).filter((tile) => tile?.isVisible !== false && ((Array.isArray(tile?.media) && tile.media.some((media) => media?.src && media?.isVisible !== false)) || tile?.logoSrc || tile?.brandConfig?.logoSrc)).length : 0;
     const brandWallReady = isBrandsGallery;
     section.className = `crmo3047-gallery${gallery.ui.editMode && editEnabled ? ' is-editing' : ''}${isBrandsGallery ? ' is-brands-gallery' : ''}${brandWallReady ? ' is-brand-wall-ready' : ''}`;
     section.dataset.galleryIndex = String(galleryIndex);
