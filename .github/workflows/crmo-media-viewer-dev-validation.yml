@@ -1,0 +1,34 @@
+name: CRMO viewer DEV validation
+
+on:
+  push:
+    branches:
+      - dev/crmo-media-viewer-20261120
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visibility-and-release-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout DEV only
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check viewer syntax
+        run: node --check public/viewer.js
+      - name: Gallery visibility, routing, release integrity and display contract
+        run: >
+          node --test
+          tests/hidden-gallery-visibility.test.cjs
+          tests/gallery-routes.test.cjs
+          tests/release-integrity.test.cjs
+          tests/display-contract.test.cjs
+      - name: Confirm DEV does not masquerade as published release
+        run: |
+          node -e "const fs=require('fs'); const config=fs.readFileSync('public/config.js','utf8'); if(!config.includes('\"release\":\"3351\"')) process.exit(1);"

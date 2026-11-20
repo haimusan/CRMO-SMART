@@ -296,9 +296,13 @@ function ensurePrivacySection(section = {}) {
     };
   }
 
+function visibleTileMedia(tile) {
+    return Array.isArray(tile?.media) ? tile.media.filter((item) => item?.src && item.isVisible !== false) : [];
+  }
+
 function tileHasMeaningfulContent(tile) {
     if (!tile) return false;
-    if (Array.isArray(tile.media) && tile.media.some((m) => m && m.src)) return true;
+    if (tile.media?.length || tile.hasRemovedMedia) return visibleTileMedia(tile).length > 0;
     const textParts = [tile?.meta?.client, tile?.meta?.brand, tile?.overlay?.title, tile?.overlay?.desc, tile?.overlay?.link]
       .map((v) => String(v || '').trim())
       .filter(Boolean);
@@ -547,7 +551,11 @@ const normalizeMedia = (m, galleryIndex, tileIndex, mediaIndex) => ({
     storageBucket: String(m?.storageBucket || ''),
     storagePath: String(m?.storagePath || ''),
     isVisible: m?.isVisible !== false,
-    isEnabled: m?.isEnabled !== false
+    isEnabled: m?.isEnabled !== false,
+    variants: Array.isArray(m?.variants) ? m.variants.filter((variant) =>
+      typeof variant?.url === 'string' && /^https:\/\//i.test(variant.url) &&
+      !/[\s,]/.test(variant.url) && Number.isInteger(variant.width) && variant.width > 0
+    ).map(({url,width}) => ({url,width})) : []
   });
 
 const normalizeTile = (tile, galleryIndex, tileIndex) => ({
@@ -564,6 +572,7 @@ const normalizeTile = (tile, galleryIndex, tileIndex) => ({
       attachedWorkRefs: Array.isArray(tile?.brandConfig?.attachedWorkRefs) ? tile.brandConfig.attachedWorkRefs.map((ref) => ({ galleryIndex: Number(ref?.galleryIndex || 0), tileIndex: Number(ref?.tileIndex || 0) })).filter((ref) => Number.isFinite(ref.galleryIndex) && Number.isFinite(ref.tileIndex)).slice(0, 18) : []
     },
     isVisible: tile?.isVisible !== false,
+    hasRemovedMedia: Array.isArray(tile?.removedMedia) && tile.removedMedia.length > 0,
     media: Array.isArray(tile?.media) ? tile.media.map((m, i) => normalizeMedia(m, galleryIndex, tileIndex, i)).filter((m) => m.src) : []
   });
 
@@ -777,7 +786,7 @@ function buildStructuredTilesState(currentGalleries) {
           link: String(tile?.overlay?.link || ''),
           visible: tile?.isVisible !== false,
           brandConfig: tile?.brandConfig ? {...tile.brandConfig} : {},
-          cover: String((Array.isArray(tile?.media) ? tile.media[0]?.src : '') || ''),
+          cover: String(visibleTileMedia(tile)[0]?.src || ''),
           files: Array.isArray(tile?.media) ? tile.media.map((media) => String(media?.src || '')).filter(Boolean) : [],
           filesMeta: Array.isArray(tile?.media) ? tile.media.map((media, mediaIndex) => ({
             id: String(media?.id || `${tileId}-media-${mediaIndex + 1}`),
@@ -787,7 +796,8 @@ function buildStructuredTilesState(currentGalleries) {
             desc: String(media?.desc || ''),
             storageBucket: String(media?.storageBucket || ''),
             storagePath: String(media?.storagePath || ''),
-            isVisible: media?.isVisible !== false
+            isVisible: media?.isVisible !== false,
+            variants: media?.variants || []
           })) : [],
           display: tile?.display && typeof tile.display === 'object' ? { ...tile.display } : {}
         };
@@ -839,6 +849,7 @@ function hydrateWrapperShape(raw) {
               tileId, meta: {client: tile.clientId || '', brand: tile.brandId || ''},
               overlay: {title: tile.title || '', desc: tile.shortDescription || '', link: tile.link || ''},
               display: tile.display || {}, brandConfig: tile.brandConfig || {}, isVisible: tile.visible !== false,
+              removedMedia: tile.removedMedia,
               media: Array.isArray(tile.filesMeta) ? tile.filesMeta : (tile.files || []).map(src => ({src}))
             };
           }).filter(Boolean)
@@ -924,7 +935,7 @@ let galleryManagerDraft = null;
 
 const activeManagedMasterIds = {};
 
-function mediaEl(item, cls = '') {
+function mediaEl(item, cls = '', sizes = '') {
     if (!item?.src) return null;
     const isVideo = (item.type || '').startsWith('video') || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.src) || item.src.startsWith('data:video');
     const el = document.createElement(isVideo ? 'video' : 'img');
@@ -933,6 +944,10 @@ function mediaEl(item, cls = '') {
       el.controls = true;
       el.playsInline = true;
     } else {
+      if (sizes && item.variants?.length) {
+        el.sizes = sizes;
+        el.srcset = item.variants.map(({url,width}) => url + ' ' + width + 'w').join(', ');
+      }
       el.src = item.src;
       el.alt = item.title || '';
       el.loading = 'eager';
@@ -963,7 +978,7 @@ function getTileTextForMedia(tile, galleryIndex, mediaIndex = 0) {
     }
     const overlayTitle = String(tile?.overlay?.title || tile?.meta?.brand || '').trim() || 'שם הפרויקט';
     const overlayDesc = String(tile?.overlay?.desc || '').trim() || 'תיאור קצר על הפרויקט';
-    const media = Array.isArray(tile?.media) ? tile.media[mediaIndex] || null : null;
+    const media = getLightboxMedia(tile)[mediaIndex] || null;
     const useOwnText = !!(tile?.display?.perImageText === true && media && media.useOwnText === true);
     return {
       title: useOwnText && String(media?.title || '').trim() ? String(media.title || '').trim() : overlayTitle,
@@ -983,7 +998,7 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
     const card = document.createElement('div');
     card.className = 'crmo3045-tile-wrap';
     const isBrandsGallery = isBrandGalleryObject(gallery);
-    const first = tile.media[0] || null;
+    const first = visibleTileMedia(tile)[0] || null;
     const meta = [gallery.meta.label, tile.meta.client, tile.meta.brand].filter(Boolean).join(' · ');
     const brandInteractive = !isBrandsGallery || isBrandTileInteractive(tile);
     const hoverTitle = isBrandsGallery ? (tile.meta.brand || tile.overlay.title || 'מותג') : getPrimaryTileName(tile, galleryIndex);
@@ -1008,7 +1023,7 @@ function createGalleryCard(gallery, galleryIndex, tile, tileIndex, editEnabled) 
     `;
     const article = card.querySelector('.crmo3045-tile');
     if (first) {
-      const preview = mediaEl(first, 'crmo3045-tile-media');
+      const preview = mediaEl(first, 'crmo3045-tile-media', '(max-width: 900px) 50vw, 33vw');
       if (preview?.tagName === 'IMG') {
         preview.loading = gallery.galleryId === 'intro' && tileIndex < 4 ? 'eager' : 'lazy';
         preview.fetchPriority = gallery.galleryId === 'intro' && tileIndex < 2 ? 'high' : 'auto';
@@ -1308,7 +1323,19 @@ function getManagerItem(id) { const manager = normalizeGalleryManagerState(galle
 
 function getCurrentViewMode() { return getAboutDisplayMode(); }
 
-function isManagerItemVisible(id) { const item = getManagerItem(id); if (item.visible === false) return false; const mode = getCurrentViewMode(); if (mode === 'mobile' && item.visibleMobile === false) return false; if (mode === 'desktop' && item.visibleDesktop === false) return false; return true; }
+function isManagerItemVisible(id) {
+  // Managers see unpublished galleries in the editor, never in public views.
+  if (canEdit()) return true;
+  const gallery = findGalleryByManagerId(id);
+  const meta = gallery?.meta || {};
+  if (meta.visible === false || meta.published === false || meta.unpublished === true) return false;
+  const item = getManagerItem(id);
+  if (item.visible === false || item.published === false || item.unpublished === true) return false;
+  const mode = getCurrentViewMode();
+  if (mode === 'mobile' && item.visibleMobile === false) return false;
+  if (mode === 'desktop' && item.visibleDesktop === false) return false;
+  return true;
+}
 
 function findGalleryByManagerId(id) { return galleries.find((gallery) => getGalleryLookupId(gallery) === id || String(gallery?.galleryId || '') === id) || null; }
 
@@ -1707,7 +1734,8 @@ function renderGalleryStack() {
     }
     const renderOrder = expandedTargetId ? getManagerRenderOrder().filter((id) => getCanonicalManagerId(id) === expandedTargetId) : getManagerRenderOrder();
     renderOrder.forEach((id) => {
-      if (!expandedTargetId && !isManagerItemVisible(id)) return;
+      // Publication rules apply equally to the homepage and dedicated gallery routes.
+      if (!isManagerItemVisible(id)) return;
       if (id === SUPER_GALLERY_ID) { renderSuperGallerySection(editEnabled); markFirst(); return; }
       const galleryIndex = findGalleryIndexByManagerId(id);
       const gallery = galleryIndex >= 0 ? galleries[galleryIndex] : null;
@@ -1726,15 +1754,10 @@ function renderGalleryStack() {
   }
 
 function getLightboxMedia(tile) {
-    const source = Array.isArray(tile?.media) ? tile.media.filter((item) => item && item.src) : [];
-    if (tile?.display?.multiItemMode === false) {
-      const firstVisible = source.find((item) => item.isVisible !== false);
-      return firstVisible ? [firstVisible] : (source[0] ? [source[0]] : []);
-    }
-    const activeOnly = source.filter((item) => item.isVisible !== false && item.isEnabled !== false);
-    if (activeOnly.length) return activeOnly;
-    const visibleOnly = source.filter((item) => item.isVisible !== false);
-    return visibleOnly.length ? visibleOnly : source;
+    const visible = visibleTileMedia(tile);
+    if (tile?.display?.multiItemMode === false) return visible.slice(0, 1);
+    const enabled = visible.filter((item) => item.isEnabled !== false);
+    return enabled.length ? enabled : visible;
   }
 
 function renderLightbox() {
@@ -1751,7 +1774,7 @@ function renderLightbox() {
     view.classList.toggle('has-strip', activeMedia.length > 1);
     view.querySelectorAll('img,video,.crmo3045-fallback').forEach((n) => n.remove());
     if (item) {
-      view.appendChild(mediaEl(item, 'crmo3045-lb-media'));
+      view.appendChild(mediaEl(item, 'crmo3045-lb-media', '95vw'));
     } else {
       const fallback = document.createElement('div');
       fallback.className = 'crmo3045-fallback';
@@ -1786,7 +1809,8 @@ function renderLightbox() {
       btn.type = 'button';
       btn.className = 'crmo3045-thumb' + (idx === activeMediaIndex ? ' active' : '');
       btn.setAttribute('aria-label', `Media ${idx + 1}`);
-      const thumb = mediaEl(media);
+      const thumb = mediaEl(media, '', '140px');
+      if (thumb?.tagName === 'IMG') thumb.loading = 'lazy';
       if (thumb) btn.appendChild(thumb);
       btn.addEventListener('click', () => { activeMediaIndex = idx; renderLightbox(); });
       strip.appendChild(btn);
@@ -1805,6 +1829,7 @@ function getNavigableTileIndexes(galleryIndex) {
     tiles.forEach((tile, tileIndex) => {
       if (tile?.isVisible === false) return;
       if (shownHome && !shownHome.includes(tileIndex)) return;
+      if (!brandGallery && !tileHasMeaningfulContent(tile)) return;
       if (brandGallery && !isBrandTileInteractive(tile)) return;
       indexes.push(tileIndex);
     });
@@ -1814,7 +1839,7 @@ function getNavigableTileIndexes(galleryIndex) {
 function openLightbox(galleryIndex, tileIndex, mediaIndex) {
     const tile = galleries[galleryIndex].tiles[tileIndex];
     if (tile?.isVisible === false) return;
-    if (isBrandGalleryIndex(galleryIndex) && !isBrandTileInteractive(tile)) return;
+    if (isBrandGalleryIndex(galleryIndex) ? !isBrandTileInteractive(tile) : !tileHasMeaningfulContent(tile)) return;
     activeGalleryIndex = galleryIndex;
     activeTileIndex = tileIndex;
     const activeMedia = isBrandGalleryIndex(galleryIndex) ? getBrandLightboxItems(tile).map((item) => item.media).filter(Boolean) : getLightboxMedia(tile);
@@ -1847,7 +1872,7 @@ function getAutoBrandWorkOptions(tile = tileEditorDraft) {
       (gallery.tiles || []).forEach((candidate, tileIndex) => {
         if (!tileHasMeaningfulContent(candidate)) return;
         if (normalizeBrandKey(candidate?.meta?.brand || '') !== normalizedBrand) return;
-        const first = getLightboxMedia(candidate)[0] || candidate.media?.[0] || null;
+        const first = getLightboxMedia(candidate)[0] || null;
         out.push({
           ref: { galleryIndex, tileIndex },
           key: `${galleryIndex}:${tileIndex}`,
