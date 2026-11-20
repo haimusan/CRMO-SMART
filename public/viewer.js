@@ -1323,7 +1323,19 @@ function getManagerItem(id) { const manager = normalizeGalleryManagerState(galle
 
 function getCurrentViewMode() { return getAboutDisplayMode(); }
 
-function isManagerItemVisible(id) { const item = getManagerItem(id); if (item.visible === false) return false; const mode = getCurrentViewMode(); if (mode === 'mobile' && item.visibleMobile === false) return false; if (mode === 'desktop' && item.visibleDesktop === false) return false; return true; }
+function isManagerItemVisible(id) {
+  // Managers see unpublished galleries in the editor, never in public views.
+  if (canEdit()) return true;
+  const gallery = findGalleryByManagerId(id);
+  const meta = gallery?.meta || {};
+  if (meta.visible === false || meta.published === false || meta.unpublished === true) return false;
+  const item = getManagerItem(id);
+  if (item.visible === false || item.published === false || item.unpublished === true) return false;
+  const mode = getCurrentViewMode();
+  if (mode === 'mobile' && item.visibleMobile === false) return false;
+  if (mode === 'desktop' && item.visibleDesktop === false) return false;
+  return true;
+}
 
 function findGalleryByManagerId(id) { return galleries.find((gallery) => getGalleryLookupId(gallery) === id || String(gallery?.galleryId || '') === id) || null; }
 
