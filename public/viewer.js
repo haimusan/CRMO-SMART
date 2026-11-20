@@ -1734,7 +1734,8 @@ function renderGalleryStack() {
     }
     const renderOrder = expandedTargetId ? getManagerRenderOrder().filter((id) => getCanonicalManagerId(id) === expandedTargetId) : getManagerRenderOrder();
     renderOrder.forEach((id) => {
-      if (!expandedTargetId && !isManagerItemVisible(id)) return;
+      // Publication rules apply equally to the homepage and dedicated gallery routes.
+      if (!isManagerItemVisible(id)) return;
       if (id === SUPER_GALLERY_ID) { renderSuperGallerySection(editEnabled); markFirst(); return; }
       const galleryIndex = findGalleryIndexByManagerId(id);
       const gallery = galleryIndex >= 0 ? galleries[galleryIndex] : null;
