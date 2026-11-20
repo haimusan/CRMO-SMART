@@ -46,6 +46,6 @@ test('private editor adds a gray draft marker without changing public CSS',()=>{
 });
 
 test('dedicated gallery route cannot bypass unpublished gallery visibility',()=>{
-  assert.match(viewer,/renderOrder\\.forEach\\(\\(id\\) => \\{[\\s\\S]{0,220}if \\(!isManagerItemVisible\\(id\\)\\) return;/);
-  assert.doesNotMatch(viewer,/!expandedTargetId\\s*&&\\s*!isManagerItemVisible\\(id\\)/);
+  assert.match(viewer,/renderOrder\.forEach\(\(id\) => \{[\s\S]{0,220}if \(!isManagerItemVisible\(id\)\) return;/);
+  assert.doesNotMatch(viewer,/!expandedTargetId\s*&&\s*!isManagerItemVisible\(id\)/);
 });
