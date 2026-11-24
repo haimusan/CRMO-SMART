@@ -1672,6 +1672,7 @@ function renderSingleGallerySection(gallery, galleryIndex, editEnabled) {
 
 function renderGalleryStack() {
     galleryStack.innerHTML = '';
+    window.CRMOPortfolioPresentation?.unmount();
     if(window.CRMO_ROUTES?.render({stack:galleryStack,galleries,editable:canEdit(),visible:isManagerItemVisible,
       renderGallery:(g,i)=>renderSingleGallerySection(g,i,canEdit()),renderAll:()=>renderSuperGallerySection(canEdit()),
       renderAbout:()=>renderAboutSection(canEdit()),renderContact:()=>renderContactSection(canEdit()),
@@ -1717,6 +1718,9 @@ function renderGalleryStack() {
       markFirst();
     });
     if (expandedTargetId) return;
+    window.CRMOPortfolioPresentation?.mount({
+      stack: galleryStack, galleries, visible: isManagerItemVisible, getMedia: getLightboxMedia, openProject: openLightbox
+    });
     renderAboutSection(editEnabled);
     markFirst();
     renderContactSection(editEnabled);
@@ -1737,6 +1741,11 @@ function getLightboxMedia(tile) {
     return visibleOnly.length ? visibleOnly : source;
   }
 
+const projectSlideshow = window.CRMOPortfolioPresentation?.projectSlideshow({
+    dialog: lb,
+    changeMedia: (index) => { activeMediaIndex = index; renderLightbox(); }
+  });
+
 function renderLightbox() {
     const gallery = galleries[activeGalleryIndex];
     const tile = gallery.tiles[activeTileIndex];
@@ -1751,7 +1760,9 @@ function renderLightbox() {
     view.classList.toggle('has-strip', activeMedia.length > 1);
     view.querySelectorAll('img,video,.crmo3045-fallback').forEach((n) => n.remove());
     if (item) {
-      view.appendChild(mediaEl(item, 'crmo3045-lb-media'));
+      const mediaNode = mediaEl(item, 'crmo3045-lb-media');
+      view.appendChild(mediaNode);
+      window.CRMOPortfolioPresentation?.animateImage(mediaNode);
     } else {
       const fallback = document.createElement('div');
       fallback.className = 'crmo3045-fallback';
@@ -1788,12 +1799,13 @@ function renderLightbox() {
       btn.setAttribute('aria-label', `Media ${idx + 1}`);
       const thumb = mediaEl(media);
       if (thumb) btn.appendChild(thumb);
-      btn.addEventListener('click', () => { activeMediaIndex = idx; renderLightbox(); });
+      btn.addEventListener('click', () => { projectSlideshow?.pause(); activeMediaIndex = idx; renderLightbox(); });
       strip.appendChild(btn);
     });
     const showTileNav = !isBrandTile && gallery.tiles.length > 1;
     byId('crmo3047PrevTile').hidden = !showTileNav;
     byId('crmo3047NextTile').hidden = !showTileNav;
+    projectSlideshow?.render(activeMedia, activeMediaIndex);
   }
 
 function getNavigableTileIndexes(galleryIndex) {
@@ -1822,6 +1834,7 @@ function openLightbox(galleryIndex, tileIndex, mediaIndex) {
     renderLightbox();
     document.body.classList.add('lightbox-open');
     lb.showModal();
+    projectSlideshow?.start();
   }
 
 function shiftTile(delta) {
@@ -1832,6 +1845,7 @@ function shiftTile(delta) {
     activeTileIndex = tileIndexes[nextPos];
     activeMediaIndex = 0;
     renderLightbox();
+    projectSlideshow?.start();
   }
 
 function normalizeBrandKey(value) {
