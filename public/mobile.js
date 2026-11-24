@@ -2,15 +2,19 @@
   'use strict';
   const nav = document.querySelector('header nav.nav');
   if (!nav || document.getElementById('crmo-mobile-menu')) return;
-  const mobile = matchMedia('(max-width:900px)');
-  const toggle = document.createElement('button');
-  toggle.type = 'button';
-  toggle.className = 'crmo-menu-toggle';
-  toggle.setAttribute('aria-label', 'פתיחת תפריט');
-  toggle.setAttribute('aria-controls', 'crmo-mobile-menu');
-  toggle.setAttribute('aria-expanded', 'false');
-  toggle.innerHTML = '<span></span><span></span><span></span>';
-  nav.append(toggle);
+  let toggle = nav.querySelector('.crmo-menu-toggle');
+  if (!toggle) {
+    // The private editor and older entry pages build their header at runtime.
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'crmo-menu-toggle';
+    toggle.setAttribute('aria-label', 'פתיחת תפריט');
+    toggle.setAttribute('aria-haspopup', 'dialog');
+    toggle.setAttribute('aria-controls', 'crmo-mobile-menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<span></span><span></span><span></span>';
+    nav.prepend(toggle);
+  }
   const menu = document.createElement('dialog');
   menu.id = 'crmo-mobile-menu';
   menu.className = 'crmo-mobile-menu';
@@ -65,7 +69,11 @@
     document.body.classList.add('crmo-menu-open');
     menu.showModal();
   });
-  mobile.addEventListener('change', () => { if (!mobile.matches && menu.open) closeMenu(); });
+
+  const compactHeader = matchMedia('(max-width:900px), (pointer:coarse) and (orientation:landscape) and (max-height:540px)');
+  compactHeader.addEventListener('change', () => {
+    if (!compactHeader.matches && menu.open) closeMenu();
+  });
 
   function enhanceCards() {
     document.querySelectorAll('.crmo3047-stack .crmo3045-tile-wrap').forEach(card => {
