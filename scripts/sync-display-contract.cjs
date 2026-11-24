@@ -9,7 +9,7 @@ const limit=viewer.slice(viewer.indexOf('function getExpandedTileLimitFor('),vie
 if(!curation.includes('function crmoRenderCuratedGrid(')||!limit.includes('return compactLimit;'))throw Error('Display contract markers changed');
 fs.writeFileSync('public/display-contract.js','/* Generated from the public viewer. Regenerate and test when display rules change. */\nwindow.CRMO_DISPLAY_SOURCE=Object.freeze('+JSON.stringify({curation,limit})+');\n');
 for(const file of ['index.html','admin/index.html']){
- let html=fs.readFileSync(file,'utf8').replace(/<script src="(?:\.\.\/)?public\/display-contract\.js\?v=\d+"><\/script>/g,'');
+ let html=fs.readFileSync(file,'utf8').replace(/<script src="(?:\.\.\/)?public\/display-contract\.js\?v=[^"<>]+"><\/script>/g,'');
  const version=fs.readFileSync('public/config.js','utf8').match(/"release":"(\d+)"/)[1];
  const prefix=file.startsWith('admin/')?'../':'';
  html=html.replace(/(<script src="(?:\.\.\/)?public\/config\.js\?v=[^"<>]+"><\/script>)/,'$1<script src="'+prefix+'public/display-contract.js?v='+version+'"></script>');
