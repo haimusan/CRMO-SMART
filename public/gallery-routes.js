@@ -38,6 +38,16 @@
   for(const key of ['view','mode','display','expanded','gallery','section','posCategory'])q.delete(key);
   if(url.href!==location.href)history.replaceState(history.state,'',url.href);
  }
+ let activeViewer;
+ function canOpen(id){
+  if(id==='about'||id==='contact')return true;
+  if(!activeViewer)return false;
+  const {galleries,editable,visible}=activeViewer;
+  if(id==='pos')return editable||visible('pos')!==false;
+  const gallery=galleries.find(g=>g.galleryId===id);
+  return Boolean(gallery && (editable || (gallery.meta?.visible!==false &&
+    gallery.meta?.published!==false && gallery.meta?.unpublished!==true && visible(id)!==false)));
+ }
  function decorate(){
   document.querySelectorAll('nav a[href],.crmo-mobile-links a[href]').forEach(link=>{
    const url=new URL(link.getAttribute('href'),location.href);
@@ -45,17 +55,24 @@
    const id=url.hash.slice(1);
    if(id==='top')link.href='/';
    // Header links always point into the complete home page, even from a shared gallery.
-   else if(byId.has(id)||aliases[id])link.href='/#'+id;
+   else if(byId.has(id)||aliases[id]){
+    link.href='/#'+id;
+    if(activeViewer && link.closest('header nav')){
+     const target=byId.has(id)?id:entries.find(([path])=>path===aliases[id])?.[1];
+     if(canOpen(target))link.style.removeProperty('display');
+     else link.style.display='none';
+    }
+   }
   });
  }
  function render(adapter){
+  activeViewer=adapter;
+  document.dispatchEvent(new Event('crmo-gallery-navigation-ready'));
   const route=current();if(!route)return false;
-  const {stack,galleries,editable,visible,renderGallery,renderAll,renderAbout,renderContact,renderFooter,renderLegal}=adapter;
+  const {stack,galleries,renderGallery,renderAll,renderAbout,renderContact,renderFooter,renderLegal}=adapter;
   const gallery=galleries.find(g=>g.galleryId===route.galleryId);
   const heading=document.createElement('h1');heading.className='crmo-route-name';heading.textContent=route.title;stack.appendChild(heading);
-  const allowed=editable || (route.kind==='section' || (route.kind==='all'?visible('pos'):
-    gallery && gallery.meta?.visible!==false && gallery.meta?.published!==false && gallery.meta?.unpublished!==true && visible(route.galleryId)!==false));
-  if(!allowed){
+  if(!canOpen(route.galleryId)){
    const message=document.createElement('p');message.setAttribute('role','status');message.textContent='הגלריה אינה זמינה לצפייה כרגע.';stack.appendChild(message);
   }else if(route.kind==='all')renderAll();
   else if(route.kind==='gallery')renderGallery(gallery,galleries.indexOf(gallery));
@@ -64,5 +81,5 @@
   return true;
  }
  canonicalize();
- window.CRMO_ROUTES=Object.freeze({entries,aliases,href,shareURL,current,render,decorate,canonicalize});
+ window.CRMO_ROUTES=Object.freeze({entries,aliases,href,shareURL,current,canOpen,render,decorate,canonicalize});
 })();

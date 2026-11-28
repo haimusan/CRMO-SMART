@@ -3,7 +3,7 @@ const source=fs.readFileSync('public/gallery-routes.js','utf8');
 function setup(address){
  const url=new URL(address),calls=[],nodes=[];
  const location={href:url.href,pathname:url.pathname,origin:url.origin};
- const c={window:{},location,URL,history:{replaceState(_,__,value){const u=new URL(value);Object.assign(location,{href:u.href,pathname:u.pathname})}},document:{querySelectorAll:()=>[],createElement:tag=>({tag,setAttribute(){}})}};
+ const c={window:{},location,URL,Event,history:{replaceState(_,__,value){const u=new URL(value);Object.assign(location,{href:u.href,pathname:u.pathname})}},document:{dispatchEvent(){},querySelectorAll:()=>[],createElement:tag=>({tag,setAttribute(){}})}};
  vm.runInNewContext(source,c);const routes=c.window.CRMO_ROUTES;
  const adapter={stack:{appendChild:n=>nodes.push(n)},galleries:routes.entries.filter(([p,id])=>!['pos','about','contact'].includes(id)).map(([p,id])=>({galleryId:id,meta:{visible:true,parentId:id.startsWith('pos-sub-')?'pos':''}})),editable:false,visible:()=>true,
   renderGallery:(g,i)=>calls.push(g.galleryId),renderAll:()=>calls.push('pos-all'),renderAbout:()=>calls.push('about'),renderContact:()=>calls.push('contact'),renderFooter:()=>calls.push('footer'),renderLegal:()=>calls.push('legal')};
@@ -43,4 +43,32 @@ test('header remains internal everywhere; share links are separate standalone ad
   assert.equal(c.window.CRMO_ROUTES.shareURL('pos-sub-1'),'https://www.crmo.co.il/pos/chosen/');
   assert.equal(c.window.CRMO_ROUTES.shareURL('gallery-18'),'https://www.crmo.co.il/pos-mix/');
  }
+});
+
+
+test('navigation tracks saved publication, role and current viewport even off the home page',()=>{
+ const s=setup('https://www.crmo.co.il/packaging/');
+ assert.equal(s.routes.canOpen('branding'),false);
+ assert.equal(s.routes.canOpen('contact'),true);
+ let mobile=true;
+ s.adapter.visible=id=>id!=='product-design' && !(mobile&&id==='branding');
+ const exhibition=s.adapter.galleries.find(g=>g.galleryId==='exhibitions');
+ exhibition.meta.unpublished=true;
+ s.routes.render(s.adapter);
+ assert.equal(s.routes.canOpen('stores'),true);
+ assert.equal(s.routes.canOpen('pos-sub-3'),true);
+ assert.equal(s.routes.canOpen('branding'),false);
+ assert.equal(s.routes.canOpen('product-design'),false);
+ assert.equal(s.routes.canOpen('exhibitions'),false);
+ assert.equal(s.routes.canOpen('unknown'),false);
+ mobile=false;
+ assert.equal(s.routes.canOpen('branding'),true);
+ s.adapter.editable=true;
+ s.routes.render(s.adapter);
+ assert.equal(s.routes.canOpen('exhibitions'),true);
+ assert.equal(s.routes.canOpen('product-design'),true);
+ s.adapter.editable=false;
+ exhibition.meta.unpublished=false;
+ s.routes.render(s.adapter);
+ assert.equal(s.routes.canOpen('exhibitions'),true);
 });
