@@ -24,11 +24,10 @@
     document.body.classList.remove('crmo-menu-open');
     toggle.setAttribute('aria-expanded', 'false');
   });
-  toggle.addEventListener('click', () => {
+  function populateMenu() {
     const links = menu.querySelector('nav');
     links.replaceChildren();
-    // Mobile is the complete portfolio directory, independent of home-page visibility.
-    // Keep the desktop navigation untouched.
+    // List standalone destinations from the current public or editor view, including galleries outside this page.
     const routes = window.CRMO_ROUTES?.entries || [];
     const excluded = new Set(['intro-more','pos','pos-sub-1','pos-sub-2','pos-sub-3','pos-sub-4','pos-sub-5','pos-sub-6','pos-sub-7','pos-sub-8']);
     const added = new Set();
@@ -50,8 +49,7 @@
     if (routes.length) {
       routes.forEach(([path,id,title]) => {
         if (excluded.has(id)) return;
-        const section = document.getElementById(id);
-        if (section?.dataset?.published === 'false' || section?.dataset?.unpublished === 'true') return;
+        if (!window.CRMO_ROUTES.canOpen(id)) return;
         addLink(title, window.CRMO_ROUTES.href(id));
       });
     } else {
@@ -63,6 +61,10 @@
     if (login) addLink(login.textContent.trim(), login.href, login);
     toggle.setAttribute('aria-expanded', 'true');
     document.body.classList.add('crmo-menu-open');
+  }
+  document.addEventListener('crmo-gallery-navigation-ready', () => { if (menu.open) populateMenu(); });
+  toggle.addEventListener('click', () => {
+    populateMenu();
     menu.showModal();
   });
   mobile.addEventListener('change', () => { if (!mobile.matches && menu.open) closeMenu(); });
