@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /preview/
+Disallow: /demo/
+
+Sitemap: https://www.crmo.co.il/sitemap.xml

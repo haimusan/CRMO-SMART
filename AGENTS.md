@@ -1,6 +1,6 @@
 # CRMO release rules
 
-- The browser title is always exactly `CRMO | sales oriented design`, for public and admin pages. Never put release numbers in it.
+- Public pages use the Hebrew editorial titles and descriptions in their HTML. Keep each canonical gallery’s metadata and initial summary when rebuilding the shared page shell. The admin browser title remains exactly `CRMO | sales oriented design`. Never include release numbers in public or admin titles.
 - Every published code update increments the numeric release by one.
 - `public/config.js` (`CRMO_CONFIG.release`) is the single source for the displayed release. Do not hardcode a second release in the admin loader.
 - The admin dashboard `#adminVersionPill` and footer labels `#footerVersionLabel`, `#crmo-footer-version`, `.crmo3047-footer-version` must all display the same current `CRMO_v<number>`.
